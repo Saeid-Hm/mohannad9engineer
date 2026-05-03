@@ -1,0 +1,1447 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="description" content="SWOT Pro — H-yber Management | أداة التحليل الاستراتيجي">
+<title>SWOT Pro — H-yber Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;900&amp;family=Tajawal:wght@300;400;500;700;900&amp;family=Amiri:wght@400;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════ ROOT ══════════════════════════════════════ */
+:root{
+  --bg:#f4f6f9;--surface:#fff;--surface2:#f8f9fb;--surface3:#eef0f4;
+  --border:#e4e7ee;--border2:#d0d5df;
+  --accent:#1a3a5c;--accent2:rgba(26,58,92,.08);--accent-mid:#235689;
+  --text:#1a2332;--text2:#4a5568;--text3:#9aa3b2;
+  --strength:#059669;--strength-bg:#ecfdf5;--strength-border:#a7f3d0;
+  --weakness:#d97706;--weakness-bg:#fffbeb;--weakness-border:#fde68a;
+  --opportunity:#2563eb;--opportunity-bg:#eff6ff;--opportunity-border:#bfdbfe;
+  --threat:#dc2626;--threat-bg:#fef2f2;--threat-border:#fecaca;
+  --radius:12px;--radius-sm:8px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --shadow:0 4px 16px rgba(0,0,0,.08),0 1px 4px rgba(0,0,0,.04);
+  --shadow-lg:0 10px 40px rgba(0,0,0,.1),0 2px 8px rgba(0,0,0,.05);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Cairo',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ══════════════════════════════════════ SIDEBAR ══════════════════════════════════════ */
+#sidebar{
+  position:fixed;top:0;right:0;width:248px;height:100vh;
+  background:var(--accent);display:flex;flex-direction:column;
+  z-index:100;transition:transform .35s cubic-bezier(.4,0,.2,1);overflow:hidden;
+}
+/* make nav scrollable so install button always reachable */
+#sidebar nav{
+  flex:1;
+  overflow-y:auto;
+  padding-bottom:4px;
+}
+#sidebar::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(135deg,rgba(255,255,255,.018) 0,rgba(255,255,255,.018) 1px,transparent 1px,transparent 28px);
+}
+
+/* ── Animated Logo ── */
+.sidebar-logo{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);position:relative;}
+.logo-mark{display:flex;align-items:center;gap:11px;}
+
+.logo-icon{
+  width:44px;height:44px;flex-shrink:0;position:relative;
+  background:transparent;border:none;padding:0;cursor:default;
+}
+
+/* Outer ring */
+.logo-icon .ring{
+  position:absolute;inset:0;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.18);
+  animation:logoRing 4s linear infinite;
+}
+.logo-icon .ring::after{
+  content:'';position:absolute;top:-2px;left:50%;margin-left:-4px;
+  width:8px;height:8px;border-radius:50%;
+  background:#4ade80;
+  box-shadow:0 0 8px #4ade80,0 0 16px rgba(74,222,128,.4);
+}
+@keyframes logoRing{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+/* Inner H mark */
+.logo-icon .hmark{
+  position:absolute;inset:6px;
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  animation:logoPulse 3s ease-in-out infinite;
+}
+@keyframes logoPulse{0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,.0)}50%{box-shadow:0 0 0 4px rgba(74,222,128,.15)}}
+
+.logo-icon .hmark svg{width:18px;height:18px;}
+
+.logo-text-block{line-height:1.15;}
+.logo-title{font-size:15px;font-weight:800;color:#fff;letter-spacing:.3px;}
+.logo-sub{font-size:9px;font-weight:500;color:rgba(255,255,255,.45);letter-spacing:2.5px;text-transform:uppercase;}
+
+.swot-badge{
+  margin-top:12px;display:inline-flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  border-radius:30px;padding:4px 12px;
+  font-size:11px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:1.5px;
+}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:#4ade80;animation:blink 2.2s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+
+nav{flex:1;padding:14px 10px;overflow-y:auto;}
+nav::-webkit-scrollbar{width:3px;}
+nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px;}
+.nav-label{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,.35);padding:10px 10px 5px;margin-top:4px;}
+nav a{
+  display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-sm);
+  color:rgba(255,255,255,.65);text-decoration:none;font-size:13px;font-weight:500;
+  cursor:pointer;transition:all .2s;margin-bottom:2px;position:relative;
+}
+nav a:hover{background:rgba(255,255,255,.1);color:#fff;}
+nav a.active{background:rgba(255,255,255,.14);color:#fff;font-weight:700;}
+nav a.active::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);width:3px;height:60%;background:#4ade80;border-radius:0 3px 3px 0;}
+nav a .material-icons-round{font-size:18px;opacity:.8;}
+nav a.active .material-icons-round{opacity:1;}
+
+.sidebar-footer{padding:12px 18px;border-top:1px solid rgba(255,255,255,.08);}
+.accent-row{display:flex;align-items:center;gap:8px;}
+.accent-lbl{font-size:10px;color:rgba(255,255,255,.4);letter-spacing:1px;}
+.swatch{width:20px;height:20px;border-radius:50%;border:2px solid rgba(255,255,255,.2);cursor:pointer;transition:transform .2s,border-color .2s;}
+.swatch:hover{transform:scale(1.2);border-color:rgba(255,255,255,.6);}
+
+.sidebar-toggle{
+  position:fixed;top:14px;right:14px;z-index:200;
+  background:var(--accent);border:none;border-radius:var(--radius-sm);
+  width:40px;height:40px;display:none;align-items:center;justify-content:center;
+  cursor:pointer;color:#fff;box-shadow:var(--shadow);
+}
+
+/* ══════════════════════════════════════ MAIN ══════════════════════════════════════ */
+main{margin-right:248px;min-height:100vh;}
+
+.topbar{
+  position:sticky;top:0;background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);padding:0 28px;height:58px;
+  display:flex;align-items:center;justify-content:space-between;
+  z-index:50;box-shadow:var(--shadow-sm);
+}
+.topbar-left{display:flex;align-items:center;gap:10px;}
+.tb-app{font-size:13px;color:var(--text3);}
+.tb-sep{color:var(--text3);font-size:14px;}
+.tb-page{font-size:14px;font-weight:700;color:var(--text);}
+.topbar-right{display:flex;gap:8px;align-items:center;}
+
+/* ══════════════════════════════════════ BUTTONS ══════════════════════════════════════ */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius-sm);
+  font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;
+  cursor:pointer;border:none;transition:all .18s;white-space:nowrap;
+}
+.btn .material-icons-round{font-size:16px;}
+.btn-outline{background:transparent;border:1.5px solid var(--border2);color:var(--text2);}
+.btn-outline:hover{border-color:var(--accent-mid);color:var(--accent-mid);background:var(--accent2);}
+.btn-primary{background:var(--accent);color:#fff;box-shadow:0 2px 8px rgba(26,58,92,.25);}
+.btn-primary:hover{background:var(--accent-mid);}
+.btn-danger{background:transparent;border:1.5px solid var(--threat-border);color:var(--threat);}
+.btn-danger:hover{background:var(--threat-bg);}
+.btn-install{
+  background:linear-gradient(135deg,#4ade80,#22c55e);color:#0f3024;
+  font-weight:700;box-shadow:0 2px 12px rgba(74,222,128,.3);
+  animation:installPulse 3s ease-in-out infinite;
+}
+.btn-install:hover{filter:brightness(1.05);transform:translateY(-1px);}
+.btn-install.hidden{display:none;}
+@keyframes installPulse{0%,100%{box-shadow:0 2px 12px rgba(74,222,128,.3);}50%{box-shadow:0 2px 20px rgba(74,222,128,.55);}}
+
+/* ══════════════════════════════════════ SECTIONS ══════════════════════════════════════ */
+section{display:none;animation:fadeUp .35s ease;}
+section.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.page-wrap{padding:36px 32px 60px;}
+.page-header{margin-bottom:32px;}
+.page-tag{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent-mid);margin-bottom:10px;}
+.page-tag::before{content:'';display:inline-block;width:18px;height:2px;background:var(--accent-mid);border-radius:2px;}
+.page-header h2{font-size:clamp(22px,2.5vw,32px);font-weight:800;color:var(--text);letter-spacing:-.3px;line-height:1.2;}
+.page-header p{font-size:14px;color:var(--text2);margin-top:8px;line-height:1.75;max-width:600px;}
+
+/* ══════════════════════════════════════ HOME HERO ══════════════════════════════════════ */
+.hero{background:var(--accent);position:relative;overflow:hidden;padding:60px 40px 56px;text-align:center;}
+.hero::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 80% at 10% 50%,rgba(255,255,255,.04) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 20%,rgba(74,222,128,.06) 0%,transparent 60%),
+    repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0,rgba(255,255,255,.015) 1px,transparent 1px,transparent 32px);
+}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:30px;padding:6px 16px;font-size:11px;font-weight:700;color:rgba(255,255,255,.8);letter-spacing:2px;text-transform:uppercase;margin-bottom:24px;position:relative;}
+.hero h1{position:relative;font-size:clamp(30px,5vw,58px);font-weight:900;color:#fff;line-height:1.1;letter-spacing:-.5px;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:#4ade80;}
+.hero-sub{position:relative;font-size:15px;color:rgba(255,255,255,.65);max-width:460px;margin:0 auto 36px;line-height:1.75;}
+.hero-cta{position:relative;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-hero-primary{background:#fff;color:var(--accent);padding:13px 28px;font-size:14px;font-weight:800;box-shadow:0 4px 20px rgba(0,0,0,.2);}
+.btn-hero-primary:hover{background:#f0f0f0;transform:translateY(-1px);}
+.btn-hero-outline{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.3);color:rgba(255,255,255,.9);padding:13px 28px;font-size:14px;font-weight:700;}
+.btn-hero-outline:hover{background:rgba(255,255,255,.18);}
+.hero-stats{position:relative;display:flex;justify-content:center;margin-top:44px;border-top:1px solid rgba(255,255,255,.1);padding-top:28px;}
+.stat-item{padding:0 32px;text-align:center;border-left:1px solid rgba(255,255,255,.1);}
+.stat-item:last-child{border-left:none;}
+.stat-num{font-size:26px;font-weight:900;color:#fff;}
+.stat-label{font-size:11px;color:rgba(255,255,255,.45);letter-spacing:1px;margin-top:3px;}
+
+.features-section{padding:32px 32px 48px;}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:16px;}
+.feat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:var(--shadow-sm);transition:all .25s;}
+.feat-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);border-color:var(--border2);}
+.feat-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:20px;}
+.fi-navy{background:#eef2f9;color:var(--accent);}
+.fi-green{background:var(--strength-bg);color:var(--strength);}
+.fi-blue{background:var(--opportunity-bg);color:var(--opportunity);}
+.fi-orange{background:var(--weakness-bg);color:var(--weakness);}
+.feat-card h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.feat-card p{font-size:13px;color:var(--text2);line-height:1.7;}
+
+/* ══════════════════════════════════════ LEARN ══════════════════════════════════════ */
+.learn-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.learn-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:all .25s;}
+.learn-card:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+.lc-top{padding:18px 22px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.lc-s .lc-top{border-top:3px solid var(--strength);}
+.lc-w .lc-top{border-top:3px solid var(--weakness);}
+.lc-o .lc-top{border-top:3px solid var(--opportunity);}
+.lc-t .lc-top{border-top:3px solid var(--threat);}
+.lc-sq{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sq-s{background:var(--strength-bg);color:var(--strength);}
+.sq-w{background:var(--weakness-bg);color:var(--weakness);}
+.sq-o{background:var(--opportunity-bg);color:var(--opportunity);}
+.sq-t{background:var(--threat-bg);color:var(--threat);}
+.lc-title{font-size:14px;font-weight:700;color:var(--text);}
+.lc-en{font-size:10px;color:var(--text3);letter-spacing:1.5px;margin-top:2px;}
+.lc-body{padding:16px 22px 18px;}
+.lc-desc{font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:12px;}
+.lc-qs{list-style:none;}
+.lc-qs li{font-size:12.5px;color:var(--text2);padding:5px 0;border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:flex-start;}
+.lc-qs li:last-child{border-bottom:none;}
+.lc-arrow{flex-shrink:0;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;margin-top:1px;}
+.lc-s .lc-arrow{background:var(--strength-bg);color:var(--strength);}
+.lc-w .lc-arrow{background:var(--weakness-bg);color:var(--weakness);}
+.lc-o .lc-arrow{background:var(--opportunity-bg);color:var(--opportunity);}
+.lc-t .lc-arrow{background:var(--threat-bg);color:var(--threat);}
+
+/* ══════════════════════════════════════ STRUCTURE ══════════════════════════════════════ */
+.mindmap-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:36px;box-shadow:var(--shadow-sm);text-align:center;}
+.mm-center{display:inline-flex;align-items:center;gap:10px;background:var(--accent);color:#fff;font-weight:800;font-size:17px;padding:14px 32px;border-radius:10px;margin-bottom:32px;box-shadow:0 4px 20px rgba(26,58,92,.25);}
+.mm-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.mm-block{border-radius:10px;padding:20px;text-align:right;border:1.5px solid;}
+.mm-s{background:var(--strength-bg);border-color:var(--strength-border);}
+.mm-w{background:var(--weakness-bg);border-color:var(--weakness-border);}
+.mm-o{background:var(--opportunity-bg);border-color:var(--opportunity-border);}
+.mm-t{background:var(--threat-bg);border-color:var(--threat-border);}
+.mm-tag{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.mm-s .mm-tag{color:var(--strength);}
+.mm-w .mm-tag{color:var(--weakness);}
+.mm-o .mm-tag{color:var(--opportunity);}
+.mm-t .mm-tag{color:var(--threat);}
+.mm-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:8px;}
+.mm-pts{list-style:none;}
+.mm-pts li{font-size:12px;color:var(--text2);padding:3px 0;display:flex;align-items:center;gap:7px;}
+.mm-pts li::before{content:'';width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.mm-s .mm-pts li::before{background:var(--strength);}
+.mm-w .mm-pts li::before{background:var(--weakness);}
+.mm-o .mm-pts li::before{background:var(--opportunity);}
+.mm-t .mm-pts li::before{background:var(--threat);}
+.mm-legend{margin-top:24px;display:flex;justify-content:center;gap:24px;flex-wrap:wrap;}
+.mm-leg{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);}
+.mm-leg-dot{width:8px;height:8px;border-radius:50%;}
+
+/* ══════════════════════════════════════ EXAMPLES ══════════════════════════════════════ */
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.ex-block{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);}
+.ex-head{padding:13px 20px;display:flex;align-items:center;gap:9px;border-bottom:1px solid var(--border);}
+.ex-s .ex-head{background:var(--strength-bg);}
+.ex-w .ex-head{background:var(--weakness-bg);}
+.ex-o .ex-head{background:var(--opportunity-bg);}
+.ex-t .ex-head{background:var(--threat-bg);}
+.ex-head h3{font-size:13px;font-weight:700;}
+.ex-s .ex-head h3{color:var(--strength);}
+.ex-w .ex-head h3{color:var(--weakness);}
+.ex-o .ex-head h3{color:var(--opportunity);}
+.ex-t .ex-head h3{color:var(--threat);}
+.ex-list{list-style:none;padding:4px 0;}
+.ex-list li{font-size:13px;color:var(--text2);padding:8px 20px;border-bottom:1px solid var(--border);display:flex;gap:10px;line-height:1.55;}
+.ex-list li:last-child{border-bottom:none;}
+.ex-num{font-size:10px;font-weight:700;color:var(--text3);min-width:16px;margin-top:2px;}
+
+/* ══════════════════════════════════════ TOOL ══════════════════════════════════════ */
+.tool-bar{display:flex;gap:10px;margin-bottom:24px;flex-wrap:wrap;align-items:center;}
+
+/* ── Tooltip overlay ── */
+.tooltip-overlay{
+  display:none;position:absolute;z-index:20;
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);box-shadow:var(--shadow-lg);
+  padding:16px 18px;max-width:240px;pointer-events:none;
+  animation:tooltipIn .25s ease;
+}
+.tooltip-overlay.show{display:block;}
+@keyframes tooltipIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+.tooltip-title{font-size:11px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.t-s .tooltip-title{color:var(--strength);}
+.t-w .tooltip-title{color:var(--weakness);}
+.t-o .tooltip-title{color:var(--opportunity);}
+.t-t .tooltip-title{color:var(--threat);}
+.tooltip-list{list-style:none;}
+.tooltip-list li{font-size:12px;color:var(--text2);padding:4px 0;display:flex;gap:7px;line-height:1.5;}
+.tooltip-list li::before{content:'←';flex-shrink:0;font-size:11px;margin-top:1px;}
+.t-s .tooltip-list li::before{color:var(--strength);}
+.t-w .tooltip-list li::before{color:var(--weakness);}
+.t-o .tooltip-list li::before{color:var(--opportunity);}
+.t-t .tooltip-list li::before{color:var(--threat);}
+.tooltip-dismiss{font-size:10px;color:var(--text3);margin-top:10px;text-align:center;pointer-events:all;cursor:pointer;text-decoration:underline;}
+
+.matrix{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.m-cell{
+  background:var(--surface);border-radius:var(--radius);
+  border:1.5px solid var(--border);overflow:visible;
+  box-shadow:var(--shadow-sm);transition:border-color .2s,box-shadow .2s;
+  position:relative;
+}
+.m-cell:focus-within{box-shadow:var(--shadow);}
+.m-s:focus-within{border-color:var(--strength-border);}
+.m-w:focus-within{border-color:var(--weakness-border);}
+.m-o:focus-within{border-color:var(--opportunity-border);}
+.m-t:focus-within{border-color:var(--threat-border);}
+.m-head{
+  padding:13px 16px 11px;display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);cursor:pointer;user-select:none;
+  transition:opacity .15s;border-radius:var(--radius) var(--radius) 0 0;
+}
+.m-head:hover{opacity:.85;}
+.m-s .m-head{background:var(--strength-bg);border-bottom-color:var(--strength-border);}
+.m-w .m-head{background:var(--weakness-bg);border-bottom-color:var(--weakness-border);}
+.m-o .m-head{background:var(--opportunity-bg);border-bottom-color:var(--opportunity-border);}
+.m-t .m-head{background:var(--threat-bg);border-bottom-color:var(--threat-border);}
+.m-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.m-s .m-icon{background:rgba(5,150,105,.15);color:var(--strength);}
+.m-w .m-icon{background:rgba(217,119,6,.15);color:var(--weakness);}
+.m-o .m-icon{background:rgba(37,99,235,.15);color:var(--opportunity);}
+.m-t .m-icon{background:rgba(220,38,38,.15);color:var(--threat);}
+.m-label{font-size:13px;font-weight:700;}
+.m-s .m-label{color:var(--strength);}
+.m-w .m-label{color:var(--weakness);}
+.m-o .m-label{color:var(--opportunity);}
+.m-t .m-label{color:var(--threat);}
+.m-en{font-size:10px;color:var(--text3);letter-spacing:1px;}
+.m-hint-icon{margin-right:auto;font-size:14px;color:var(--text3);animation:hintBounce 2s ease-in-out infinite;}
+@keyframes hintBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-3px);}}
+
+textarea{
+  width:100%;background:transparent;border:none;outline:none;
+  color:var(--text);font-family:'Cairo',sans-serif;font-size:13px;
+  line-height:1.8;padding:14px 16px;min-height:160px;resize:vertical;direction:rtl;
+}
+textarea::placeholder{color:var(--text3);}
+
+/* ══════════════════════════════════════ NOTES ══════════════════════════════════════ */
+.notes-toolbar{
+  background:var(--surface);border:1px solid var(--border);border-bottom:none;
+  border-radius:var(--radius) var(--radius) 0 0;padding:8px 12px;
+  display:flex;align-items:center;gap:3px;flex-wrap:wrap;box-shadow:var(--shadow-sm);
+}
+.nt-btn{
+  width:32px;height:32px;border-radius:6px;border:none;background:transparent;
+  color:var(--text2);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:16px;transition:all .15s;position:relative;
+}
+.nt-btn:hover{background:var(--surface3);color:var(--text);}
+.nt-sep{width:1px;height:20px;background:var(--border);margin:0 3px;}
+.font-sel{background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Cairo',sans-serif;font-size:12px;padding:4px 8px;cursor:pointer;}
+.notes-area{
+  background:var(--surface);border:1px solid var(--border);border-top:none;
+  border-radius:0 0 var(--radius) var(--radius);
+  min-height:360px;padding:20px 22px;outline:none;
+  color:var(--text);font-family:'Cairo',sans-serif;font-size:14px;
+  line-height:1.8;direction:rtl;box-shadow:var(--shadow-sm);
+}
+.notes-area:empty::before{content:'اكتب ملاحظتك هنا ثم احفظها بزر الحفظ...';color:var(--text3);}
+
+/* Notes action bar */
+.notes-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;align-items:center;}
+.note-title-input{
+  flex:1;min-width:180px;background:var(--surface);
+  border:1.5px solid var(--border);border-radius:var(--radius-sm);
+  font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);
+  padding:8px 14px;outline:none;direction:rtl;
+}
+.note-title-input:focus{border-color:var(--accent-mid);}
+.note-title-input::placeholder{color:var(--text3);}
+
+/* Saved notes list */
+.saved-notes-header{display:flex;align-items:center;justify-content:space-between;margin:28px 0 14px;}
+.saved-notes-header h3{font-size:15px;font-weight:700;color:var(--text);}
+.saved-notes-count{font-size:12px;color:var(--text3);}
+.saved-notes-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.saved-note-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 18px;box-shadow:var(--shadow-sm);transition:all .2s;
+  position:relative;overflow:hidden;
+}
+.saved-note-card:hover{box-shadow:var(--shadow);transform:translateY(-1px);}
+.saved-note-card::before{content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:var(--accent);}
+.sn-title{font-size:13px;font-weight:700;color:var(--text);margin-bottom:5px;padding-left:8px;}
+.sn-preview{font-size:12px;color:var(--text2);line-height:1.6;max-height:60px;overflow:hidden;padding-left:8px;}
+.sn-footer{display:flex;align-items:center;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid var(--border);}
+.sn-date{font-size:11px;color:var(--text3);}
+.sn-actions{display:flex;gap:4px;}
+.sn-btn{
+  width:28px;height:28px;border-radius:6px;border:none;background:transparent;
+  color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:15px;transition:all .15s;
+}
+.sn-btn:hover{background:var(--surface3);color:var(--text);}
+.sn-btn.del:hover{background:var(--threat-bg);color:var(--threat);}
+.empty-notes{text-align:center;padding:32px;color:var(--text3);font-size:13px;}
+.empty-notes .material-icons-round{font-size:36px;display:block;margin-bottom:8px;opacity:.3;}
+
+/* Install guide modal */
+.install-modal-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);
+  z-index:400;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);padding:16px;
+}
+.install-modal-backdrop.open{display:flex;}
+.install-modal{
+  background:var(--surface);border-radius:16px;
+  max-width:440px;width:100%;box-shadow:var(--shadow-lg);
+  animation:modalIn .25s ease;overflow:hidden;
+}
+.install-modal-head{
+  background:var(--accent);padding:20px 22px 18px;
+  display:flex;align-items:center;gap:12px;
+}
+.install-modal-head .im-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.install-modal-head .im-icon .material-icons-round{font-size:24px;color:#4ade80;}
+.install-modal-head h3{font-size:16px;font-weight:800;color:#fff;}
+.install-modal-head p{font-size:12px;color:rgba(255,255,255,.6);margin-top:2px;}
+.install-modal-body{padding:20px 22px 24px;}
+.install-tabs{display:flex;gap:6px;margin-bottom:18px;}
+.install-tab{
+  flex:1;padding:8px 6px;border-radius:8px;border:1.5px solid var(--border);
+  background:transparent;font-family:'Cairo',sans-serif;font-size:12px;font-weight:600;
+  color:var(--text2);cursor:pointer;transition:all .18s;text-align:center;
+}
+.install-tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+.install-tab-content{display:none;}
+.install-tab-content.active{display:block;}
+.install-step{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.install-step:last-child{border-bottom:none;}
+.step-num{
+  width:26px;height:26px;border-radius:50%;
+  background:var(--accent);color:#fff;
+  font-size:12px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;
+}
+.step-text{font-size:13px;color:var(--text);line-height:1.6;}
+.step-text span{font-weight:700;color:var(--accent-mid);}
+.install-note{
+  margin-top:14px;padding:12px 14px;
+  background:#fffbeb;border:1px solid #fde68a;border-radius:8px;
+  font-size:12px;color:#92400e;line-height:1.6;
+  display:flex;gap:8px;align-items:flex-start;
+}
+.install-note .material-icons-round{font-size:16px;color:#d97706;flex-shrink:0;margin-top:1px;}
+.install-modal-foot{
+  padding:12px 22px 18px;display:flex;gap:8px;justify-content:flex-end;
+  border-top:1px solid var(--border);
+}
+/* auto-install button inside modal */
+.btn-auto-install{
+  background:linear-gradient(135deg,#4ade80,#22c55e);
+  color:#0f3024;font-weight:800;
+}
+.btn-auto-install:hover{filter:brightness(1.05);}
+.btn-auto-install.hidden{display:none;}
+
+/* Share modal */
+.modal-backdrop{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);
+  z-index:300;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
+}
+.modal-backdrop.open{display:flex;}
+.modal{
+  background:var(--surface);border-radius:var(--radius);padding:28px;
+  max-width:420px;width:90%;box-shadow:var(--shadow-lg);
+  animation:modalIn .25s ease;
+}
+@keyframes modalIn{from{opacity:0;transform:scale(.95);}to{opacity:1;transform:scale(1);}}
+.modal h3{font-size:16px;font-weight:800;color:var(--text);margin-bottom:16px;}
+.share-textarea{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:12px 14px;
+  font-family:'Cairo',sans-serif;font-size:13px;color:var(--text);
+  direction:rtl;min-height:140px;resize:none;outline:none;
+}
+.modal-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end;}
+
+/* ══════════════════════════════════════ COMPANIES ══════════════════════════════════════ */
+.co-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px;}
+.co-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:all .25s;}
+.co-card:hover{box-shadow:var(--shadow-lg);transform:translateY(-3px);}
+.co-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:13px;}
+.co-logo{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.co-name{font-size:14px;font-weight:700;color:var(--text);}
+.co-sector{font-size:11px;color:var(--text3);letter-spacing:.5px;margin-top:2px;}
+.co-body{padding:4px 0;}
+.co-row{display:flex;gap:11px;align-items:flex-start;padding:10px 20px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);line-height:1.55;}
+.co-row:last-child{border-bottom:none;}
+.co-ic{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;margin-top:1px;}
+.cri-s{background:var(--strength-bg);color:var(--strength);}
+.cri-w{background:var(--weakness-bg);color:var(--weakness);}
+.cri-o{background:var(--opportunity-bg);color:var(--opportunity);}
+.cri-t{background:var(--threat-bg);color:var(--threat);}
+
+/* ══════════════════════════════════════ H-YBER LOGO WATERMARK ══════════════════════════════════════ */
+.hm-watermark{
+  position:fixed;bottom:18px;left:18px;z-index:200;
+  display:flex;align-items:center;gap:11px;
+  background:var(--accent);border-radius:40px;
+  padding:8px 16px 8px 10px;
+  box-shadow:0 4px 20px rgba(26,58,92,.3);
+  cursor:default;transition:all .3s;
+  overflow:hidden;
+}
+.hm-watermark::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(74,222,128,.08));
+  pointer-events:none;
+}
+.hm-watermark:hover{box-shadow:0 6px 28px rgba(26,58,92,.4);transform:translateY(-2px);}
+
+/* Animated logo in watermark */
+.hm-logo-anim{
+  width:34px;height:34px;flex-shrink:0;position:relative;
+}
+.hm-logo-anim .hm-ring{
+  position:absolute;inset:0;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,.2);
+  animation:logoRing 5s linear infinite;
+}
+.hm-logo-anim .hm-ring::after{
+  content:'';position:absolute;top:-2px;left:50%;margin-left:-3px;
+  width:6px;height:6px;border-radius:50%;background:#4ade80;
+  box-shadow:0 0 6px #4ade80;
+}
+.hm-logo-anim .hm-core{
+  position:absolute;inset:5px;border-radius:8px;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;
+  animation:logoPulse 3s ease-in-out infinite;
+}
+.hm-logo-anim .hm-core svg{width:14px;height:14px;}
+
+.hm-text{line-height:1.2;}
+.hm-name{font-size:11px;font-weight:800;color:#fff;letter-spacing:.3px;}
+.hm-name span{color:rgba(255,255,255,.5);font-weight:400;}
+.hm-tag{font-size:8px;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* ══════════════════════════════════════ PRINT ══════════════════════════════════════ */
+.print-header{display:none;}
+@media print{
+  body *{visibility:hidden;}
+  #tool,#tool *{visibility:visible;}
+  #tool{position:fixed;inset:0;display:block !important;padding:16mm 14mm;background:#fff;}
+  .tool-bar,.tooltip-overlay{display:none !important;}
+  #sidebar,.topbar,.hm-watermark,.sidebar-toggle{display:none !important;}
+  main{margin-right:0 !important;}
+  .matrix{grid-template-columns:1fr 1fr;gap:10px;}
+  .m-cell{box-shadow:none;border:1.5px solid #ddd;page-break-inside:avoid;}
+  textarea{min-height:110px;}
+  .print-header{display:flex !important;align-items:center;justify-content:space-between;margin-bottom:18px;padding-bottom:12px;border-bottom:2px solid #1a3a5c;}
+}
+
+/* ══════════════════════════════════════ RESPONSIVE ══════════════════════════════════════ */
+@media(max-width:900px){
+  #sidebar{transform:translateX(100%);}
+  #sidebar.open{transform:translateX(0);}
+  .sidebar-toggle{display:flex;}
+  main{margin-right:0;}
+  .topbar,.page-wrap,.features-section{padding-left:16px;padding-right:16px;}
+  .hero{padding:36px 16px 32px;}
+  .learn-grid,.mm-grid,.matrix,.ex-grid{grid-template-columns:1fr;}
+  .hero-stats{flex-wrap:wrap;}
+  .stat-item{padding:8px 20px;border-left:none;border-bottom:1px solid rgba(255,255,255,.1);}
+}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+<link rel="manifest" href="blob:null/bb0b1777-1c2f-463c-8c7c-83c697ba2cf0"></head>
+<body>
+
+<!-- ══════════ SIDEBAR ══════════ -->
+<div id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <div class="ring"></div>
+        <div class="hmark">
+          <svg viewBox="0 0 18 18" fill="none">
+            <rect x="1.5" y="2" width="3" height="14" rx="1.5" fill="white"></rect>
+            <rect x="7.5" y="7" width="3" height="4" rx="1.5" fill="rgba(255,255,255,0.5)"></rect>
+            <rect x="13.5" y="2" width="3" height="14" rx="1.5" fill="white"></rect>
+            <line x1="4.5" y1="9" x2="7.5" y2="9" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"></line>
+            <line x1="10.5" y1="9" x2="13.5" y2="9" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"></line>
+          </svg>
+        </div>
+      </div>
+      <div class="logo-text-block">
+        <div class="logo-title">H-yber</div>
+        <div class="logo-sub">Management</div>
+      </div>
+    </div>
+    <div class="swot-badge"><span class="badge-dot"></span>SWOT PRO</div>
+  </div>
+
+  <nav>
+    <div class="nav-label">التنقل</div>
+    <a onclick="show('home')" id="n-home" class="active"><span class="material-icons-round">space_dashboard</span>الرئيسية</a>
+    <a onclick="show('learn')" id="n-learn"><span class="material-icons-round">menu_book</span>الشرح المفصل</a>
+    <a onclick="show('structure')" id="n-structure"><span class="material-icons-round">account_tree</span>الهيكلية</a>
+    <a onclick="show('examples')" id="n-examples"><span class="material-icons-round">lightbulb</span>الأمثلة</a>
+    <div class="nav-label">الأدوات</div>
+    <a onclick="show('tool')" id="n-tool"><span class="material-icons-round">edit_note</span>أداة التحليل</a>
+    <a onclick="show('notes')" id="n-notes"><span class="material-icons-round">sticky_note_2</span>الملاحظات</a>
+    <div class="nav-label">المكتبة</div>
+    <a onclick="show('companies')" id="n-companies"><span class="material-icons-round">corporate_fare</span>شركات عربية</a>
+
+    <div class="nav-label">تحميل البرنامج</div>
+    <a onclick="downloadSelf()" id="n-install" style="background:rgba(74,222,128,0.18);border:1.5px solid rgba(74,222,128,0.4);color:#4ade80;font-weight:700;margin-top:4px;">
+      <span class="material-icons-round" style="color:#4ade80;font-size:18px;">download</span>
+      <span style="flex:1;">تحميل البرنامج</span>
+      <span style="font-size:9px;background:rgba(74,222,128,0.25);border:1px solid rgba(74,222,128,0.35);color:#4ade80;padding:2px 7px;border-radius:10px;letter-spacing:.5px;white-space:nowrap;">.html</span>
+    </a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="accent-row">
+      <span class="accent-lbl">اللون</span>
+      <div class="swatch" style="background:#1a3a5c" onclick="setTheme('#1a3a5c','#235689')"></div>
+      <div class="swatch" style="background:#0f4c81" onclick="setTheme('#0f4c81','#1565a8')"></div>
+      <div class="swatch" style="background:#1a4731" onclick="setTheme('#1a4731','#226040')"></div>
+      <div class="swatch" style="background:#7f1d3a" onclick="setTheme('#7f1d3a','#a02450')"></div>
+    </div>
+  </div>
+</div>
+
+<button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+  <span class="material-icons-round">menu</span>
+</button>
+
+<!-- ══════════ MAIN ══════════ -->
+<main>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="tb-app">SWOT Pro</span>
+      <span class="tb-sep">›</span>
+      <span class="tb-page" id="page-title">الرئيسية</span>
+    </div>
+    <div class="topbar-right">
+      <button id="installBtn" class="btn btn-install hidden" onclick="triggerInstall()">
+        <span class="material-icons-round">install_mobile</span>
+        تثبيت التطبيق
+      </button>
+      <button class="btn btn-primary" onclick="show('tool')">
+        <span class="material-icons-round">edit_note</span>ابدأ التحليل
+      </button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <section id="home" class="active">
+    <div class="hero">
+      <div class="hero-eyebrow"><span class="material-icons-round" style="font-size:13px">analytics</span>أداة التخطيط الاستراتيجي</div>
+      <h1>تحليل <em>SWOT</em> الاحترافي</h1>
+      <p class="hero-sub">أداتك الشاملة للتقييم الاستراتيجي، تحليل البيانات، واتخاذ القرارات بثقة ووضوح</p>
+      <div class="hero-cta">
+        <button class="btn btn-hero-primary" onclick="show('tool')"><span class="material-icons-round">rocket_launch</span>ابدأ التحليل الآن</button>
+        <button class="btn btn-hero-outline" onclick="show('learn')"><span class="material-icons-round">menu_book</span>تعلم المفاهيم</button>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">عناصر التحليل</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">خصوصية البيانات</div></div>
+        <div class="stat-item"><div class="stat-num">Offline</div><div class="stat-label">يعمل بلا إنترنت</div></div>
+      </div>
+    </div>
+    <div class="features-section">
+      <div class="features-grid">
+        <div class="feat-card"><div class="feat-icon fi-navy"><span class="material-icons-round">wifi_off</span></div><h3>يعمل بدون إنترنت</h3><p>ملف واحد كامل، شغّله في أي مكان وعلى أي جهاز دون الحاجة لاتصال بالشبكة.</p></div>
+        <div class="feat-card"><div class="feat-icon fi-green"><span class="material-icons-round">lock</span></div><h3>خصوصية تامة ١٠٠٪</h3><p>بياناتك تبقى في متصفحك فقط. لا خوادم، لا نقل، حفظ تلقائي محلي آمن.</p></div>
+        <div class="feat-card"><div class="feat-icon fi-blue"><span class="material-icons-round">install_mobile</span></div><h3>قابل للتثبيت على الهاتف</h3><p>اضغط "تثبيت التطبيق" لإضافته لشاشة هاتفك ويعمل كتطبيق أصلي بدون إنترنت.</p></div>
+        <div class="feat-card"><div class="feat-icon fi-orange"><span class="material-icons-round">save</span></div><h3>حفظ تلقائي + ملاحظات متعددة</h3><p>تحليلك يُحفظ تلقائياً، وملاحظاتك تبقى محفوظة داخل البرنامج حتى تحذفها.</p></div>
+        <div class="feat-card"><div class="feat-icon fi-navy"><span class="material-icons-round">corporate_fare</span></div><h3>نماذج شركات عربية</h3><p>مكتبة تحليلات حقيقية لكبرى الشركات العربية للإلهام والاستفادة.</p></div>
+        <div class="feat-card"><div class="feat-icon fi-green"><span class="material-icons-round">share</span></div><h3>مشاركة الملاحظات</h3><p>احفظ ملاحظاتك وشاركها نصياً أو انسخها للمشاركة مع فريقك بسهولة.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEARN -->
+  <section id="learn">
+    <div class="page-wrap">
+      <div class="page-header"><div class="page-tag">الشرح المفصل</div><h2>دليلك الشامل لتحليل SWOT</h2><p>تحليل SWOT اختصار لـ Strengths · Weaknesses · Opportunities · Threats — أداة استراتيجية لتقييم الوضع التنافسي وبناء الخطط المستقبلية.</p></div>
+      <div class="learn-grid">
+        <div class="learn-card lc-s">
+          <div class="lc-top"><div class="lc-sq sq-s"><span class="material-icons-round">bolt</span></div><div><div class="lc-title">نقاط القوة</div><div class="lc-en">STRENGTHS · S</div></div></div>
+          <div class="lc-body"><p class="lc-desc">العوامل <strong>الداخلية الإيجابية</strong> التي تمنحك ميزة تنافسية وتقع تحت سيطرتك.</p><ul class="lc-qs"><li><span class="lc-arrow">←</span>ما الذي تفعله مؤسستك بشكل أفضل من غيرها؟</li><li><span class="lc-arrow">←</span>ما هي الموارد الفريدة أو منخفضة التكلفة لديك؟</li><li><span class="lc-arrow">←</span>هل لديك تقنية حصرية أو براءة اختراع؟</li><li><span class="lc-arrow">←</span>ما الإنجازات التي تفخر بها؟</li></ul></div>
+        </div>
+        <div class="learn-card lc-w">
+          <div class="lc-top"><div class="lc-sq sq-w"><span class="material-icons-round">warning_amber</span></div><div><div class="lc-title">نقاط الضعف</div><div class="lc-en">WEAKNESSES · W</div></div></div>
+          <div class="lc-body"><p class="lc-desc">العوامل <strong>الداخلية السلبية</strong> التي تعيق الأداء الأمثل وتحتاج تحسيناً.</p><ul class="lc-qs"><li><span class="lc-arrow">←</span>ما الذي يمكن تحسينه في عملياتك أو منتجاتك؟</li><li><span class="lc-arrow">←</span>ما العوامل التي تسبب خسارة المبيعات؟</li><li><span class="lc-arrow">←</span>هل تفتقر إلى موارد مالية أو بشرية؟</li><li><span class="lc-arrow">←</span>ما الذي يراه المنافسون كضعف لديك؟</li></ul></div>
+        </div>
+        <div class="learn-card lc-o">
+          <div class="lc-top"><div class="lc-sq sq-o"><span class="material-icons-round">trending_up</span></div><div><div class="lc-title">الفرص</div><div class="lc-en">OPPORTUNITIES · O</div></div></div>
+          <div class="lc-body"><p class="lc-desc">العوامل <strong>الخارجية الإيجابية</strong> التي يمكن استغلالها لصالحك.</p><ul class="lc-qs"><li><span class="lc-arrow">←</span>ما الاتجاهات التكنولوجية أو الاجتماعية الجديدة؟</li><li><span class="lc-arrow">←</span>هل هناك تغييرات في السياسات لصالحك؟</li><li><span class="lc-arrow">←</span>هل هناك فجوة في السوق لم يغطِها أحد؟</li><li><span class="lc-arrow">←</span>هل هناك شريحة عملاء جديدة يمكن استهدافها؟</li></ul></div>
+        </div>
+        <div class="learn-card lc-t">
+          <div class="lc-top"><div class="lc-sq sq-t"><span class="material-icons-round">gpp_bad</span></div><div><div class="lc-title">التحديات</div><div class="lc-en">THREATS · T</div></div></div>
+          <div class="lc-body"><p class="lc-desc">العوامل <strong>الخارجية السلبية</strong> — لا تسيطر عليها لكن يمكنك الاستعداد لها.</p><ul class="lc-qs"><li><span class="lc-arrow">←</span>ما العقبات التي تواجهك حالياً؟</li><li><span class="lc-arrow">←</span>ما الذي يفعله المنافسون وقد يضرك؟</li><li><span class="lc-arrow">←</span>هل هناك تغيرات اقتصادية تهددك؟</li><li><span class="lc-arrow">←</span>هل تتغير معايير الجودة أو المواصفات؟</li></ul></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STRUCTURE -->
+  <section id="structure">
+    <div class="page-wrap">
+      <div class="page-header"><div class="page-tag">الهيكلية</div><h2>الخريطة المنطقية للتحليل</h2><p>نظرة شاملة على العلاقة بين العناصر الأربعة وكيفية ترابطها في الاستراتيجية.</p></div>
+      <div class="mindmap-wrap">
+        <div class="mm-center"><span class="material-icons-round" style="font-size:22px">hub</span>SWOT Analysis</div>
+        <div class="mm-grid">
+          <div class="mm-block mm-s"><div class="mm-tag">داخلي · إيجابي</div><div class="mm-title">نقاط القوة · Strengths</div><ul class="mm-pts"><li>ما يميزك عن المنافسين</li><li>الموارد والإمكانات المتوفرة</li><li>الخبرات والمهارات الحصرية</li></ul></div>
+          <div class="mm-block mm-w"><div class="mm-tag">داخلي · سلبي</div><div class="mm-title">نقاط الضعف · Weaknesses</div><ul class="mm-pts"><li>ما يحتاج إلى تحسين عاجل</li><li>نقص الموارد والكفاءات</li><li>الثغرات في الأداء التشغيلي</li></ul></div>
+          <div class="mm-block mm-o"><div class="mm-tag">خارجي · إيجابي</div><div class="mm-title">الفرص · Opportunities</div><ul class="mm-pts"><li>الاتجاهات الصاعدة في السوق</li><li>تغييرات في البيئة التشريعية</li><li>الأسواق والشرائح الجديدة</li></ul></div>
+          <div class="mm-block mm-t"><div class="mm-tag">خارجي · سلبي</div><div class="mm-title">التحديات · Threats</div><ul class="mm-pts"><li>المنافسون الجدد والأقوياء</li><li>الظروف الاقتصادية المتقلبة</li><li>تغير سلوك المستهلك</li></ul></div>
+        </div>
+        <div class="mm-legend">
+          <div class="mm-leg"><div class="mm-leg-dot" style="background:var(--strength)"></div>قوة — يمكنك تطويرها</div>
+          <div class="mm-leg"><div class="mm-leg-dot" style="background:var(--weakness)"></div>ضعف — يمكنك معالجته</div>
+          <div class="mm-leg"><div class="mm-leg-dot" style="background:var(--opportunity)"></div>فرصة — يمكنك اغتنامها</div>
+          <div class="mm-leg"><div class="mm-leg-dot" style="background:var(--threat)"></div>تحدي — يمكنك الاستعداد له</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- EXAMPLES -->
+  <section id="examples">
+    <div class="page-wrap">
+      <div class="page-header"><div class="page-tag">أمثلة عملية</div><h2>أمثلة للإلهام والتطبيق</h2><p>أمثلة واقعية لكل عنصر تساعدك على فهم كيفية تطبيق التحليل في سياقات متنوعة.</p></div>
+      <div class="ex-grid">
+        <div class="ex-block ex-s"><div class="ex-head"><span class="material-icons-round" style="color:var(--strength)">bolt</span><h3>نقاط القوة</h3></div><ul class="ex-list"><li><span class="ex-num">01</span>سمعة العلامة التجارية قوية ومعروفة محلياً وإقليمياً.</li><li><span class="ex-num">02</span>تكاليف إنتاج منخفضة بفضل التكنولوجيا الحديثة.</li><li><span class="ex-num">03</span>فريق عمل متخصص ذو خبرة عالية في المجال.</li><li><span class="ex-num">04</span>قاعدة عملاء وفية وعلاقات طويلة الأمد.</li></ul></div>
+        <div class="ex-block ex-w"><div class="ex-head"><span class="material-icons-round" style="color:var(--weakness)">warning_amber</span><h3>نقاط الضعف</h3></div><ul class="ex-list"><li><span class="ex-num">01</span>غياب التواجد الرقمي القوي على منصات التواصل.</li><li><span class="ex-num">02</span>سلسلة توريد بطيئة وغير مرنة في التوصيل.</li><li><span class="ex-num">03</span>ميزانية محدودة لبرامج التسويق والترويج.</li><li><span class="ex-num">04</span>اعتماد زائد على عدد محدود من الموردين.</li></ul></div>
+        <div class="ex-block ex-o"><div class="ex-head"><span class="material-icons-round" style="color:var(--opportunity)">trending_up</span><h3>الفرص</h3></div><ul class="ex-list"><li><span class="ex-num">01</span>نمو الطلب على المنتجات الصديقة للبيئة عالمياً.</li><li><span class="ex-num">02</span>إمكانية التوسع والتصدير لدول مجاورة.</li><li><span class="ex-num">03</span>شراكات استراتيجية مع شركات ناشئة مبتكرة.</li><li><span class="ex-num">04</span>الرقمنة وأتمتة العمليات لخفض التكاليف.</li></ul></div>
+        <div class="ex-block ex-t"><div class="ex-head"><span class="material-icons-round" style="color:var(--threat)">gpp_bad</span><h3>التحديات</h3></div><ul class="ex-list"><li><span class="ex-num">01</span>دخول منافسين عالميين أقوياء إلى السوق المحلي.</li><li><span class="ex-num">02</span>تغييرات في اللوائح الضريبية والتشريعات.</li><li><span class="ex-num">03</span>ارتفاع أسعار المواد الخام على المستوى العالمي.</li><li><span class="ex-num">04</span>تقلبات أسعار الصرف وعدم الاستقرار الاقتصادي.</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOOL -->
+  <section id="tool">
+    <div class="page-wrap">
+      <div class="print-header" id="printHeader">
+        <div><div style="font-size:19px;font-weight:900;color:#1a3a5c;">تحليل SWOT الاستراتيجي</div><div style="font-size:12px;color:#666;margin-top:2px;" id="print-date"></div></div>
+        <div style="font-size:13px;font-weight:700;color:#1a3a5c;">H-yber Management</div>
+      </div>
+      <div class="page-header"><div class="page-tag">أداة التحليل</div><h2>مصفوفة التحليل الاستراتيجي</h2><p>اضغط على عنوان أي خانة لرؤية تلميحات كتابية، ثم ابدأ الكتابة.</p></div>
+      <div class="tool-bar">
+        <button class="btn btn-danger" onclick="clearAll()"><span class="material-icons-round">delete_outline</span>مسح الكل</button>
+        <button class="btn btn-outline" onclick="exportTxt()"><span class="material-icons-round">download</span>تصدير</button>
+        <button class="btn btn-primary" onclick="printTool()"><span class="material-icons-round">print</span>طباعة التحليل</button>
+        <span style="font-size:12px;color:var(--text3);margin-right:auto;">آخر حفظ: <span id="last-saved">—</span></span>
+      </div>
+
+      <div class="matrix">
+        <!-- STRENGTHS -->
+        <div class="m-cell m-s" id="cell-s">
+          <div class="m-head" onclick="toggleTip('tip-s')">
+            <div class="m-icon"><span class="material-icons-round">bolt</span></div>
+            <div><div class="m-label">نقاط القوة</div><div class="m-en">STRENGTHS</div></div>
+            <span class="material-icons-round m-hint-icon">tips_and_updates</span>
+          </div>
+          <div id="tip-s" class="tooltip-overlay t-s" style="top:64px;right:12px;">
+            <div class="tooltip-title">نقاط القوة</div>
+            <ul class="tooltip-list">
+              <li>المهارات والكفاءات المتميزة</li>
+              <li>الموارد الفريدة والحصرية</li>
+              <li>السمعة والعلامة التجارية</li>
+              <li>التكنولوجيا أو براءات الاختراع</li>
+              <li>العلاقات مع العملاء والموردين</li>
+            </ul>
+            <div class="tooltip-dismiss" onclick="dismissTip('tip-s',event)">فهمت ← أغلق</div>
+          </div>
+          <textarea id="strengths" placeholder="مثال: سمعة قوية في السوق، تكاليف منخفضة..." oninput="autoSave()"></textarea>
+        </div>
+
+        <!-- WEAKNESSES -->
+        <div class="m-cell m-w" id="cell-w">
+          <div class="m-head" onclick="toggleTip('tip-w')">
+            <div class="m-icon"><span class="material-icons-round">warning_amber</span></div>
+            <div><div class="m-label">نقاط الضعف</div><div class="m-en">WEAKNESSES</div></div>
+            <span class="material-icons-round m-hint-icon">tips_and_updates</span>
+          </div>
+          <div id="tip-w" class="tooltip-overlay t-w" style="top:64px;right:12px;">
+            <div class="tooltip-title">نقاط الضعف</div>
+            <ul class="tooltip-list">
+              <li>الموارد أو الكفاءات الناقصة</li>
+              <li>العمليات غير الفعّالة</li>
+              <li>ضعف التسويق أو الرقمنة</li>
+              <li>الاعتماد المفرط على مورد واحد</li>
+              <li>محدودية الميزانية أو الكوادر</li>
+            </ul>
+            <div class="tooltip-dismiss" onclick="dismissTip('tip-w',event)">فهمت ← أغلق</div>
+          </div>
+          <textarea id="weaknesses" placeholder="مثال: غياب التواجد الرقمي، ميزانية محدودة..." oninput="autoSave()"></textarea>
+        </div>
+
+        <!-- OPPORTUNITIES -->
+        <div class="m-cell m-o" id="cell-o">
+          <div class="m-head" onclick="toggleTip('tip-o')">
+            <div class="m-icon"><span class="material-icons-round">trending_up</span></div>
+            <div><div class="m-label">الفرص</div><div class="m-en">OPPORTUNITIES</div></div>
+            <span class="material-icons-round m-hint-icon">tips_and_updates</span>
+          </div>
+          <div id="tip-o" class="tooltip-overlay t-o" style="top:64px;right:12px;">
+            <div class="tooltip-title">الفرص</div>
+            <ul class="tooltip-list">
+              <li>اتجاهات السوق الصاعدة</li>
+              <li>تغييرات تشريعية لصالحك</li>
+              <li>فجوات في السوق غير مشبعة</li>
+              <li>تقنيات جديدة يمكن اعتمادها</li>
+              <li>شراكات استراتيجية محتملة</li>
+            </ul>
+            <div class="tooltip-dismiss" onclick="dismissTip('tip-o',event)">فهمت ← أغلق</div>
+          </div>
+          <textarea id="opportunities" placeholder="مثال: نمو الطلب الرقمي، أسواق جديدة..." oninput="autoSave()"></textarea>
+        </div>
+
+        <!-- THREATS -->
+        <div class="m-cell m-t" id="cell-t">
+          <div class="m-head" onclick="toggleTip('tip-t')">
+            <div class="m-icon"><span class="material-icons-round">gpp_bad</span></div>
+            <div><div class="m-label">التحديات</div><div class="m-en">THREATS</div></div>
+            <span class="material-icons-round m-hint-icon">tips_and_updates</span>
+          </div>
+          <div id="tip-t" class="tooltip-overlay t-t" style="top:64px;right:12px;">
+            <div class="tooltip-title">التحديات</div>
+            <ul class="tooltip-list">
+              <li>منافسون جدد أو أقوياء</li>
+              <li>تقلبات اقتصادية أو سياسية</li>
+              <li>تغير سلوك المستهلكين</li>
+              <li>ارتفاع التكاليف التشغيلية</li>
+              <li>تغييرات في التشريعات</li>
+            </ul>
+            <div class="tooltip-dismiss" onclick="dismissTip('tip-t',event)">فهمت ← أغلق</div>
+          </div>
+          <textarea id="threats" placeholder="مثال: منافسة متزايدة، تقلب أسعار المواد..." oninput="autoSave()"></textarea>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NOTES -->
+  <section id="notes">
+    <div class="page-wrap">
+      <div class="page-header"><div class="page-tag">الملاحظات</div><h2>مساحة الأفكار والمسودات</h2><p>اكتب ملاحظتك ثم احفظها — تبقى محفوظة داخل البرنامج حتى تحذفها يدوياً.</p></div>
+
+      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center;">
+        <select class="font-sel" onchange="document.getElementById('notesArea').style.fontFamily=this.value">
+          <option value="'Cairo',sans-serif">Cairo</option>
+          <option value="'Tajawal',sans-serif">Tajawal</option>
+          <option value="'Amiri',serif">Amiri</option>
+        </select>
+        <select class="font-sel" onchange="document.getElementById('notesArea').style.fontSize=this.value">
+          <option value="13px">صغير</option>
+          <option value="15px" selected="">عادي</option>
+          <option value="18px">كبير</option>
+        </select>
+      </div>
+
+      <div class="notes-toolbar">
+        <button class="nt-btn" onclick="fmt('bold')"><span class="material-icons-round">format_bold</span></button>
+        <button class="nt-btn" onclick="fmt('italic')"><span class="material-icons-round">format_italic</span></button>
+        <button class="nt-btn" onclick="fmt('underline')"><span class="material-icons-round">format_underlined</span></button>
+        <div class="nt-sep"></div>
+        <button class="nt-btn" onclick="fmt('insertOrderedList')"><span class="material-icons-round">format_list_numbered</span></button>
+        <button class="nt-btn" onclick="fmt('insertUnorderedList')"><span class="material-icons-round">format_list_bulleted</span></button>
+        <div class="nt-sep"></div>
+        <button class="nt-btn" onclick="fmt('justifyRight')"><span class="material-icons-round">format_align_right</span></button>
+        <button class="nt-btn" onclick="fmt('justifyCenter')"><span class="material-icons-round">format_align_center</span></button>
+        <button class="nt-btn" onclick="fmt('justifyLeft')"><span class="material-icons-round">format_align_left</span></button>
+        <div class="nt-sep"></div>
+        <button class="nt-btn" title="لون النص"><span class="material-icons-round">format_color_text</span><input type="color" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="document.execCommand('foreColor',false,this.value)"></button>
+        <button class="nt-btn" title="تظليل"><span class="material-icons-round">highlight</span><input type="color" value="#fef08a" style="position:absolute;opacity:0;inset:0;cursor:pointer;" oninput="document.execCommand('hiliteColor',false,this.value)"></button>
+      </div>
+      <div id="notesArea" class="notes-area" contenteditable="true"></div>
+
+      <!-- Save/Share bar -->
+      <div class="notes-actions">
+        <input type="text" class="note-title-input" id="noteTitleInput" placeholder="عنوان الملاحظة (اختياري)...">
+        <button class="btn btn-primary" onclick="saveNote()"><span class="material-icons-round">save</span>حفظ الملاحظة</button>
+        <button class="btn btn-outline" onclick="shareNote()"><span class="material-icons-round">share</span>مشاركة</button>
+        <button class="btn btn-danger" onclick="clearNoteEditor()"><span class="material-icons-round">delete_outline</span>مسح</button>
+      </div>
+
+      <!-- Saved notes list -->
+      <div class="saved-notes-header">
+        <h3>الملاحظات المحفوظة</h3>
+        <span class="saved-notes-count" id="notesCount">٠ ملاحظة</span>
+      </div>
+      <div id="savedNotesList" class="saved-notes-list"><div class="empty-notes"><span class="material-icons-round">sticky_note_2</span>لا توجد ملاحظات محفوظة بعد.</div></div>
+    </div>
+  </section>
+
+  <!-- COMPANIES -->
+  <section id="companies">
+    <div class="page-wrap">
+      <div class="page-header"><div class="page-tag">نماذج تحليل</div><h2>شركات عربية عالمية</h2><p>تحليلات SWOT واقعية لكبرى الشركات العربية — للإلهام والاستفادة.</p></div>
+      <div class="co-grid">
+        <div class="co-card"><div class="co-head"><div class="co-logo" style="background:#fef9ec;color:#b45309;"><span class="material-icons-round">local_gas_station</span></div><div><div class="co-name">أرامكو السعودية</div><div class="co-sector">Saudi Aramco · قطاع الطاقة</div></div></div><div class="co-body"><div class="co-row"><div class="co-ic cri-s"><span class="material-icons-round" style="font-size:13px">bolt</span></div><span>أكبر احتياطي نفطي في العالم وأقل تكلفة إنتاج للبرميل عالمياً.</span></div><div class="co-row"><div class="co-ic cri-w"><span class="material-icons-round" style="font-size:13px">warning_amber</span></div><span>اعتماد كبير على أسعار النفط والتأثير البيئي للكربون.</span></div><div class="co-row"><div class="co-ic cri-o"><span class="material-icons-round" style="font-size:13px">trending_up</span></div><span>التوسع في البتروكيماويات والهيدروجين الأزرق والطاقة المتجددة.</span></div><div class="co-row"><div class="co-ic cri-t"><span class="material-icons-round" style="font-size:13px">gpp_bad</span></div><span>التحول العالمي للطاقة النظيفة والتوترات الجيوسياسية.</span></div></div></div>
+        <div class="co-card"><div class="co-head"><div class="co-logo" style="background:#eff6ff;color:#2563eb;"><span class="material-icons-round">cell_tower</span></div><div><div class="co-name">مجموعة STC</div><div class="co-sector">Saudi Telecom · الاتصالات</div></div></div><div class="co-body"><div class="co-row"><div class="co-ic cri-s"><span class="material-icons-round" style="font-size:13px">bolt</span></div><span>بنية تحتية قوية للجيل الخامس 5G وحصة سوقية مهيمنة.</span></div><div class="co-row"><div class="co-ic cri-w"><span class="material-icons-round" style="font-size:13px">warning_amber</span></div><span>تشبع سوق الاتصالات التقليدية وبيروقراطية في بعض العمليات.</span></div><div class="co-row"><div class="co-ic cri-o"><span class="material-icons-round" style="font-size:13px">trending_up</span></div><span>الخدمات الرقمية (STC Pay) والأمن السيبراني والحوسبة السحابية.</span></div><div class="co-row"><div class="co-ic cri-t"><span class="material-icons-round" style="font-size:13px">gpp_bad</span></div><span>المنافسة السعرية الشديدة والتغيرات السريعة في التكنولوجيا.</span></div></div></div>
+        <div class="co-card"><div class="co-head"><div class="co-logo" style="background:#ecfdf5;color:#059669;"><span class="material-icons-round">nutrition</span></div><div><div class="co-name">المراعي</div><div class="co-sector">Almarai · الأغذية والمشروبات</div></div></div><div class="co-body"><div class="co-row"><div class="co-ic cri-s"><span class="material-icons-round" style="font-size:13px">bolt</span></div><span>تكامل رأسي كامل من المزارع حتى التوزيع، جودة عالية ومعترف بها.</span></div><div class="co-row"><div class="co-ic cri-w"><span class="material-icons-round" style="font-size:13px">warning_amber</span></div><span>تكاليف لوجستية مرتفعة واعتماد على استيراد الأعلاف.</span></div><div class="co-row"><div class="co-ic cri-o"><span class="material-icons-round" style="font-size:13px">trending_up</span></div><span>التوسع في الدواجن والمخبوزات ودخول أسواق عربية جديدة.</span></div><div class="co-row"><div class="co-ic cri-t"><span class="material-icons-round" style="font-size:13px">gpp_bad</span></div><span>ضرائب السكر وتقلب أسعار المواد الخام العالمية.</span></div></div></div>
+        <div class="co-card"><div class="co-head"><div class="co-logo" style="background:#fef2f2;color:#dc2626;"><span class="material-icons-round">shopping_bag</span></div><div><div class="co-name">نون</div><div class="co-sector">Noon · التجارة الإلكترونية</div></div></div><div class="co-body"><div class="co-row"><div class="co-ic cri-s"><span class="material-icons-round" style="font-size:13px">bolt</span></div><span>حضور قوي في منطقة الخليج وقاعدة عملاء محلية راسخة.</span></div><div class="co-row"><div class="co-ic cri-w"><span class="material-icons-round" style="font-size:13px">warning_amber</span></div><span>تحديات في الربحية والمنافسة الشديدة على التسعير.</span></div><div class="co-row"><div class="co-ic cri-o"><span class="material-icons-round" style="font-size:13px">trending_up</span></div><span>نمو التجارة الرقمية في المنطقة وتوسع الدفع الإلكتروني.</span></div><div class="co-row"><div class="co-ic cri-t"><span class="material-icons-round" style="font-size:13px">gpp_bad</span></div><span>منافسة أمازون والمنصات الصينية المتوسعة في المنطقة.</span></div></div></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- H-YBER ANIMATED WATERMARK -->
+<div class="hm-watermark">
+  <div class="hm-logo-anim">
+    <div class="hm-ring"></div>
+    <div class="hm-core">
+      <svg viewBox="0 0 14 14" fill="none">
+        <rect x="1" y="1.5" width="2.5" height="11" rx="1.25" fill="white"></rect>
+        <rect x="5.75" y="5.5" width="2.5" height="3" rx="1.25" fill="rgba(255,255,255,0.5)"></rect>
+        <rect x="10.5" y="1.5" width="2.5" height="11" rx="1.25" fill="white"></rect>
+        <line x1="3.5" y1="7" x2="5.75" y2="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"></line>
+        <line x1="8.25" y1="7" x2="10.5" y2="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.2"></line>
+      </svg>
+    </div>
+  </div>
+  <div class="hm-text">
+    <div class="hm-name">H-yber <span>Management</span></div>
+    <div class="hm-tag">Strategic Tools</div>
+  </div>
+</div>
+
+<!-- Install Guide Modal -->
+<div id="installGuideModal" class="install-modal-backdrop">
+  <div class="install-modal">
+    <div class="install-modal-head">
+      <div class="im-icon"><span class="material-icons-round">install_mobile</span></div>
+      <div>
+        <h3>تثبيت التطبيق على الهاتف</h3>
+        <p>يعمل بدون إنترنت كتطبيق أصلي</p>
+      </div>
+    </div>
+    <div class="install-modal-body">
+
+      <!-- Tabs -->
+      <div class="install-tabs">
+        <button class="install-tab active" onclick="switchTab('android')">
+          <span class="material-icons-round" style="font-size:14px;vertical-align:middle">android</span> Android
+        </button>
+        <button class="install-tab" onclick="switchTab('ios')">
+          <span class="material-icons-round" style="font-size:14px;vertical-align:middle">apple</span> iPhone
+        </button>
+        <button class="install-tab" onclick="switchTab('pc')">
+          <span class="material-icons-round" style="font-size:14px;vertical-align:middle">computer</span> الكمبيوتر
+        </button>
+      </div>
+
+      <!-- Android -->
+      <div id="tab-android" class="install-tab-content active">
+        <div class="install-step">
+          <div class="step-num">١</div>
+          <div class="step-text">افتح الملف في متصفح <span>Chrome</span> (إن لم يكن مفتوحاً به)</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٢</div>
+          <div class="step-text">اضغط على النقاط الثلاث <span>⋮</span> في أعلى يمين المتصفح</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٣</div>
+          <div class="step-text">اختر <span>"إضافة إلى الشاشة الرئيسية"</span> أو <span>"تثبيت التطبيق"</span></div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٤</div>
+          <div class="step-text">اضغط <span>"إضافة"</span> وسيظهر التطبيق على شاشتك الرئيسية ✓</div>
+        </div>
+        <div class="install-note">
+          <span class="material-icons-round">info</span>
+          إن ظهر زر <strong>"تثبيت التطبيق"</strong> تلقائياً أعلى النافذة فاضغط عليه مباشرة — هو الأسرع.
+        </div>
+      </div>
+
+      <!-- iOS -->
+      <div id="tab-ios" class="install-tab-content">
+        <div class="install-step">
+          <div class="step-num">١</div>
+          <div class="step-text">افتح الملف في متصفح <span>Safari</span> (ضروري — لا يعمل في Chrome على iOS)</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٢</div>
+          <div class="step-text">اضغط أيقونة <span>المشاركة</span> في أسفل الشاشة (المربع بالسهم للأعلى)</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٣</div>
+          <div class="step-text">اختر <span>"إضافة إلى الشاشة الرئيسية"</span> من القائمة</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٤</div>
+          <div class="step-text">اضغط <span>"إضافة"</span> وسيظهر أيقونة التطبيق على شاشتك ✓</div>
+        </div>
+        <div class="install-note">
+          <span class="material-icons-round">info</span>
+          على iOS يجب استخدام Safari حصراً لتثبيت التطبيق على الشاشة الرئيسية.
+        </div>
+      </div>
+
+      <!-- PC -->
+      <div id="tab-pc" class="install-tab-content">
+        <div class="install-step">
+          <div class="step-num">١</div>
+          <div class="step-text">افتح الملف في متصفح <span>Chrome</span> أو <span>Edge</span></div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٢</div>
+          <div class="step-text">ابحث عن أيقونة <span>التثبيت</span> في شريط العنوان (أيقونة شاشة بعلامة +)</div>
+        </div>
+        <div class="install-step">
+          <div class="step-num">٣</div>
+          <div class="step-text">اضغط عليها واختر <span>"تثبيت"</span> — سيُضاف التطبيق لسطح المكتب</div>
+        </div>
+        <div class="install-note">
+          <span class="material-icons-round">info</span>
+          بعد التثبيت يعمل كتطبيق مستقل بدون إنترنت ويُحفظ في تطبيقاتك.
+        </div>
+      </div>
+
+    </div>
+    <div class="install-modal-foot">
+      <button id="autoInstallBtn" class="btn btn-auto-install hidden" onclick="triggerInstall();closeInstallGuide()">
+        <span class="material-icons-round">rocket_launch</span>تثبيت الآن تلقائياً
+      </button>
+      <button class="btn btn-outline" onclick="closeInstallGuide()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- Share Modal -->
+<div id="shareModal" class="modal-backdrop">
+  <div class="modal">
+    <h3>مشاركة الملاحظة</h3>
+    <textarea id="shareContent" class="share-textarea" readonly="" dir="rtl"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-primary" onclick="copyShareContent()"><span class="material-icons-round">content_copy</span>نسخ النص</button>
+      <button class="btn btn-outline" onclick="closeModal()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+const SECTIONS=['home','learn','structure','examples','tool','notes','companies'];
+const TITLES={home:'الرئيسية',learn:'الشرح المفصل',structure:'الهيكلية',examples:'الأمثلة',tool:'أداة التحليل',notes:'الملاحظات',companies:'شركات عربية'};
+let toolVisited=false;
+
+function show(id){
+  SECTIONS.forEach(s=>{
+    document.getElementById(s).classList.toggle('active',s===id);
+    const n=document.getElementById('n-'+s);
+    if(n)n.classList.toggle('active',s===id);
+  });
+  document.getElementById('page-title').textContent=TITLES[id]||'';
+  if(window.innerWidth<900)document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo(0,0);
+
+  // Show tooltips once per tool visit per session
+  if(id==='tool'&&!toolVisited){
+    toolVisited=true;
+    setTimeout(()=>{
+      ['tip-s','tip-w','tip-o','tip-t'].forEach((id,i)=>{
+        setTimeout(()=>document.getElementById(id).classList.add('show'),i*180);
+      });
+    },400);
+  }
+}
+
+/* ══════════════════════════════════════
+   TOOLTIPS
+══════════════════════════════════════ */
+function toggleTip(id){
+  const el=document.getElementById(id);
+  const isOpen=el.classList.contains('show');
+  // close all
+  ['tip-s','tip-w','tip-o','tip-t'].forEach(t=>document.getElementById(t).classList.remove('show'));
+  if(!isOpen)el.classList.add('show');
+}
+
+function dismissTip(id,e){
+  e.stopPropagation();
+  document.getElementById(id).classList.remove('show');
+}
+
+// Close tips when clicking outside
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.m-cell'))
+    ['tip-s','tip-w','tip-o','tip-t'].forEach(t=>document.getElementById(t).classList.remove('show'));
+});
+
+/* ══════════════════════════════════════
+   MATRIX SAVE/LOAD
+══════════════════════════════════════ */
+const KEYS=['strengths','weaknesses','opportunities','threats'];
+
+function autoSave(){
+  KEYS.forEach(k=>localStorage.setItem('swot_'+k,document.getElementById(k).value));
+  document.getElementById('last-saved').textContent=new Date().toLocaleTimeString('ar-SA');
+}
+
+function loadMatrix(){
+  KEYS.forEach(k=>{const el=document.getElementById(k);if(el)el.value=localStorage.getItem('swot_'+k)||'';});
+}
+
+function clearAll(){
+  if(!confirm('هل تريد مسح جميع بيانات التحليل؟'))return;
+  KEYS.forEach(k=>{document.getElementById(k).value='';localStorage.removeItem('swot_'+k);});
+  document.getElementById('last-saved').textContent='—';
+}
+
+function exportTxt(){
+  const d=new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+  const labels=['نقاط القوة','نقاط الضعف','الفرص','التحديات'];
+  let txt=`تحليل SWOT الاستراتيجي — H-yber Management\nالتاريخ: ${d}\n${'─'.repeat(44)}\n\n`;
+  KEYS.forEach((k,i)=>{txt+=`${labels[i]}:\n${document.getElementById(k).value||'(لا يوجد محتوى)'}\n\n${'─'.repeat(44)}\n\n`;});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(new Blob([txt],{type:'text/plain;charset=utf-8'})),download:'SWOT-Analysis.txt'});
+  a.click();
+}
+
+function printTool(){
+  document.getElementById('print-date').textContent='التاريخ: '+new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'long',day:'numeric'});
+  window.print();
+}
+
+/* ══════════════════════════════════════
+   NOTES — MULTI-SAVE SYSTEM
+══════════════════════════════════════ */
+function fmt(cmd){document.execCommand(cmd,false,null);}
+
+function clearNoteEditor(){
+  if(confirm('مسح محتوى المحرر؟')){
+    document.getElementById('notesArea').innerHTML='';
+    document.getElementById('noteTitleInput').value='';
+  }
+}
+
+function getSavedNotes(){
+  try{return JSON.parse(localStorage.getItem('swot_saved_notes')||'[]');}catch{return[];}
+}
+
+function setSavedNotes(arr){localStorage.setItem('swot_saved_notes',JSON.stringify(arr));}
+
+function saveNote(){
+  const content=document.getElementById('notesArea').innerHTML.trim();
+  const text=document.getElementById('notesArea').innerText.trim();
+  if(!text){alert('لا يوجد محتوى للحفظ');return;}
+  const title=document.getElementById('noteTitleInput').value.trim()||
+    (text.substring(0,40)+(text.length>40?'...':''));
+  const notes=getSavedNotes();
+  notes.unshift({id:Date.now(),title,content,date:new Date().toLocaleDateString('ar-SA',{year:'numeric',month:'short',day:'numeric'})});
+  setSavedNotes(notes);
+  document.getElementById('notesArea').innerHTML='';
+  document.getElementById('noteTitleInput').value='';
+  renderNotes();
+  // flash success
+  const btn=event.target.closest('.btn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="material-icons-round">check</span>تم الحفظ';
+  btn.style.background='var(--strength)';
+  setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';},1800);
+}
+
+function renderNotes(){
+  const notes=getSavedNotes();
+  const list=document.getElementById('savedNotesList');
+  const count=document.getElementById('notesCount');
+  const nums=['٠','١','٢','٣','٤','٥','٦','٧','٨','٩','١٠','١١','١٢','١٣','١٤','١٥','١٦','١٧','١٨','١٩','٢٠'];
+  count.textContent=(nums[notes.length]||notes.length)+' ملاحظة';
+  if(!notes.length){
+    list.innerHTML=`<div class="empty-notes"><span class="material-icons-round">sticky_note_2</span>لا توجد ملاحظات محفوظة بعد.</div>`;
+    return;
+  }
+  list.innerHTML=notes.map(n=>{
+    const preview=n.content.replace(/<[^>]+>/g,' ').substring(0,90).trim();
+    return`<div class="saved-note-card">
+      <div class="sn-title">${escHtml(n.title)}</div>
+      <div class="sn-preview">${escHtml(preview)}${preview.length>=90?'...':''}</div>
+      <div class="sn-footer">
+        <span class="sn-date">${n.date}</span>
+        <div class="sn-actions">
+          <button class="sn-btn" title="تحميل للتحرير" onclick="loadNoteToEditor(${n.id})"><span class="material-icons-round">edit</span></button>
+          <button class="sn-btn" title="مشاركة" onclick="shareNoteById(${n.id})"><span class="material-icons-round">share</span></button>
+          <button class="sn-btn del" title="حذف" onclick="deleteNote(${n.id})"><span class="material-icons-round">delete_outline</span></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function loadNoteToEditor(id){
+  const note=getSavedNotes().find(n=>n.id===id);
+  if(!note)return;
+  document.getElementById('notesArea').innerHTML=note.content;
+  document.getElementById('noteTitleInput').value=note.title;
+  window.scrollTo(0,0);
+}
+
+function deleteNote(id){
+  if(!confirm('حذف هذه الملاحظة نهائياً؟'))return;
+  setSavedNotes(getSavedNotes().filter(n=>n.id!==id));
+  renderNotes();
+}
+
+function shareNote(){
+  const text=document.getElementById('notesArea').innerText.trim();
+  if(!text){alert('لا يوجد محتوى للمشاركة');return;}
+  const title=document.getElementById('noteTitleInput').value.trim();
+  openShareModal(title?title+'\n\n'+text:text);
+}
+
+function shareNoteById(id){
+  const note=getSavedNotes().find(n=>n.id===id);
+  if(!note)return;
+  const text=note.title+'\n\n'+note.content.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+  openShareModal(text);
+}
+
+function openShareModal(text){
+  document.getElementById('shareContent').value=text;
+  document.getElementById('shareModal').classList.add('open');
+}
+
+function closeModal(){document.getElementById('shareModal').classList.remove('open');}
+
+function copyShareContent(){
+  const ta=document.getElementById('shareContent');
+  ta.select();
+  document.execCommand('copy');
+  const btn=event.target.closest('.btn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="material-icons-round">check</span>تم النسخ';
+  setTimeout(()=>btn.innerHTML=orig,1800);
+}
+
+// close modal on backdrop click
+document.getElementById('shareModal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('shareModal'))closeModal();
+});
+
+function escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ══════════════════════════════════════
+   THEME
+══════════════════════════════════════ */
+function setTheme(c1,c2){
+  document.documentElement.style.setProperty('--accent',c1);
+  document.documentElement.style.setProperty('--accent-mid',c2);
+  document.documentElement.style.setProperty('--accent2',c1+'1a');
+}
+
+/* ══════════════════════════════════════
+   SELF DOWNLOAD
+══════════════════════════════════════ */
+function downloadSelf() {
+  const html = '<!DOCTYPE html>' + document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'SWOT-Pro-HyberManagement.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* ══════════════════════════════════════
+   PWA INSTALL
+══════════════════════════════════════ */
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // show topbar button too
+  document.getElementById('installBtn').classList.remove('hidden');
+  document.getElementById('autoInstallBtn').classList.remove('hidden');
+});
+
+/* Called by sidebar button — fires prompt immediately if available */
+function quickInstall() {
+  if (deferredPrompt) {
+    // Chrome Android / Desktop — fires native install dialog instantly
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(choice => {
+      deferredPrompt = null;
+      document.getElementById('installBtn').classList.add('hidden');
+      document.getElementById('autoInstallBtn').classList.add('hidden');
+      if (choice.outcome === 'accepted') {
+        showInstallSuccess();
+      }
+    });
+    return;
+  }
+
+  // No prompt available — show platform-specific one-tap instruction
+  const ua = navigator.userAgent.toLowerCase();
+  if (/iphone|ipad|ipod/.test(ua)) {
+    showToast('Safari فقط: اضغط 🔗 ثم "إضافة إلى الشاشة الرئيسية"', 5000);
+  } else if (/android/.test(ua)) {
+    showToast('Chrome: اضغط ⋮ ثم "إضافة إلى الشاشة الرئيسية"', 5000);
+  } else {
+    openInstallGuide();
+  }
+}
+
+function triggerInstall() { quickInstall(); }
+
+function showInstallSuccess() {
+  showToast('✓ تم تثبيت التطبيق بنجاح على هاتفك!', 3500);
+}
+
+/* Small toast notification */
+function showToast(msg, duration) {
+  let t = document.getElementById('swot-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'swot-toast';
+    t.style.cssText = `
+      position:fixed;bottom:80px;left:50%;transform:translateX(-50%);
+      background:#1a3a5c;color:#fff;
+      padding:12px 20px;border-radius:30px;
+      font-family:'Cairo',sans-serif;font-size:13px;font-weight:600;
+      box-shadow:0 6px 24px rgba(0,0,0,.25);z-index:999;
+      text-align:center;max-width:300px;line-height:1.5;
+      transition:opacity .3s;
+    `;
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => { t.style.opacity = '0'; }, duration);
+}
+
+function openInstallGuide() {
+  document.getElementById('installGuideModal').classList.add('open');
+  const ua = navigator.userAgent.toLowerCase();
+  if (/iphone|ipad|ipod/.test(ua)) switchTab('ios');
+  else if (/android/.test(ua)) switchTab('android');
+  else switchTab('pc');
+}
+
+function closeInstallGuide() {
+  document.getElementById('installGuideModal').classList.remove('open');
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.install-tab').forEach((t, i) => {
+    const names = ['android','ios','pc'];
+    t.classList.toggle('active', names[i] === name);
+  });
+  document.querySelectorAll('.install-tab-content').forEach(c => {
+    c.classList.toggle('active', c.id === 'tab-' + name);
+  });
+}
+
+document.addEventListener('click', e => {
+  if (e.target === document.getElementById('installGuideModal')) closeInstallGuide();
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('installBtn').classList.add('hidden');
+  document.getElementById('autoInstallBtn').classList.add('hidden');
+  showInstallSuccess();
+});
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded',()=>{
+  loadMatrix();
+  renderNotes();
+});
+</script>
+
+<!-- Service Worker for offline PWA -->
+<script>
+if('serviceWorker' in navigator){
+  // inline SW registration using blob
+  const swCode=`
+const CACHE='swot-pro-v1';
+const ASSETS=[location.href||'/'];
+self.addEventListener('install',e=>{
+  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',e=>{
+  e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
+});
+self.addEventListener('fetch',e=>{
+  e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(res=>{
+    const clone=res.clone();
+    caches.open(CACHE).then(c=>c.put(e.request,clone));
+    return res;
+  }).catch(()=>caches.match(e.request))));
+});
+`;
+  const blob=new Blob([swCode],{type:'application/javascript'});
+  const swURL=URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swURL).catch(()=>{});
+}
+</script>
+
+<!-- Web App Manifest inline -->
+<script>
+const manifest={
+  name:'SWOT Pro — H-yber Management',
+  short_name:'SWOT Pro',
+  description:'أداة التحليل الاستراتيجي',
+  start_url:'.',
+  display:'standalone',
+  background_color:'#f4f6f9',
+  theme_color:'#1a3a5c',
+  icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="%231a3a5c"/><rect x="40" y="44" width="28" height="104" rx="14" fill="white"/><rect x="82" y="76" width="28" height="40" rx="14" fill="rgba(255,255,255,0.5)"/><rect x="124" y="44" width="28" height="104" rx="14" fill="white"/></svg>',sizes:'192x192',type:'image/svg+xml'}]
+};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+const mLink=document.createElement('link');
+mLink.rel='manifest';
+mLink.href=URL.createObjectURL(mBlob);
+document.head.appendChild(mLink);
+</script>
+
+
+</body></html>
