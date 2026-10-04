@@ -3,15 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>معرض التصاميم المعمارية | م. مهند</title>
-<meta name="description" content="معرض تصاميم معمارية وديكورات داخلية وخارجية منفذة باحترافية">
-<meta property="og:title" content="معرض التصاميم المعمارية">
-<meta property="og:description" content="تصاميم معمارية ثلاثية الأبعاد خالية من ذوات الأرواح">
-<meta property="og:type" content="website">
-<meta name="theme-color" content="#0B0E14">
+<title>معرض التصاميم | نصمم مساحات أفضل</title>
+<meta name="description" content="معرض تصاميم داخلية وخارجية منفذة عبر 3ds Max">
+<meta property="og:title" content="معرض التصاميم"><meta property="og:description" content="تصاميم داخلية وخارجية بمنتهى الإتقان">
+<meta property="og:type" content="website"><meta name="theme-color" content="#0B0E14">
+<link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--cols-d:3;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
@@ -19,7 +17,7 @@
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font),system-ui,sans-serif;font-size:1rem;line-height:1.7;overflow-x:hidden}
-body.modal-open{overflow:hidden}
+body.lb-open{overflow:hidden}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;color:inherit}
@@ -138,7 +136,7 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 .back-link:hover{color:var(--accent)}
 .detail{display:grid;grid-template-columns:1.4fr 1fr;gap:26px}
 @media(max-width:900px){.detail{grid-template-columns:1fr}}
-.detail-main{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;background:#0e1219;position:relative}
+.detail-main{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;background:#0e1219}
 .detail-main img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
 .detail-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .detail-thumbs img{aspect-ratio:4/3;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.25s}
@@ -171,22 +169,13 @@ textarea.input{min-height:110px;resize:vertical}
 .socials a{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);transition:.25s}
 .socials a:hover{color:var(--accent);border-color:var(--accent)}
 .socials svg{width:18px;height:18px}
-
-/* ================= عارض الصور و 3D ================= */
-.lightbox{position:fixed;inset:0;z-index:9999;background:rgba(5,7,10,.97);display:none;align-items:center;justify-content:center;touch-action:none;user-select:none}
-.lightbox.active{display:flex}
-.lightbox img{max-width:90vw;max-height:84vh;object-fit:contain;cursor:grab;transition:transform .12s ease-out;border-radius:8px;pointer-events:auto}
-.lightbox canvas{max-width:92vw;max-height:85vh;border-radius:10px;border:1px solid var(--line);cursor:grab;box-shadow:0 0 40px rgba(0,0,0,.8)}
-.lb-btn{position:absolute;width:48px;height:48px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(20,25,35,.85);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:10001;transition:.2s}
-.lb-btn:hover{background:var(--accent);border-color:var(--accent)}
-.lb-btn svg{width:22px;height:22px}
-.lb-close{top:20px;inset-inline-end:20px}
-.lb-prev{top:50%;transform:translateY(-50%);inset-inline-start:20px}
-.lb-next{top:50%;transform:translateY(-50%);inset-inline-end:20px}
-.lb-zoom{bottom:20px;inset-inline-start:20px;display:flex;gap:10px;z-index:10001}
-.lb-count{position:absolute;top:24px;inset-inline-start:24px;color:#fff;font-size:.9rem;background:rgba(0,0,0,.6);padding:4px 12px;border-radius:99px;border:1px solid var(--line);z-index:10001}
-.lb-tip{position:absolute;bottom:24px;inset-inline-end:24px;color:var(--muted);font-size:.8rem;background:rgba(0,0,0,.6);padding:4px 12px;border-radius:99px;pointer-events:none}
-
+.lightbox{position:fixed;inset:0;z-index:150;background:rgba(5,7,10,.96);display:flex;align-items:center;justify-content:center;touch-action:none}
+.lightbox img{max-width:92vw;max-height:86vh;user-select:none;cursor:grab;transition:transform .12s ease-out;border-radius:8px}
+.lb-btn{position:absolute;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:rgba(18,22,31,.8);color:#fff;display:grid;place-items:center;cursor:pointer;z-index:3}
+.lb-btn svg{width:20px;height:20px}
+.lb-close{top:16px;inset-inline-end:16px}.lb-prev{top:50%;transform:translateY(-50%);inset-inline-end:14px}.lb-next{top:50%;transform:translateY(-50%);inset-inline-start:14px}
+.lb-zoom{bottom:16px;inset-inline-start:16px;display:flex;gap:8px}
+.lb-count{position:absolute;top:22px;inset-inline-start:20px;color:var(--muted);font-size:.85rem}
 #botIcon{position:fixed;z-index:120;width:52px;height:52px;border-radius:16px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);display:grid;place-items:center;cursor:grab;touch-action:none;transition:box-shadow .25s}
 #botIcon:active{cursor:grabbing}
 #botIcon svg{width:28px;height:28px}
@@ -282,7 +271,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
     <div class="header-actions">
       <div id="engBadge" class="engineer-badge" hidden>
         <div class="av" id="engAv">M</div>
-        <div class="info"><b id="engName">م. مهند</b><small id="engTitle">مهندس معماري</small></div>
+        <div class="info"><b id="engName">المهندس</b><small id="engTitle">مهندس معماري</small></div>
       </div>
       <div id="engIcons" class="social-icons" hidden></div>
       <button class="icon-btn" id="searchBtn" aria-label="بحث"></button>
@@ -295,7 +284,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
   <div class="drawer-head"><span class="logo"><span id="logoText2">AR</span></span><button class="icon-btn" id="drawerClose" aria-label="إغلاق"></button></div>
   <div id="drawerEng" class="drawer-engineer" hidden>
     <div class="av" id="drawerEngAv">M</div>
-    <div class="info"><b id="drawerEngName">م. مهند</b><small id="drawerEngTitle">مهندس معماري ومصمم داخلي</small></div>
+    <div class="info"><b id="drawerEngName">المهندس</b><small id="drawerEngTitle">مهندس معماري ومصمم داخلي</small></div>
   </div>
   <nav id="drawerNav" class="drawer-nav"></nav>
   <div id="drawerSocial" class="drawer-social"></div>
@@ -303,12 +292,14 @@ input[type=range]{accent-color:var(--accent);flex:1}
 <main id="app" class="app"></main>
 <footer id="footer" class="footer"></footer>
 <nav id="bottomNav" class="bottomnav only-mobile" aria-label="تنقل سفلي"></nav>
-<div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="عارض الصور"></div>
+<div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="عارض الصور"></div>
 <div id="toasts" class="toasts" aria-live="polite"></div>
 <div id="botRoot"></div>
 
 <script type="module">
-/* ================= Firebase Config ================= */
+/* ============================================================
+   🔑 مفاتيح Firebase
+============================================================ */
 const firebaseConfig = {
   apiKey: "AIzaSyCgkwgQs8mpZ4aazt2PE_DwOFj1zw8FgTo",
   authDomain: "mohannad-fad53.firebaseapp.com",
@@ -319,6 +310,7 @@ const firebaseConfig = {
 };
 const appConfig = { storageMode:"firestore", pageSize:12, maxUploadMB:8, appCheckSiteKey:"" };
 
+/* ================= أدوات عامة ================= */
 const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
@@ -328,21 +320,21 @@ const bytes=b64=>Math.round((b64.length-(b64.indexOf(",")+1))*0.75);
 const fmtDate=ts=>{try{return new Date(ts?.seconds?ts.seconds*1000:ts).toLocaleDateString("ar-SA");}catch{return "";}};
 function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
 function toast(msg,type="ok"){const t=document.createElement("div");t.className="toast"+(type==="err"?" err":"");t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),400);},3200);}
-
-const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',cube:'<path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3zM12 12l8-4.5M12 12v9M12 12 4 7.5"/>'};
+/* ✅ لا أيقونات عيون/وجوه/أيدي إطلاقاً — كل الرموز هندسية أو قلوب/نجوم */
+const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<path d="M4 20c1.2-3.4 4.4-5 8-5s6.8 1.6 8 5M12 4l4 4-4 4-4-4z"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',cube:'<path d="M12 2 21 7v10l-9 5-9-5V7z"/><path d="M12 12 21 7M12 12v10M12 12 3 7"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
 const icon=(n,cls="")=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||""}</svg>`;
 
-/* ================= Firebase Initialization ================= */
+/* ================= Firebase ================= */
 let _fbApi=null;
 async function fb(){
   if(_fbApi) return _fbApi;
   const [appM,fsM,auM]=await Promise.all([
     import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
     import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"),
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js")
-  ]);
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js")]);
   const app=appM.initializeApp(firebaseConfig);
   const db=fsM.getFirestore(app), auth=auM.getAuth(app);
+  if(appConfig.appCheckSiteKey){try{const ac=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check.js");ac.initializeAppCheck(app,{provider:new ac.ReCaptchaV3Provider(appConfig.appCheckSiteKey),isTokenAutoRefreshEnabled:true});}catch(e){}}
   let st=null,stM=null;
   try{stM=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js");st=stM.getStorage(app);}catch(e){}
   _fbApi={...fsM,...auM,db,auth,storage:st,storageApi:stM};
@@ -369,15 +361,14 @@ function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=nul
 
 /* ================= الإعدادات ================= */
 const FALLBACK_SETTINGS={
-  siteName:"بيت التصميم المعماري",initials:"AR",
-  engineerName:"م. مهند المعماري",engineerTitle:"مهندس معماري ومصمم ديكور",engineerInitial:"M",
-  heroTitle1:"نصمم مساحات",heroAccent:"أرقى",heroTitle2:"بأحدث الرؤى الهندسية",
-  heroDesc:"معرض أعمال وتصاميم معمارية ثلاثية الأبعاد منفذة باحترافية وبدون أي تصوير لذوات الأرواح.",heroImage:"",
+  siteName:"بيت التصميم",initials:"AR",
+  engineerName:"م. مهند المعماري",engineerTitle:"مهندس معماري ومصمم داخلي",engineerInitial:"M",
+  heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية منفذة عبر 3ds Max.",heroImage:"",
   accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:3,colsMobile:2,
-  bio:"مهندس معماري ومصمم ديكور داخلي وخارجي متخصص في النمذجة ثلاثية الأبعاد والإخراج الواقعي المعماري.",
-  stats:{years:"6+",projects:"65+",satisfaction:"100%"},
+  bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية منفذة بدقة عبر 3ds Max.",
+  stats:{years:"5+",projects:"50+",satisfaction:"100%"},
   links:{whatsapp:"",instagram:"",twitter:"",facebook:""},
-  contact:{email:"info@mohannad-design.com",phone:"+966 50 123 4567",address:"الرياض، المملكة العربية السعودية",whatsappNumber:"966501234567"},
+  contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},
   watermark:{enabled:false,text:""},adminPath:"/admin-panel"
 };
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
@@ -504,6 +495,24 @@ const FirebaseStorageAdapter={
   listMeta:Base64FirestoreAdapter.listMeta
 };
 const storage=appConfig.storageMode==="storage"?FirebaseStorageAdapter:Base64FirestoreAdapter;
+async function migrateToStorage(onProgress){
+  const F=await fb();
+  const designs=await getAllDesigns();
+  let i=0,total=0;
+  for(const d of designs) total+=(await Base64FirestoreAdapter.listMeta(d.id)).length;
+  for(const d of designs){
+    const imgs=await Base64FirestoreAdapter.listMeta(d.id);
+    for(const im of imgs){
+      const data=im.data; i++; onProgress?.(i,total);
+      if(!data)continue;
+      const bin=await (await fetch(data)).blob();
+      const ref=F.storageApi.ref(F.storage,`designs/${d.id}/${im.id}`);
+      await F.storageApi.uploadBytes(ref,bin,{contentType:bin.type});
+      const imageUrl=await F.storageApi.getDownloadURL(ref);
+      await F.updateDoc(F.doc(F.db,"designs",d.id,"images",im.id),{imageUrl});
+    }
+  }
+}
 
 let myLikes=new Set(), _anon=undefined;
 async function ensureAnon(){
@@ -534,7 +543,7 @@ function paintLike(btn,id){
 }
 async function toggleLike(id,btn,countEl){
   const u=await ensureAnon();
-  if(!u){toast("يرجى تفعيل الزائر المجهول في Authentication في Firebase","err");return;}
+  if(!u){toast("أضف نطاق الموقع في Firebase ← Authentication ← Settings ← Authorized domains","err");return;}
   const liked=myLikes.has(id);
   liked?myLikes.delete(id):myLikes.add(id);
   paintLike(btn,id); btn.classList.add("pulse"); setTimeout(()=>btn.classList.remove("pulse"),500);
@@ -557,266 +566,120 @@ async function toggleLike(id,btn,countEl){
 }
 
 /* ============================================================
-   🔧 عارض الصور ونموذج 3D (مُعالج ومُصلح بالكامل)
+   ✅ عارض الصور المُصلح: الأزرار والأسهم والإغلاق تعمل دائماً
+   (لم نعد نأسر المؤشر عند الضغط على الأزرار)
 ============================================================ */
-let lbImgs=[], lbIdx=0, lbScale=1, lbTx=0, lbTy=0;
-let is3DMode=false, anim3DId=null;
-
-function closeLightbox(e){
-  if(e){e.preventDefault(); e.stopPropagation();}
-  if(anim3DId){cancelAnimationFrame(anim3DId); anim3DId=null;}
+let lbImgs=[],lbIdx=0,lbScale=1,lbTx=0,lbTy=0; const lbPointers=new Map(); let lbPinch0=0,lbScale0=1;
+function closeLightbox(){
   const lb=$("#lightbox");
-  lb.classList.remove("active");
-  lb.innerHTML="";
-  document.body.classList.remove("modal-open");
+  lb.setAttribute("hidden","");
+  lb.style.display="none";
+  document.body.classList.remove("lb-open");
   document.onkeydown=null;
 }
-
-function openLightbox(list, start=0, as3D=false){
-  if(!list||!list.length) return;
-  lbImgs=list; lbIdx=Math.max(0,Math.min(start,list.length-1));
-  lbScale=1; lbTx=lbTy=0; is3DMode=as3D;
-  document.body.classList.add("modal-open");
-
+function openLightbox(list,start=0){
+  lbImgs=list; lbIdx=start; lbScale=1; lbTx=lbTy=0; lbPointers.clear();
   const lb=$("#lightbox");
-  lb.classList.add("active");
-
-  lb.innerHTML=`
-    <button class="lb-btn lb-close" id="lbCloseBtn" aria-label="إغلاق">${icon("close")}</button>
-    <button class="lb-btn lb-prev" id="lbPrevBtn" aria-label="السابق">${icon("chevR")}</button>
-    <button class="lb-btn lb-next" id="lbNextBtn" aria-label="التالي">${icon("chevL")}</button>
-    <div class="lb-zoom">
-      <button class="lb-btn" id="lbIn" aria-label="تكبير">${icon("zoomin")}</button>
-      <button class="lb-btn" id="lbOut" aria-label="تصغير">${icon("zoomout")}</button>
-    </div>
-    <span class="lb-count" id="lbCounter"></span>
-    <span class="lb-tip">${as3D ? "وضع الاستعراض ثلاثي الأبعاد — اسحب للتدوير" : "استخدم الأسهم للتنقل أو اسحب يميناً ويساراً"}</span>
-    <div id="lbCanvasWrap" style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;pointer-events:none"></div>
-  `;
-
-  $("#lbCloseBtn").onclick=closeLightbox;
-  $("#lbPrevBtn").onclick=(e)=>{e.stopPropagation(); lbStep(-1);};
-  $("#lbNextBtn").onclick=(e)=>{e.stopPropagation(); lbStep(1);};
-  $("#lbIn").onclick=(e)=>{e.stopPropagation(); lbSetScale(lbScale*1.25);};
-  $("#lbOut").onclick=(e)=>{e.stopPropagation(); lbSetScale(lbScale/1.25);};
-
+  lb.removeAttribute("hidden");
+  lb.style.display="flex";
+  document.body.classList.add("lb-open");
+  lb.innerHTML=`<button class="lb-btn lb-close" aria-label="إغلاق">${icon("close")}</button>
+    <button class="lb-btn lb-prev" aria-label="السابق">${icon("chevR")}</button>
+    <button class="lb-btn lb-next" aria-label="التالي">${icon("chevL")}</button>
+    <div class="lb-zoom"><button class="lb-btn" id="lbIn" aria-label="تكبير">${icon("zoomin")}</button><button class="lb-btn" id="lbOut" aria-label="تصغير">${icon("zoomout")}</button></div>
+    <span class="lb-count"></span><img alt="صورة مكبرة" draggable="false">`;
+  lb.querySelector(".lb-close").onclick=(e)=>{e.stopPropagation();closeLightbox();};
+  lb.querySelector(".lb-prev").onclick=(e)=>{e.stopPropagation();lbStep(-1);};
+  lb.querySelector(".lb-next").onclick=(e)=>{e.stopPropagation();lbStep(1);};
+  lb.querySelector("#lbIn").onclick=(e)=>{e.stopPropagation();lbSetScale(lbScale*1.3);};
+  lb.querySelector("#lbOut").onclick=(e)=>{e.stopPropagation();lbSetScale(lbScale/1.3);};
+  lb.querySelector("img").onload=()=>lbApply();
+  lb.querySelector("img").onerror=()=>{const im=lb.querySelector("img");im.onerror=null;im.src=fallbackScene();};
   document.onkeydown=e=>{
-    if(e.key==="Escape"){closeLightbox(); return;}
-    if(e.key==="ArrowRight"||e.key==="ArrowUp") lbStep(-1);
-    if(e.key==="ArrowLeft"||e.key==="ArrowDown") lbStep(1);
+    if(e.key==="Escape"){closeLightbox();closeModelOverlay();return;}
+    if(e.key==="ArrowRight")lbStep(-1);
+    if(e.key==="ArrowLeft")lbStep(1);
   };
+  const dist=()=>{const [a,b]=[...lbPointers.values()];return Math.hypot(a[0]-b[0],a[1]-b[1]);};
+  /* ✅ لا نأسر المؤشر إذا كان الضغط على زر — حتى تعمل النقرات */
+  lb.onpointerdown=e=>{
+    if(e.target.closest(".lb-btn"))return;
+    lbPointers.set(e.pointerId,[e.clientX,e.clientY]);
+    lb.setPointerCapture(e.pointerId);
+    if(lbPointers.size===2){lbPinch0=dist();lbScale0=lbScale;}
+  };
+  lb.onpointermove=e=>{
+    if(!lbPointers.has(e.pointerId))return;
+    const prev=lbPointers.get(e.pointerId); lbPointers.set(e.pointerId,[e.clientX,e.clientY]);
+    if(lbPointers.size===2)lbSetScale(lbScale0*(dist()/lbPinch0));
+    else if(lbScale>1){lbTx+=e.clientX-prev[0];lbTy+=e.clientY-prev[1];lbApply();}
+    else lb.dataset.dx=(+(lb.dataset.dx||0))+(e.clientX-prev[0]);
+  };
+  lb.onpointerup=lb.onpointercancel=e=>{
+    if(!lbPointers.has(e.pointerId))return;
+    const swipe=lbPointers.size===1&&lbScale===1&&Math.abs(+(lb.dataset.dx||0))>60;
+    if(swipe)lbStep(+(lb.dataset.dx||0)>0?-1:1);
+    lb.dataset.dx=0; lbPointers.delete(e.pointerId);
+  };
+  lbShow();
+}
+function lbSetScale(s){lbScale=Math.min(5,Math.max(1,s));if(lbScale===1)lbTx=lbTy=0;lbApply();}
+function lbApply(){const img=$("#lightbox img");if(img)img.style.transform=`translate(${lbTx}px,${lbTy}px) scale(${lbScale})`;}
+function lbShow(){const lb=$("#lightbox");lb.querySelector("img").src=lbImgs[lbIdx];lb.querySelector(".lb-count").textContent=`${lbIdx+1} / ${lbImgs.length}`;lbScale=1;lbTx=lbTy=0;lbApply();}
+function lbStep(d){lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;lbShow();}
 
-  lbRenderView();
+/* ================= عارض النموذج ثلاثي الأبعاد (Sketchfab embed) ================= */
+function openModelOverlay(url){
+  closeLightbox();
+  let ov=$("#modelOverlay");
+  if(!ov){ov=document.createElement("div");ov.id="modelOverlay";ov.style.cssText="position:fixed;inset:0;z-index:160;background:rgba(5,7,10,.97);display:flex;align-items:center;justify-content:center";document.body.appendChild(ov);}
+  ov.innerHTML=`<button class="lb-btn lb-close" id="mClose" aria-label="إغلاق">${icon("close")}</button>
+    <iframe src="${esc(url)}" title="نموذج ثلاثي الأبعاد" style="width:min(1000px,94vw);height:min(640px,86vh);border:1px solid var(--line);border-radius:12px;background:#000" allowfullscreen allow="xr; fullscreen; autoplay"></iframe>`;
+  ov.removeAttribute("hidden"); ov.style.display="flex";
+  document.body.classList.add("lb-open");
+  $("#mClose").onclick=()=>closeModelOverlay();
+}
+function closeModelOverlay(){
+  const ov=$("#modelOverlay");
+  if(ov){ov.style.display="none";ov.innerHTML="";}
+  document.body.classList.remove("lb-open");
 }
 
-function lbSetScale(s){
-  lbScale=Math.min(4,Math.max(0.8,s));
-  if(lbScale===1){lbTx=0; lbTy=0;}
-  applyTransform();
-}
-
-function applyTransform(){
-  const el=$("#lbCanvasWrap > *");
-  if(el) el.style.transform=`translate(${lbTx}px, ${lbTy}px) scale(${lbScale})`;
-}
-
-function lbStep(d){
-  lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;
-  lbScale=1; lbTx=0; lbTy=0;
-  lbRenderView();
-}
-
-function lbRenderView(){
-  const wrap=$("#lbCanvasWrap");
-  if(!wrap) return;
-  wrap.innerHTML="";
-  $("#lbCounter").textContent=`${lbIdx+1} / ${lbImgs.length}`;
-
-  if(anim3DId){cancelAnimationFrame(anim3DId); anim3DId=null;}
-
-  if(is3DMode){
-    // إنشاء نموذج 3D تفاعلي بـ Canvas
-    const cv=document.createElement("canvas");
-    cv.width=900; cv.height=600;
-    cv.style.pointerEvents="auto";
-    wrap.appendChild(cv);
-    initInteractive3D(cv, lbImgs[lbIdx]);
-  }else{
-    const img=document.createElement("img");
-    img.src=lbImgs[lbIdx];
-    img.alt="صورة التصميم";
-    img.draggable=false;
-    img.style.pointerEvents="auto";
-    img.onerror=()=>{img.onerror=null; img.src=fallbackScene();};
-    wrap.appendChild(img);
-    initInteractiveImage(img);
-  }
-}
-
-function initInteractiveImage(img){
-  let startX=0, startY=0, isDown=false;
-  img.onpointerdown=e=>{
-    isDown=true; startX=e.clientX-lbTx; startY=e.clientY-lbTy;
-    img.setPointerCapture(e.pointerId);
-    img.style.cursor="grabbing";
-  };
-  img.onpointermove=e=>{
-    if(!isDown) return;
-    if(lbScale>1){
-      lbTx=e.clientX-startX;
-      lbTy=e.clientY-startY;
-      applyTransform();
-    }
-  };
-  img.onpointerup=img.onpointercancel=e=>{
-    if(!isDown) return;
-    isDown=false;
-    img.style.cursor="grab";
-    const movedX=e.clientX-(startX+lbTx);
-    if(lbScale<=1 && Math.abs(movedX)>60){
-      lbStep(movedX>0 ? -1 : 1);
-    }
-  };
-}
-
-/* محاكاة تفاعلية لعرض 3D للمساحات المعمارية باستخدام Canvas بدون مكتبات خارجية */
-function initInteractive3D(canvas, texUrl){
-  const ctx=canvas.getContext("2d");
-  let rotY=0, rotX=0.2, isDown=false, lx=0, ly=0;
-  const tex=new Image();
-  tex.crossOrigin="anonymous";
-  tex.src=texUrl;
-  tex.onerror=()=>{tex.src=fallbackScene();};
-
-  canvas.onpointerdown=e=>{
-    isDown=true; lx=e.clientX; ly=e.clientY;
-    canvas.setPointerCapture(e.pointerId);
-    canvas.style.cursor="grabbing";
-  };
-  canvas.onpointermove=e=>{
-    if(!isDown) return;
-    const dx=e.clientX-lx, dy=e.clientY-ly;
-    rotY += dx*0.01;
-    rotX = Math.max(-0.6, Math.min(0.6, rotX + dy*0.01));
-    lx=e.clientX; ly=e.clientY;
-  };
-  canvas.onpointerup=canvas.onpointercancel=()=>{
-    isDown=false; canvas.style.cursor="grab";
-  };
-
-  function render(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    const w=canvas.width, h=canvas.height, cx=w/2, cy=h/2;
-
-    // خلفية المشهد الهندسي 3D
-    const grad=ctx.createRadialGradient(cx,cy,50,cx,cy,w/1.5);
-    grad.addColorStop(0,"#1A202C");
-    grad.addColorStop(1,"#0B0E14");
-    ctx.fillStyle=grad;
-    ctx.fillRect(0,0,w,h);
-
-    // رسم شبكة معمارية ثلاثية الأبعاد (Architectural Grid)
-    ctx.strokeStyle="rgba(225,6,0,0.25)";
-    ctx.lineWidth=1;
-    const gridCount=10, size=300;
-    for(let i=-gridCount; i<=gridCount; i++){
-      const z0=i*(size/gridCount);
-      // خطوط أفقية بالأبعاد الثلاثية
-      const p1=project3D(-size, 150, z0, rotX, rotY, cx, cy);
-      const p2=project3D(size, 150, z0, rotX, rotY, cx, cy);
-      if(p1&&p2){ctx.beginPath(); ctx.moveTo(p1.x,p1.y); ctx.lineTo(p2.x,p2.y); ctx.stroke();}
-    }
-
-    // عرض لوحة التصميم داخل البيئة ثلاثية الأبعاد
-    const panelW=260, panelH=180;
-    const c1=project3D(-panelW, -panelH, 0, rotX, rotY, cx, cy);
-    const c2=project3D(panelW, -panelH, 0, rotX, rotY, cx, cy);
-    const c3=project3D(panelW, panelH, 0, rotX, rotY, cx, cy);
-    const c4=project3D(-panelW, panelH, 0, rotX, rotY, cx, cy);
-
-    if(c1&&c2&&c3&&c4){
-      ctx.save();
-      ctx.beginPath();
-      ctx.moveTo(c1.x,c1.y); ctx.lineTo(c2.x,c2.y); ctx.lineTo(c3.x,c3.y); ctx.lineTo(c4.x,c4.y);
-      ctx.closePath();
-      ctx.strokeStyle="var(--accent)";
-      ctx.lineWidth=3;
-      ctx.stroke();
-
-      if(tex.complete && tex.naturalWidth>0){
-        ctx.clip();
-        ctx.drawImage(tex, c1.x, c1.y, (c2.x-c1.x)||300, (c4.y-c1.y)||200);
-      } else {
-        ctx.fillStyle="#1E2430";
-        ctx.fill();
-      }
-      ctx.restore();
-    }
-
-    // دوران خفيف تلقائي عند التوقف
-    if(!isDown) rotY += 0.003;
-    anim3DId=requestAnimationFrame(render);
-  }
-
-  function project3D(x,y,z,rx,ry,cx,cy){
-    const cosY=Math.cos(ry), sinY=Math.sin(ry);
-    const x1=x*cosY + z*sinY;
-    const z1=-x*sinY + z*cosY;
-
-    const cosX=Math.cos(rx), sinX=Math.sin(rx);
-    const y2=y*cosX - z1*sinX;
-    const z2=y*sinX + z1*cosX;
-
-    const dist=550;
-    if(z2 + dist <= 10) return null;
-    const fov=dist/(z2+dist);
-    return {x: cx + x1*fov, y: cy + y2*fov};
-  }
-
-  anim3DId=requestAnimationFrame(render);
-}
-
-/* ================= روابط التواصل ================= */
+/* ================= القشرة + أيقونات التواصل ================= */
+const NAV=[{href:"#/",path:"/",label:"الرئيسية",ic:"home"},{href:"#/portfolio",path:"/portfolio",label:"الأعمال",ic:"grid"},{href:"#/about",path:"/about",label:"من أنا",ic:"user"},{href:"#/contact",path:"/contact",label:"تواصل",ic:"phone"}];
 function socialIconsHTML(){
   const l=settings.links||{}, c=settings.contact||{};
   const items=[];
-  if(c.whatsappNumber||l.whatsapp){
-    const num=(c.whatsappNumber||"").replace(/\D/g,"");
-    const url=num?`https://wa.me/${num}`:l.whatsapp;
-    if(url)items.push(`<a class="wa" href="${esc(url)}" target="_blank" rel="noopener" aria-label="واتساب">${icon("wa")}</a>`);
-  }
+  const num=(c.whatsappNumber||"").replace(/\D/g,"");
+  const waUrl=num?`https://wa.me/${num}`:(l.whatsapp||"");
+  if(waUrl)items.push(`<a class="wa" href="${esc(waUrl)}" target="_blank" rel="noopener" aria-label="واتساب">${icon("wa")}</a>`);
   if(l.twitter)items.push(`<a class="x" href="${esc(l.twitter)}" target="_blank" rel="noopener" aria-label="تويتر">${icon("x")}</a>`);
   if(l.instagram)items.push(`<a class="ig" href="${esc(l.instagram)}" target="_blank" rel="noopener" aria-label="إنستغرام">${icon("ig")}</a>`);
   if(l.facebook)items.push(`<a class="fb" href="${esc(l.facebook)}" target="_blank" rel="noopener" aria-label="فيسبوك">${icon("fb")}</a>`);
   if(c.email)items.push(`<a class="mail" href="mailto:${esc(c.email)}" aria-label="البريد الإلكتروني">${icon("mail")}</a>`);
   return items.join("");
 }
-
-/* ================= الهيكل العام ================= */
-const NAV=[{href:"#/",path:"/",label:"الرئيسية",ic:"home"},{href:"#/portfolio",path:"/portfolio",label:"الأعمال",ic:"grid"},{href:"#/about",path:"/about",label:"من أنا",ic:"user"},{href:"#/contact",path:"/contact",label:"تواصل",ic:"phone"}];
 function initShell(){
   $("#searchBtn").innerHTML=icon("search"); $("#menuBtn").innerHTML=icon("menu"); $("#drawerClose").innerHTML=icon("close");
   $("#searchBtn").onclick=()=>nav("/portfolio?focus=1");
   $("#menuBtn").onclick=()=>openDrawer(true);
   $("#drawerClose").onclick=()=>openDrawer(false);
   $("#drawerOverlay").onclick=()=>openDrawer(false);
-
-  // الضغط 5 مرات على الشعار للوصول للوحة التحكم
   let clicks=0,t;
   $("#logoBtn").onclick=(e)=>{
-    e.preventDefault(); clicks++; clearTimeout(t);
+    e.preventDefault();
+    clicks++;
+    clearTimeout(t);
     t=setTimeout(()=>clicks=0,1500);
     if(clicks>=5){
       clicks=0;
       const adminPath=settings.adminPath||"/admin-panel";
       window.location.hash=adminPath.startsWith("/")?adminPath:"/"+adminPath;
-      toast("جارٍ فتح بوابة الإدارة...");
     }
   };
   renderShell(_curPath);
   store.onChange(()=>renderShell(_curPath));
 }
-
 function renderShell(path){
   _curPath=path;
   const s=settings;
@@ -826,51 +689,31 @@ function renderShell(path){
   $("#topnav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${n.label}</a>`).join("");
   $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
   $("#bottomNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}" aria-label="${n.label}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
-
-  const engName=s.engineerName||"م. مهند المعماري";
-  const engTitle=s.engineerTitle||"مهندس معماري ومصمم ديكور";
+  const engName=s.engineerName||"المهندس المعماري";
+  const engTitle=s.engineerTitle||"مهندس معماري";
   const engInitial=(s.engineerInitial||engName.charAt(0)).toUpperCase();
   $("#engAv").textContent=engInitial;
   $("#engName").textContent=engName;
   $("#engTitle").textContent=engTitle;
-
   const engIcons=socialIconsHTML();
-  if(engIcons){
-    $("#engBadge").hidden=false;
-    const ic=$("#engIcons"); ic.innerHTML=engIcons; ic.hidden=false;
-  }else{
-    $("#engBadge").hidden=true; $("#engIcons").hidden=true;
-  }
-
+  if(engIcons){$("#engBadge").hidden=false;const ic=$("#engIcons");ic.innerHTML=engIcons;ic.hidden=false;}
+  else{$("#engBadge").hidden=true;$("#engIcons").hidden=true;}
   $("#drawerEngAv").textContent=engInitial;
   $("#drawerEngName").textContent=engName;
   $("#drawerEngTitle").textContent=engTitle;
   $("#drawerEng").hidden=false;
-
   $("#drawerSocial").innerHTML=`<div class="social-icons" style="justify-content:center;gap:10px">${engIcons}</div>`;
-
-  const footerSoc=[
-    [s.links?.whatsapp||`https://wa.me/${s.contact?.whatsappNumber||""}`,"wa","واتساب"],
-    [s.links?.instagram,"ig","إنستغرام"],
-    [s.links?.twitter,"x","تويتر"],
-    [s.links?.facebook,"fb","فيسبوك"],
-    [s.contact?.email,"mail","البريد"]
-  ].filter(([u])=>u).map(([u,ic,label])=>`<a href="${esc(u.startsWith("mailto:")?u:(u.includes("@")?`mailto:${u}`:u))}" target="_blank" rel="noopener" aria-label="${label}">${icon(ic)}</a>`).join("");
-
+  const footerSoc=engIcons;
   $("#footer").innerHTML=`<div class="container footer-in">
     <div class="footer-engineer">
       <div class="av">${esc(engInitial)}</div>
       <div class="info"><b>${esc(engName)}</b><small>${esc(engTitle)}</small></div>
     </div>
-    <small>© ${new Date().getFullYear()} ${esc(s.siteName)}. جميع التصاميم المعمارية محفوظة.</small>
+    <small>© ${new Date().getFullYear()} ${esc(s.siteName)}. جميع الحقوق محفوظة.</small>
     <div class="socials">${footerSoc}</div>
   </div>`;
 }
-function openDrawer(open){
-  const d=$("#drawer"),o=$("#drawerOverlay");
-  o.hidden=!open;
-  requestAnimationFrame(()=>{d.classList.toggle("open",open);o.classList.toggle("show",open);});
-}
+function openDrawer(open){const d=$("#drawer"),o=$("#drawerOverlay");o.hidden=!open;requestAnimationFrame(()=>{d.classList.toggle("open",open);o.classList.toggle("show",open);});}
 
 function designCard(d,catName){
   return `<article class="card dcard">
@@ -883,10 +726,9 @@ function designCard(d,catName){
   </article>`;
 }
 const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="skel" style="aspect-ratio:4/3"></div><div class="skel" style="height:16px;margin-top:8px;width:70%"></div></div>`).join("")}</div>`;
-const emptyState=(msg="لا توجد تصاميم مسجلة")=>`<div class="empty">${icon("image")}<p>${esc(msg)}</p></div>`;
+const emptyState=(msg="لا توجد تصاميم بعد")=>`<div class="empty">${icon("image")}<p>${esc(msg)}</p></div>`;
 const bindCards=root=>bindLikeButtons(root);
 
-/* ================= الصفحات ================= */
 async function renderHome(root){
   const s=settings;
   root.innerHTML=`
@@ -895,11 +737,11 @@ async function renderHome(root){
     <div class="container hero-in">
       <h1>${esc(s.heroTitle1)} <span class="accent">${esc(s.heroAccent)}</span> ${esc(s.heroTitle2||"")}</h1>
       <p>${esc(s.heroDesc)}</p>
-      <a class="btn" href="#/portfolio">استعرض أحدث الأعمال ${icon("chevL")}</a>
+      <a class="btn" href="#/portfolio">شاهد الأعمال ${icon("chevL")}</a>
     </div>
   </section>
   <section class="section container">
-    <div class="section-head"><h2 class="section-title">المشاريع المختارة</h2><a class="link-accent" href="#/portfolio">عرض كافة التصاميم ${icon("chevL")}</a></div>
+    <div class="section-head"><h2 class="section-title">أحدث المشاريع</h2><a class="link-accent" href="#/portfolio">عرض الكل ${icon("chevL")}</a></div>
     <div id="homeGrid">${skeletonGrid(9)}</div>
   </section>`;
   const all=await getAllDesigns();
@@ -911,79 +753,79 @@ async function renderHome(root){
   grid.innerHTML=items.length?`<div class="grid">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
   bindCards(grid);
 }
-
 async function renderAbout(root){
   const s=settings;
   root.innerHTML=`<section class="section container geo"><div class="about-grid">
-    <div><span class="link-accent" style="cursor:default">المهندس المعماري</span>
-      <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900">${esc(s.engineerName||"م. مهند المعماري")}</h1>
+    <div><span class="link-accent" style="cursor:default">من أنا</span>
+      <h1 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:900">${esc(s.engineerName||"مهندس معماري")}</h1>
       <p style="color:var(--muted)">${esc(s.bio)}</p>
-      <a class="btn" href="#/contact">طلب استشارة أو تصميم ${icon("send")}</a>
+      <a class="btn" href="#/contact">تواصل معي ${icon("send")}</a>
       <div class="stats-row">
         <div class="stat-card">${icon("clock")}<b>${esc(s.stats?.years||"0")}</b><span>سنوات خبرة</span></div>
-        <div class="stat-card">${icon("flag")}<b>${esc(s.stats?.projects||"0")}</b><span>مشروع معماري منجز</span></div>
-        <div class="stat-card">${icon("smile")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
+        <div class="stat-card">${icon("flag")}<b>${esc(s.stats?.projects||"0")}</b><span>مشروع منجز</span></div>
+        <div class="stat-card">${icon("heart")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
       </div></div>
-    <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="أعمال المهندس" onerror="__imgErr(this)">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
+    <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="صورة المشروع" onerror="__imgErr(this)">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
   </div></section>`;
 }
-
 async function renderContact(root){
   const s=settings,c=s.contact||{};
-  root.innerHTML=`<section class="hero geo" style="min-height:300px">
+  root.innerHTML=`<section class="hero geo" style="min-height:320px">
     ${s.heroImage?`<div class="hero-bg" style="background-image:url('${s.heroImage}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
     <div class="container hero-in">
-      <h1>تواصل مع المهندس مباشرة</h1>
-      <p>لبدء تخطيط مشروعك أو طلب تصميم داخلي أو خارجي ثلاثي الأبعاد.</p>
+      <h1>لنبني شيئاً مذهلاً</h1>
+      <p>لديك مشروع في ذهنك؟ يسعدني سماع رأيك.</p>
+      <button class="btn" id="ctaBtn">تواصل معي ${icon("send")}</button>
     </div>
   </section>
   <section class="section container">
     <div class="contact-grid">
       <form id="cForm" class="specs geo">
         <div class="form-grid">
-          <div class="field"><label for="cn">الاسم الكريم</label><input class="input" id="cn" maxlength="100" required></div>
-          <div class="field"><label for="cp">رقم الجوال</label><input class="input" id="cp" inputmode="tel"></div>
+          <div class="field"><label for="cn">الاسم</label><input class="input" id="cn" maxlength="100" required></div>
+          <div class="field"><label for="cp">الجوال</label><input class="input" id="cp" inputmode="tel"></div>
         </div>
         <div class="field"><label for="ce">البريد الإلكتروني</label><input class="input" id="ce" type="email"></div>
-        <div class="field"><label for="ct">تفاصيل المشروع المطلوب</label><textarea class="input" id="ct" maxlength="1900" required></textarea></div>
-        <button class="btn" type="submit">إرسال الطلب ${icon("send")}</button>
-        ${c.whatsappNumber?`<a class="btn ghost" style="margin-inline-start:8px" target="_blank" href="https://wa.me/${esc(c.whatsappNumber)}">${icon("wa")} محادثة واتساب</a>`:""}
+        <div class="field"><label for="ct">رسالتك</label><textarea class="input" id="ct" maxlength="1900" required></textarea></div>
+        <button class="btn" type="submit">إرسال الرسالة ${icon("send")}</button>
+        ${c.whatsappNumber?`<a class="btn ghost" style="margin-inline-start:8px" target="_blank" href="https://wa.me/${esc(c.whatsappNumber)}">${icon("wa")} واتساب مباشر</a>`:""}
       </form>
       <div>
-        <div class="c-item"><span class="ic">${icon("mail")}</span><div><small>البريد الإلكتروني</small>${esc(c.email||"")}</div></div>
-        <div class="c-item"><span class="ic">${icon("phone")}</span><div><small>الهاتف المباشر</small><span dir="ltr">${esc(c.phone||"")}</span></div></div>
-        <div class="c-item"><span class="ic">${icon("pin")}</span><div><small>المقر والموقع</small>${esc(c.address||"")}</div></div>
+        <div class="c-item"><span class="ic">${icon("mail")}</span><div><small>البريد</small>${esc(c.email||"")}</div></div>
+        <div class="c-item"><span class="ic">${icon("phone")}</span><div><small>الهاتف</small><span dir="ltr">${esc(c.phone||"")}</span></div></div>
+        <div class="c-item"><span class="ic">${icon("pin")}</span><div><small>الموقع</small>${esc(c.address||"")}</div></div>
       </div>
     </div>
   </section>`;
+  $("#ctaBtn").onclick=()=>$("#cForm").scrollIntoView({behavior:"smooth",block:"center"});
   $("#cForm").onsubmit=async e=>{
     e.preventDefault();
     const {db,collection,addDoc}=await fb();
     await addDoc(collection(db,"messages"),{name:$("#cn").value.slice(0,99),phone:$("#cp").value||"",email:$("#ce").value||"",text:$("#ct").value.slice(0,1999),read:false,createdAt:Date.now()});
-    toast("تم إرسال رسالتك بنجاح، سيتم التواصل معك بأقرب وقت."); e.target.reset();
+    toast("تم إرسال رسالتك بنجاح، سأتواصل معك قريباً"); e.target.reset();
   };
 }
-function render404(root){root.innerHTML=`<div class="empty" style="padding:120px 20px">${icon("search")}<h1>404</h1><p>الصفحة المطلوبة غير موجودة</p><a class="btn" href="#/">العودة للمعرض</a></div>`;}
+function render404(root){root.innerHTML=`<div class="empty" style="padding:120px 20px">${icon("search")}<h1>404</h1><p>الصفحة التي تبحث عنها غير موجودة</p><a class="btn" href="#/">العودة للرئيسية</a></div>`;}
 
 let pState=null;
 async function renderPortfolio(root,params){
   pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
-    <h1 style="font-weight:900">معرض المشاريع والتصاميم</h1>
-    <p style="color:var(--muted);margin-bottom:18px">استعراض كافة الأعمال المعمارية ثلاثية الأبعاد خالية تماماً من صور وتماثيل ذوات الأرواح.</p>
+    <h1 style="font-weight:900">معرض الأعمال</h1>
+    <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية المنفذة عبر 3ds Max.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
       <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
       <div style="margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap">
-        <div style="position:relative"><input id="q" class="input" style="width:190px;padding-inline-end:38px" placeholder="بحث بالمشروع..." value="${esc(pState.q)}" aria-label="بحث"><span style="position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">${icon("search")}</span></div>
+        <div style="position:relative"><input id="q" class="input" style="width:190px;padding-inline-end:38px" placeholder="بحث..." value="${esc(pState.q)}" aria-label="بحث"><span style="position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">${icon("search")}</span></div>
         <select id="sort" class="input" style="width:150px" aria-label="ترتيب">
-          <option value="new" ${pState.sort==="new"?"selected":""}>الأحدث أولاً</option>
-          <option value="likes" ${pState.sort==="likes"?"selected":""}>الأعلى إعجاباً</option>
+          <option value="new" ${pState.sort==="new"?"selected":""}>الأحدث</option>
+          <option value="likes" ${pState.sort==="likes"?"selected":""}>الأكثر إعجاباً</option>
         </select>
       </div>
     </div>
-    ${pState.color?`<div class="badge pub" style="margin-bottom:12px">فلترة باللون: ${esc(pState.color)} <button id="clrColor" class="mini-btn" style="display:inline-grid">${icon("close")}</button></div>`:""}
+    ${pState.color?`<div class="badge pub" style="margin-bottom:12px">فلترة بالألوان: ${esc(pState.color)} <button id="clrColor" class="mini-btn" style="display:inline-grid">${icon("close")}</button></div>`:""}
     <div id="pGrid">${skeletonGrid(appConfig.pageSize)}</div>
-    <div style="text-align:center;margin-top:22px"><button id="more" class="btn ghost" hidden>تحميل المزيد من الأعمال</button></div>
+    <div style="text-align:center;margin-top:22px"><button id="more" class="btn ghost" hidden>تحميل المزيد</button></div>
   </section>`;
   renderChips();
   $("#q").oninput=debounce(e=>{pState.q=e.target.value.trim();pReset();},350);
@@ -994,7 +836,7 @@ async function renderPortfolio(root,params){
   await fetchPage();
 }
 function renderChips(){
-  $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">كافة الأعمال</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
+  $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
 async function pReset(){pState.items=[];pState.page=0;pState.done=false;invalidateDesignsCache();$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
@@ -1020,11 +862,10 @@ async function fetchPage(){
 }
 function paintGrid(){
   const g=$("#pGrid");
-  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مطابقة للبحث");
+  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
   bindCards(g); $("#more").hidden=pState.done;
 }
 
-/* ================= صفحة تفاصيل التصميم المعماري ================= */
 async function renderDesign(root,params,path){
   const id=path.split("/")[2];
   const {db,doc,getDoc,collection,getDocs,updateDoc,increment}=await fb();
@@ -1037,13 +878,12 @@ async function renderDesign(root,params,path){
   const thumbs=imgs.map(i=>i.thumb||d.thumbnail).filter(Boolean);
   const main0=imgs.find(i=>i.id===d.coverImageId)?.thumb||d.thumbnail||"";
   const specs=(d.specs||[]).filter(s=>s.name);
-
   root.innerHTML=`<div class="container">
     <button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
     <div class="detail">
       <div>
         <div class="detail-main geo"><img id="mainImg" src="${main0}" alt="${esc(d.title)}" onerror="__imgErr(this)"></div>
-        <div class="detail-thumbs" id="dThumbs">${thumbs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="لقطة ${i+1}" loading="lazy" onerror="__imgErr(this)">`).join("")}</div>
+        <div class="detail-thumbs" id="dThumbs">${thumbs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}" loading="lazy" onerror="__imgErr(this)">`).join("")}</div>
       </div>
       <div class="specs geo">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
@@ -1053,93 +893,75 @@ async function renderDesign(root,params,path){
         <span class="like-count" style="position:static;background:none;color:var(--muted);padding:0" data-likecount="${d.id}">${d.likesCount||0}</span> إعجاب · ${d.viewsCount||0} مشاهدة
         <p style="color:var(--muted);font-size:.9rem">${esc(d.description||"")}</p>
         <div class="spec-row"><b>${icon("layers")} النوع</b>${esc(store.catName(d.categoryId))}</div>
-        <div class="spec-row"><b>${icon("pin")} المدينة / الموقع</b>${esc(d.location||"—")}</div>
-        <div class="spec-row"><b>${icon("gear")} برامج التصميم</b>${esc(d.software||"3ds Max & V-Ray")}</div>
+        <div class="spec-row"><b>${icon("pin")} الموقع</b>${esc(d.location||"—")}</div>
+        <div class="spec-row"><b>${icon("cube")} البرنامج</b>${esc(d.software||"3D Max")}</div>
         <div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area||"—")}</div>
-        <div class="spec-row"><b>${icon("image")} الخامات المستخدمة</b>${esc(d.materials||"—")}</div>
-        <div class="spec-row"><b>${icon("chart")} سنة الإنجاز</b>${esc(d.year||"—")}</div>
+        <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials||"—")}</div>
+        <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
-          <button class="btn sm" id="view3dBtn">${icon("cube")} تفقد النموذج ثلاثي الأبعاد</button>
+          <button class="btn sm" id="view3d">${icon("cube")} عرض النموذج ثلاثي الأبعاد</button>
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
-          ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("استفسار عن تصميم: "+d.title)}">${icon("wa")} استفسار واتساب</a>`:""}
+          ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
         </div>
       </div>
     </div>
-    <section class="section"><div class="section-head"><h2 class="section-title">تصاميم معمارية مشابهة</h2></div><div id="sim"></div></section>
+    <section class="section"><div class="section-head"><h2 class="section-title">تصاميم مشابهة</h2></div><div id="sim"></div></section>
   </div>`;
   bindLikeButtons(root);
-
   let bigCache=[];
-  const bigUrls=async()=>{
-    if(bigCache.length)return bigCache;
-    bigCache=await Promise.all(imgs.map(i=>i.imageUrl||storage.getImageUrl(id,i.id)));
-    return bigCache.filter(Boolean);
-  };
-
-  $("#dThumbs").onclick=async e=>{
-    const t=e.target.closest("img"); if(!t)return;
-    $("#dThumbs").querySelectorAll("img").forEach(x=>x.classList.remove("sel"));
-    t.classList.add("sel");
+  const bigUrls=async()=>{if(bigCache.length)return bigCache;bigCache=await Promise.all(imgs.map(i=>i.imageUrl||storage.getImageUrl(id,i.id)));return bigCache;};
+  $("#dThumbs").onclick=async e=>{const t=e.target.closest("img");if(!t)return;$("#dThumbs").querySelectorAll("img").forEach(x=>x.classList.remove("sel"));t.classList.add("sel");const u=await bigUrls();$("#mainImg").src=u[+t.dataset.i]||t.src;};
+  $("#mainImg").onclick=async()=>{const u=await bigUrls();openLightbox(u.length?u:[$("#mainImg").src],0);};
+  /* ✅ الثلاثي الأبعاد: إن وُجد رابط نموذج يُفتح عارض 3D، وإلا المعرض الكامل */
+  $("#view3d").onclick=async()=>{
+    if(d.modelUrl){openModelOverlay(d.modelUrl);return;}
     const u=await bigUrls();
-    $("#mainImg").src=u[+t.dataset.i]||t.src;
+    if(!u.length){toast("لا توجد صور لهذا التصميم","err");return;}
+    toast("لا يوجد نموذج 3D مرفوع — يُعرض المعرض بالحجم الكامل (أضف رابط Sketchfab من لوحة التحكم)");
+    openLightbox(u,0);
   };
-
-  // فتح عارض الصور العادي
-  $("#mainImg").onclick=async()=>{
-    const u=await bigUrls();
-    openLightbox(u.length?u:[$("#mainImg").src], 0, false);
-  };
-
-  // فتح عارض 3D التفاعلي
-  $("#view3dBtn").onclick=async()=>{
-    const u=await bigUrls();
-    openLightbox(u.length?u:[$("#mainImg").src], 0, true);
-  };
-
   const url=()=>location.href;
-  $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط للحافظة");}catch{toast("تعذر النسخ","err");}};
+  $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
   $("#shareBtn").onclick=async()=>{
     if(navigator.share){try{await navigator.share({title:d.title,url:url()});}catch{}return;}
-    window.open(`https://wa.me/?text=${encodeURIComponent(d.title+" "+url())}`);
+    if(confirm("مشاركة عبر واتساب؟\n(موافق = واتساب / إلغاء = نسخ الرابط)"))window.open(`https://wa.me/?text=${encodeURIComponent(d.title+" "+url())}`);
+    else{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}
   };
-
   const all=await getAllDesigns();
   const list=all.filter(x=>x.status==="published"&&x.categoryId===d.categoryId&&x.id!==id).slice(0,4);
   $("#sim").innerHTML=list.length?`<div class="grid">${list.map(x=>designCard(x,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
   bindCards($("#sim"));
   document.title=`${d.title} | ${settings.siteName}`;
+  const md=document.querySelector('meta[name="description"]'); if(md)md.setAttribute("content",(d.description||d.title).slice(0,150));
 }
 
-/* ================= الباقات اللونية ================= */
+/* ================= باقات الألوان ================= */
 const mkP=(name,colors,tiles,furniture,curtains,carpet,tags)=>({name,colors,tiles,furniture,curtains,carpet,tags});
 const DEFAULT_PALETTES={
-living:[
-  mkP("رمال الصحراء",["#D8C3A5","#8C6F4E","#EFE6D8","#B49B7C","#5C4A33"],"بورسلان بيج مطفي","كنب كتان بيج مع طاولة خشب جوز هندسية","ستائر كتان كريمي","سجاد صوف عاجي",["بيج","خشبي"]),
-  mkP("ضباب الليل",["#2B2F3A","#4A5568","#8B93A7","#D7DAE0","#1A1D24"],"رخام رمادي لامع","كنب رمادي فاتح بطاولات معدن أسود","ستائر مخمل رمادي","سجاد شاج رمادي",["رمادي","مودرن"]),
-  mkP("زمرد كلاسيكي",["#0E4B3B","#1E6F5C","#D9C7A0","#EFE3C8","#274036"],"سيراميك كريمي مطفي","كنب بيج بإطار خشب مزخرف هندسياً","ستائر حرير زيتية","سجاد شرقي هندسي",["أخضر","شرقي"])
-],
-bedroom:[
-  mkP("خشب دافئ",["#8B6F47","#C4A87C","#F0E7D8","#5E4B32","#DCC9A8"],"باركيه جوز طبيعي","سرير خشب جوز بمفارش قطن بيج","ستائر كتان بيج","سجاد جوت",["خشبي","دافئ"]),
-  mkP("أبيض فندقي",["#F5F3EF","#DED9D0","#B8B2A8","#8A857C","#FFFFFF"],"رخام أبيض مطفي","سرير مفارش بيضاء بطاولات رخام","ستائر شيفون أبيض","سجاد فرو أبيض",["أبيض","فاخر"])
-],
-exterior:[
-  mkP("حجر مودرن",["#F2F0EB","#D8D4CC","#B8B2A8","#8A857C","#5C5852"],"حجر طبيعي واجهات","أبواب خشب جوز مع درابزين ألمنيوم","تظليل خارجي بيج","أرضية بورسلان حجري",["أبيض","حجر"]),
-  mkP("واجهة زجاجية",["#1A1A1A","#333333","#595959","#0D0D0D","#C9A227"],"غرانيت أسود مطفي","واجهات زجاج دبل مع إطارات ألمنيوم","كسرات شمسية","أرضية بورسلان أسود",["أسود","مودرن"])
-]
+living:[mkP("رمال الخليج",["#D8C3A5","#8C6F4E","#EFE6D8","#B49B7C","#5C4A33"],"بورسلان بيج مطفي","كنب كتان بيج مع طاولة خشب جوز","ستائر كتان كريمي","سجاد صوف عاجي",["بيج","خشبي"]),mkP("ضباب الليل",["#2B2F3A","#4A5568","#8B93A7","#D7DAE0","#1A1D24"],"رخام رمادي لامع","كنب رمادي فاتح بطاولات معدن أسود","ستائر مخمل رمادي","سجاد شاج رمادي",["رمادي","مودرن"]),mkP("زمرد دمشقي",["#0E4B3B","#1E6F5C","#D9C7A0","#EFE3C8","#274036"],"سيراميك كريمي مطفي","كنب بيج بإطار خشب مزخرف","ستائر حرير زيتية","سجاد شرقي أحمر",["أخضر","شرقي"]),mkP("صحراء نجد",["#C97B4A","#8A4B2A","#E8D3B8","#6E3B22","#F2E4CE"],"ترافرتين بيج","كنب جلد جملي بطاولات نحاس","ستائر قطن بلون الرمل","سجاد سدو",["ترابي","سدو"]),mkP("لؤلؤ الخليج",["#F2EFE9","#D9D2C5","#A89F8D","#7E8A97","#5A6472"],"رخام كرارا","كنب عاجي بطاولات رخام","ستائر شيفون أبيض","سجاد فضي",["أبيض","فاخر"]),mkP("عنابي دمشقي",["#5A1F24","#8C2F39","#D9B48B","#EFE0C7","#3A1418"],"بورسلان بيج لامع","كنب عنابي بطاولات خشب جوز","ستائر مخمل عنابي","سجاد كريمي",["عنابي","كلاسيك"]),mkP("نعناع الصباح",["#BFD8C9","#8FBF9F","#EFE9DC","#6E8B7A","#DCE8DF"],"سيراميك أبيض مطفي","كنب فاتح بطاولات خشب زان","ستائر كتان نعناعية","سجاد قطن بيج",["أخضر","هادئ"]),mkP("رمادي دبي",["#3C4048","#5C6270","#9AA3B2","#D5D9E0","#22252B"],"غرانيت رمادي داكن","كنب رمادي بطاولات زجاج","ستائر رمادية فاتحة","سجاد جريج",["رمادي","مودرن"]),mkP("ذهبي الأندلس",["#B98A2F","#D4AF37","#EFE3C0","#7A5A1E","#F6EEDC"],"بورسلان ذهبي مطفي","كنب كريمي بتفاصيل ذهبية","ستائر حرير ذهبية","سجاد عاجي",["ذهبي","فاخر"]),mkP("أزرق متوسطي",["#1F4E5F","#2E7D93","#DCE9EC","#8FB6C4","#12333E"],"سيراميك أزرق مطفي","كنب أبيض بطاولات خشب تيكي","ستائر كتان أزرق فاتح","سجاد قطن أبيض",["أزرق","منعش"])],
+bedroom:[mkP("بنفسج هادئ",["#6D5A8C","#9C8BBF","#EDE9F4","#4A3D66","#D8D0E8"],"باركيه خشبي فاتح","سرير مخمل بنفسجي بطاولات جانبية بيضاء","ستائر ديم أوت بنفسجية","سجاد صوف رمادي فاتح",["بنفسجي","هادئ"]),mkP("خشب دافئ",["#8B6F47","#C4A87C","#F0E7D8","#5E4B32","#DCC9A8"],"باركيه جوز","سرير خشب جوز بمفارش قطن بيج","ستائر كتان بيج","سجاد جوت",["خشبي","دافئ"]),mkP("أبيض فندقي",["#F5F3EF","#DED9D0","#B8B2A8","#8A857C","#FFFFFF"],"رخام أبيض مطفي","سرير مفارش بيضاء بطاولات رخام","ستائر شيفون أبيض","سجاد فرو أبيض",["أبيض","فاخر"]),mkP("رمادي مخملي",["#4E5560","#7C8494","#C9CEDA","#2E333C","#A7AEBC"],"موكيت رمادي","سرير مخمل رمادي بطاولات معدن","ستائر مخمل رمادي داكن","سجاد شاج فحمي",["رمادي","مودرن"]),mkP("زيتوني شرقي",["#5C6646","#8A9268","#E8E4D0","#3C4430","#C6CBA8"],"سيراميك بيج","سرير خشب زيتوني بمفارش كتان","ستائر قطن زيتونية","سجاد صوف بيج",["أخضر","شرقي"]),mkP("وردي باستيل",["#E8C4C4","#D9A5A5","#FAF0F0","#B98383","#F3DEDE"],"بورسلان أبيض لامع","سرير مفارش وردية بطاولات بيضاء","ستائر شيفون وردي","سجاد قطن وردي فاتح",["وردي","ناعمة"]),mkP("كحلي فاخر",["#1F2A44","#37476B","#C9CFDD","#101828","#8C97B4"],"باركيه داكن","سرير مخمل كحلي بتفاصيل نحاس","ستائر مخمل كحلي","سجاد رمادي فضي",["أزرق","فاخر"]),mkP("بيج صحراوي",["#D9C7A7","#B49B72","#F2EBDD","#8C7550","#E6D9BE"],"ترافرتين بيج","سرير مفارش بيج بطاولات خشب","ستائر كتان رملية","سجاد سدو بيج",["بيج","ترابي"]),mkP("أخضر غامق",["#1E3D2F","#3C6B54","#DDE8DF","#122A20","#7FA98D"],"باركيه جوز داكن","سرير مخمل أخضر بطاولات ذهبية","ستائر مخمل خضراء","سجاد كريمي",["أخضر","فاخر"]),mkP("رمادي فاتح",["#DDE0E5","#B9BEC7","#F4F5F7","#949AA6","#C8CCD4"],"بورسلان رمادي فاتح","سرير مفارش رمادية بطاولات بيضاء","ستائر كتان رمادي فاتح","سجاد قطن أبيض",["رمادي","هادئ"])],
+bathroom:[mkP("رخام كرارا",["#F4F4F2","#D8D8D4","#A9A9A5","#7C7C78","#FFFFFF"],"رخام كرارا لامع","خزائن أبيض مطفي بإكسسوارات كروم","ستارة حمام قطن أبيض","حصيرة دياس رمادي",["أبيض","فاخر"]),mkP("أسود ملكي",["#1A1A1A","#333333","#C9A227","#0D0D0D","#595959"],"غرانيت أسود مطفي","خزائن أسود بإكسسوارات ذهبية","ستارة حمام سوداء","حصيرة دياس فحمي",["أسود","فاخر"]),mkP("بيج مطفي",["#E3D5C0","#C9B493","#F5EEE2","#A08A67","#D6C3A5"],"بورسلان بيج مطفي","خزائن خشب فاتح بإكسسوارات نحاس","ستارة كتان بيج","حصيرة جوت",["بيج","هادئ"]),mkP("رمادي حجري",["#8D939C","#6B717B","#D5D8DD","#4A4F58","#B4B9C2"],"سيراميك حجري رمادي","خزائن رمادي مطفي بإكسسوارات أسود","ستارة رمادية","حصيرة دياس رمادي",["رمادي","مودرن"]),mkP("أزرق بحري",["#1F4E5F","#2E7D93","#DCE9EC","#12333E","#8FB6C4"],"سيراميك أزرق لامع","خزائن أبيض بإكسسوارات كروم","ستارة زرقاء فاتحة","حصيرة قطن أبيض",["أزرق","منعش"]),mkP("زيتي طبيعي",["#5C6646","#8A9268","#E8E4D0","#3C4430","#C6CBA8"],"ترافرتين بيج","خزائن خشب جوز بإكسسوارات نحاس","ستارة كتان زيتية","حصيرة جوت",["أخضر","طبيعي"]),mkP("أبيض لامع",["#FFFFFF","#EDEDED","#D0D0D0","#B3B3B3","#F7F7F7"],"بورسلان أبيض لامع","خزائن أبيض لامع بإكسسوارات كروم","ستارة بيضاء","حصيرة بيضاء",["أبيض","نظيف"]),mkP("ترابي دافئ",["#C97B4A","#8A4B2A","#E8D3B8","#6E3B22","#F2E4CE"],"سيراميك ترابي مطفي","خزائن خشب دافئ بإكسسوارات برونز","ستارة قطن ترابية","حصيرة سدو",["ترابي","دافئ"]),mkP("ذهبي فاخر",["#D4AF37","#B98A2F","#F6EEDC","#7A5A1E","#EFE3C0"],"رخام بيج بعروق ذهبية","خزائن كريمي بإكسسوارات ذهبية","ستارة حرير ذهبية","حصيرة كريمية",["ذهبي","فاخر"]),mkP("فسيفساء تركي",["#0E6B6B","#159898","#DFF4F4","#084C4C","#7FCFCF"],"فسيفساء تركي فيروزي","خزائن أبيض بإكسسوارات نحاس","ستارة فيروزية","حصيرة قطن بيضاء",["أزرق","شرقي"])],
+salon:[mkP("ملكي ذهبي",["#D4AF37","#8C6F1E","#F6EEDC","#5C4A12","#EFE3C0"],"رخام بيج لامع","كنب ملكي كريمي بتطعيم ذهبي","ستائر حرير ذهبية بطبقات","سجاد شرقي ذهبي",["ذهبي","ملكي"]),mkP("عنابي كلاسيك",["#5A1F24","#8C2F39","#D9B48B","#3A1418","#EFE0C7"],"بورسلان بيج لامع","كنب عنابي مخمل بطاولات جوز","ستائر مخمل عنابي ثقيلة","سجاد كريمي فاخر",["عنابي","كلاسيك"]),mkP("تركي فيروزي",["#0E6B6B","#159898","#DFF4F4","#084C4C","#D9C7A0"],"سيراميك كريمي","كنب بيج بوسائد فيروزية","ستائر كتان فيروزية","سجاد تركي تقليدي",["أزرق","شرقي"]),mkP("نجدي تقليدي",["#C97B4A","#6E3B22","#E8D3B8","#8A4B2A","#F2E4CE"],"ترافرتين بيج","مساند سدو وكنب جلد جملي","ستائر قطن رملية","سجاد سدو أصيل",["ترابي","سدو"]),mkP("خليجي عاجي",["#F2EFE9","#D9D2C5","#A89F8D","#7E8A97","#EFE6D8"],"رخام كرارا","كنب عاجي مخمل بطاولات رخام","ستائر شيفون عاجية","سجاد فضي فاخر",["أبيض","فاخر"]),mkP("مخمل أخضر",["#1E3D2F","#3C6B54","#DDE8DF","#122A20","#D9C7A0"],"باركيه جوز","كنب مخمل أخضر بطاولات ذهبية","ستائر مخمل خضراء","سجاد كريمي",["أخضر","فاخر"]),mkP("رمادي فاخر",["#4E5560","#7C8494","#C9CEDA","#2E333C","#A7AEBC"],"غرانيت رمادي","كنب رمادي مخمل بطاولات زجاج","ستائر مخمل رمادية","سجاد شاج رمادي",["رمادي","مودرن"]),mkP("بنفسجي ملكي",["#4A3D66","#6D5A8C","#D8D0E8","#2E2542","#9C8BBF"],"رخام أبيض بعروق رمادية","كنب بنفسجي مخمل بتفاصيل فضية","ستائر مخمل بنفسجية","سجاد رمادي فاتح",["بنفسجي","ملكي"]),mkP("بيج دافئ",["#D9C7A7","#B49B72","#F2EBDD","#8C7550","#E6D9BE"],"بورسلان بيج مطفي","كنب بيج كتان بطاولات خشب","ستائر كتان بيج","سجاد صوف بيج",["بيج","دافئ"]),mkP("أسود وذهبي",["#1A1A1A","#333333","#C9A227","#0D0D0D","#D4AF37"],"غرانيت أسود لامع","كنب أسود مخمل بلمسات ذهبية","ستائر سوداء ثقيلة","سجاد أسود بنقش ذهبي",["أسود","فاخر"])],
+kitchen:[mkP("أبيض رخامي",["#F5F3EF","#DED9D0","#B8B2A8","#8A857C","#FFFFFF"],"رخام كرارا","خزائن أبيض مطفي بأسطح رخام","ستائر رومان بيضاء","سجاد مطبخ قطني رمادي",["أبيض","فاخر"]),mkP("خشب إسكندنافي",["#C4A87C","#8B6F47","#F0E7D8","#5E4B32","#EDEDED"],"باركيه فاتح","خزائن خشب زان بأسطح بيضاء","ستائر كتان قصيرة","سجاد جوت",["خشبي","فاتح"]),mkP("رمادي مطفي",["#6B717B","#8D939C","#D5D8DD","#4A4F58","#B4B9C2"],"بورسلان رمادي مطفي","خزائن رمادي مطفي بأسطح كوارتز أبيض","ستائر رمادية","سجاد مطبخ رمادي",["رمادي","مودرن"]),mkP("أسود جريء",["#1A1A1A","#333333","#C9A227","#0D0D0D","#595959"],"غرانيت أسود","خزائن أسود مطفي بمقابض ذهبية","ستائر سوداء قصيرة","سجاد فحمي",["أسود","جريء"]),mkP("زيتوني طبيعي",["#5C6646","#8A9268","#E8E4D0","#3C4430","#C6CBA8"],"ترافرتين بيج","خزائن زيتوني بأسطح خشب","ستائر كتان زيتونية","سجاد جوت",["أخضر","طبيعي"]),mkP("بيج كلاسيك",["#E3D5C0","#C9B493","#F5EEE2","#A08A67","#D6C3A5"],"بورسلان بيج لامع","خزائن بيج كلاسيك بأسطح غرانيت","ستائر بيج قصيرة","سجاد بيج",["بيج","كلاسيك"]),mkP("أزرق ليلي",["#1F2A44","#37476B","#C9CFDD","#101828","#8C97B4"],"سيراميك أبيض لامع","خزائن كحلي بمقابض نحاس","ستائر زرقاء فاتحة","سجاد رمادي",["أزرق","فاخر"]),mkP("ذهبي فاتح",["#D4AF37","#EFE3C0","#F6EEDC","#B98A2F","#FFFFFF"],"رخام بيج","خزائن كريمي بتفاصيل ذهبية","ستائر حرير فاتحة","سجاد عاجي",["ذهبي","فاخر"]),mkP("خرساني عصري",["#8D8D8D","#B3B3B3","#D9D9D9","#666666","#F2F2F2"],"أسمنت مصقول","خزائن خرساني مطفي بأسطح ستانلس","ستائر رمادية بسيطة","سجاد رمادي داكن",["رمادي","عصري"]),mkP("جوز دافئ",["#5E4B32","#8B6F47","#DCC9A8","#3E3222","#C4A87C"],"باركيه جوز","خزائن جوز بأسطح كوارتز بيج","ستائر كتان بيج","سجاد صوف بيج",["خشبي","دافئ"])],
+kids:[mkP("وردي باستيل",["#F3DEDE","#E8C4C4","#FAF0F0","#D9A5A5","#FFFFFF"],"بورسلان أبيض مطفي","سرير أطفال وردي بخزائن بيضاء","ستائر شيفون وردي","سجاد قطن وردي",["وردي","ناعمة"]),mkP("أزرق سماوي",["#BBD8E8","#8FB6C4","#EAF4F9","#5E8CA8","#FFFFFF"],"سيراميك أبيض","سرير أزرق سماوي بمكتب أبيض","ستائر زرقاء فاتحة","سجاد قطن أزرق",["أزرق","مرح"]),mkP("أصفر مشمس",["#F5D76E","#E8B923","#FDF6DC","#C79A0F","#FFFFFF"],"بورسلان بيج","سرير أصفر بخزائن بيضاء","ستائر صفراء فاتحة","سجاد كريمي",["أصفر","مرح"]),mkP("نعناعي منعش",["#BFD8C9","#8FBF9F","#EFE9DC","#6E8B7A","#FFFFFF"],"سيراميك أبيض مطفي","سرير نعناعي بطاولات بيضاء","ستائر كتان نعناعية","سجاد قطن بيج",["أخضر","هادئ"]),mkP("بنفسجي فاتح",["#D8D0E8","#9C8BBF","#EDE9F4","#6D5A8C","#FFFFFF"],"بورسلان أبيض","سرير بنفسجي فاتح بخزائن بيضاء","ستائر بنفسجية فاتحة","سجاد رمادي فاتح",["بنفسجي","ناعمة"]),mkP("برتقالي مرح",["#F5B078","#E88B3C","#FDEEDC","#C96F1F","#FFFFFF"],"سيراميك بيج","سرير برتقالي بأرفف بيضاء","ستائر برتقالية فاتحة","سجاد بيج",["برتقالي","مرح"]),mkP("رمادي ووردي",["#C9CEDA","#E8C4C4","#F4F5F7","#949AA6","#D9A5A5"],"باركيه فاتح","سرير رمادي بوسائد وردية","ستائر رمادية بلمسة وردية","سجاد وردي فاتح",["رمادي","وردي"]),mkP("بيج دافئ",["#E6D9BE","#D9C7A7","#F2EBDD","#B49B72","#FFFFFF"],"باركيه بيج","سرير خشب فاتح بمفارش بيج","ستائر كتان بيج","سجاد جوت",["بيج","دافئ"]),mkP("تركي فاتح",["#BFE3E3","#7FCFCF","#DFF4F4","#159898","#FFFFFF"],"سيراميك أبيض لامع","سرير فيروزي بخزائن بيضاء","ستائر فيروزية فاتحة","سجاد أبيض",["أزرق","منعش"]),mkP("ليموني حيوي",["#DCE8A8","#B8D15C","#F4F8E4","#8FA83C","#FFFFFF"],"بورسلان أبيض","سرير ليموني بأرفف بيضاء","ستائر خضراء فاتحة","سجاد قطن أبيض",["أخضر","مرح"])],
+exterior:[mkP("حجر أبيض",["#F2F0EB","#D8D4CC","#B8B2A8","#8A857C","#5C5852"],"حجر أبيض طبيعي","أبواب خشب جوز مع درابزين أسود","ستائر خارجية بيج","أرضية بورسلان حجري",["أبيض","حجر"]),mkP("رمادي حديث",["#6B717B","#8D939C","#D5D8DD","#4A4F58","#22252B"],"غرانيت رمادي داكن","واجهات زجاج مع ألواح رمادية","ستائر خارجية رمادية","أرضية أسمنت مصقول",["رمادي","مودرن"]),mkP("بيج صحراوي",["#D9C7A7","#B49B72","#F2EBDD","#8C7550","#6E5A3E"],"ترافرتين بيج","أبواب خشب دافئ مع مشربيات","ستائر رملية خارجية","أرضية حجر بيج",["بيج","ترابي"]),mkP("أسود وزجاج",["#1A1A1A","#333333","#595959","#0D0D0D","#C9A227"],"غرانيت أسود مطفي","واجهات زجاجية بإطارات سوداء","ستائر خارجية سوداء","أرضية بورسلان أسود",["أسود","مودرن"]),mkP("طين تقليدي",["#C97B4A","#8A4B2A","#E8D3B8","#6E3B22","#F2E4CE"],"طين مصقول","أبواب خشب قديمة بنقوش","ستائر قطن ترابية","أرضية سدو خارجية",["ترابي","تراثي"]),mkP("أبيض متوسطي",["#FFFFFF","#EDEDED","#D0D0D0","#1F4E5F","#2E7D93"],"بورسلان أبيض لامع","نوافذ زرقاء مع أبراج بيضاء","ستائر شيفون بيضاء","أرضية سيراميك أزرق",["أبيض","أزرق"]),mkP("خشب دافئ",["#8B6F47","#C4A87C","#F0E7D8","#5E4B32","#3E3222"],"باركيه خارجي معالج","ألواح خشب دافئ مع زجاج","ستائر خارجية بيج","أرضية خشب تيكي",["خشبي","دافئ"]),mkP("كريمي كلاسيك",["#F2EFE9","#D9D2C5","#A89F8D","#7E8A97","#5A6472"],"رخام كرارا","أعمدة كلاسيكية بكرميد كريمي","ستائر حرير كريمي","أرضية رخام أبيض",["أبيض","كلاسيك"]),mkP("رمادي وحجر",["#8D939C","#B4B9C2","#D5D8DD","#5C5852","#4A4F58"],"حجر رمادي طبيعي","مزيج حجر رمادي مع خشب","ستائر خارجية رمادية","أرضية حجر رمادي",["رمادي","حجر"]),mkP("ذهبي فاخر",["#D4AF37","#B98A2F","#F6EEDC","#7A5A1E","#1A1A1A"],"بورسلان ذهبي مطفي","تفاصيل ذهبية مع زجاج أسود","ستائر حرير ذهبية","أرضية رخام بيج",["ذهبي","فاخر"])]
 };
 
-/* ================= المساعد الذكي ================= */
-const GREET=["السلام عليكم ورحمة الله وبركاته","معك المساعد المعماري الافتراضي","أهلاً بك في منصة م. مهند","ما هو نوع المشروع الذي ترغب في استعراضه؟"];
+const GREET=["السلام عليكم","اسمي «تصميم»","أهلاً بك في بيتك للتصميم","اختر نوع التصميم الذي تبحث عنه وسأساعدك في الاختيار","ماذا تريد أن تصمّم؟"];
+const SHORTS=["السلام عليكم","أنا هنا","معك معك","تفضل"];
 let botOpen=false, botState=null, bubbleTimer=null;
+const _palCache={};
 function initBot(){
   const root=$("#botRoot");
-  root.innerHTML=`<div id="botBubble"></div><button id="botIcon" aria-label="المساعد المعماري">${icon("cube")}</button>`;
+  root.innerHTML=`<div id="botBubble"></div><button id="botIcon" aria-label="المساعد تصميم">${icon("house")}</button>`;
   const ic=$("#botIcon");
   placeIcon(ic); makeDraggable(ic);
   ic.addEventListener("click",()=>{if(ic.dataset.dragged==="1"){ic.dataset.dragged="0";return;}botToggle(true);});
   window.addEventListener("resize",()=>placeIcon(ic));
+  scheduleBubble();
+  store.onChange(()=>{if(botOpen&&botState?.step==="cats")renderCats();});
 }
 function placeIcon(ic){
   let p;try{p=JSON.parse(localStorage.getItem("ap_bot_pos"));}catch{}
@@ -1158,9 +980,21 @@ function makeDraggable(ic){
       if(moved){ic.dataset.dragged="1";localStorage.setItem("ap_bot_pos",JSON.stringify({x:ic.offsetLeft,y:ic.offsetTop}));}};
     ic.addEventListener("pointermove",mv); ic.addEventListener("pointerup",up);});
 }
+function scheduleBubble(){
+  clearTimeout(bubbleTimer);
+  bubbleTimer=setTimeout(()=>{
+    if(currentPath()==="/"&&!botOpen&&!document.hidden){
+      const b=$("#botBubble"),ic=$("#botIcon");
+      b.textContent=SHORTS[Math.floor(Math.random()*SHORTS.length)];
+      b.style.left=ic.offsetLeft+60+"px"; b.style.top=ic.offsetTop+6+"px";
+      b.classList.add("show"); setTimeout(()=>b.classList.remove("show"),3000);
+    }
+    scheduleBubble();
+  },20000+Math.random()*10000);
+}
 function botToggle(toOpen){
   botOpen=toOpen;
-  if(botOpen){ensureWin();botGreet();}
+  if(botOpen){ensureWin();bumpStat("botOpens");botState?botResume():botGreet();}
   else $("#botWin")?.remove();
 }
 function ensureWin(){
@@ -1169,407 +1003,595 @@ function ensureWin(){
   const w=document.createElement("div"); w.id="botWin";
   w.style.left=Math.max(10,Math.min(ic.offsetLeft-160,innerWidth-380))+"px";
   w.style.top=Math.max(10,ic.offsetTop-570)+"px";
-  w.innerHTML=`<div class="bot-head"><span class="av">${icon("cube")}</span><div style="flex:1"><h4>المستشار المعماري</h4><small>مساعد التصميم</small></div><button class="icon-btn" id="botClose" aria-label="إغلاق">${icon("close")}</button></div><div class="bot-body" id="botBody"></div><div class="bot-chips" id="botChips"></div>`;
+  w.innerHTML=`<div class="bot-head"><span class="av">${icon("house")}</span><div style="flex:1"><h4>تصميم</h4><small>مساعد افتراضي</small></div><button class="icon-btn" id="botClose" aria-label="إغلاق">${icon("close")}</button></div><div class="bot-body" id="botBody"></div><div class="bot-chips" id="botChips"></div>`;
   $("#botRoot").appendChild(w);
-  $("#botClose").onclick=()=>botToggle(false);
+  $("#botClose").onclick=async()=>{await botSay("السلام عليكم.");botToggle(false);};
 }
 async function botSay(text,me=false){
   const body=$("#botBody"); if(!body)return;
   const m=document.createElement("div"); m.className="bot-msg"+(me?" me":""); body.appendChild(m); body.scrollTop=body.scrollHeight;
-  if(me){m.textContent=text; return;}
-  for(const ch of text){m.textContent+=ch; body.scrollTop=body.scrollHeight; await wait(8);}
+  if(me||matchMedia("(prefers-reduced-motion: reduce)").matches){m.textContent=text;body.scrollTop=body.scrollHeight;return;}
+  for(const ch of text){m.textContent+=ch;body.scrollTop=body.scrollHeight;await wait(9);}
 }
 async function botGreet(){
-  $("#botBody").innerHTML="";
-  for(const g of GREET){await botSay(g); await wait(40);}
+  botState={step:"cats"};
+  for(const g of GREET){await botSay(g);await wait(60);}
   renderCats();
+}
+function botResume(){
+  if(botState.step==="cats")renderCats();
+  else if(botState.step==="colors"){botSay("ما هي ألوانك المفضلة؟");renderPalettes();}
+  else if(botState.step==="done")renderDone();
 }
 function renderCats(){
   const c=$("#botChips"); if(!c)return;
-  c.innerHTML=store.categories.map(x=>`<button class="chip" data-slug="${esc(x.slug)}" data-id="${x.id}">${esc(x.name)}</button>`).join("")||`<button class="chip" data-slug="living">غرف معيشة</button><button class="chip" data-slug="bedroom">غرف نوم</button>`;
+  c.innerHTML=store.categories.map(x=>`<button class="chip" data-slug="${esc(x.slug)}" data-id="${x.id}">${esc(x.name)}</button>`).join("")||`<span style="color:var(--muted);font-size:.8rem">لا توجد تصنيفات بعد</span>`;
   c.onclick=async e=>{
     const b=e.target.closest("[data-slug]"); if(!b)return;
+    botState={step:"colors",cat:{slug:b.dataset.slug,id:b.dataset.id,name:b.textContent}};
     await botSay(b.textContent,true);
+    bumpStat("cat_"+b.dataset.slug);
     botToggle(false);
     nav(`/portfolio?cat=${encodeURIComponent(b.dataset.slug)}`);
   };
 }
-
-/* ============================================================
-   🔒 لوحة الإدارة والتحقق من صلاحية المدير (مُعالجة بدقة)
-   - لا دخول إلا لمن يملك UID مسجل داخل /admins/{uid}
-============================================================ */
-const SECTIONS=[["designs","layers","التصاميم"],["cats","grid","التصنيفات"],["look","eye","مظهر الموقع"],["general","gear","الإعدادات العامة"],["msgs","msg","الرسائل"],["backup","dl","نسخ احتياطي واستيراد"]];
-let aSec="designs";
-
-async function renderAdmin(root){
-  const F=await fb();
-  const u=F.auth.currentUser;
-  if(!u){
-    loginView(root);
-    return;
+async function renderPalettes(){
+  botState.step="colors";
+  const cid=botState.cat.id;
+  let items=_palCache[cid];
+  if(!items){
+    const {db,doc,getDoc}=await fb();
+    try{const s=await getDoc(doc(db,"palettes",cid));items=s.data()?.items||[];}catch{}
+    if(!items.length)items=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
+    _palCache[cid]=items;
   }
-  const isAdm=await checkIsAdmin(u.uid);
-  if(!isAdm){
-    sessionStorage.removeItem("ap_isadmin");
-    loginView(root, "حسابك غير مسجل في قائمة المدراء (/admins). يرجى التأكد من الـ Console.");
-    return;
-  }
-  sessionStorage.setItem("ap_isadmin", u.uid);
-  adminShell(root);
-}
-
-async function checkIsAdmin(uidVal){
-  if(!uidVal) return false;
-  try{
-    const F=await fb();
-    const docSnap=await F.getDoc(F.doc(F.db, "admins", uidVal));
-    return docSnap.exists();
-  }catch(e){
-    console.error("Admin check failed:", e);
-    return false;
-  }
-}
-
-function loginView(root,err){
-  root.innerHTML=`<div class="login-box geo">
-    <div style="text-align:center;margin-bottom:18px"><span class="logo">${esc(settings.initials)}</span></div>
-    <h2 style="text-align:center">تسجيل دخول المدير</h2>
-    <p style="font-size:.82rem;color:var(--muted);text-align:center;margin-bottom:14px">يرجى إدخال حسابك المسجل في Firebase لتأكيد الصلاحيات.</p>
-    ${err?`<div style="background:#3a1113;border:1px solid #5b1a1d;color:#ff8a8a;font-size:.85rem;padding:8px 12px;border-radius:8px;margin-bottom:12px;text-align:center">${esc(err)}</div>`:""}
-    <form id="lf">
-      <div class="field"><label for="em">البريد الإلكتروني</label><input class="input" id="em" type="email" autocomplete="email" required placeholder="admin@example.com"></div>
-      <div class="field"><label for="pw">كلمة المرور</label><div class="pw-wrap"><input class="input" id="pw" type="password" autocomplete="current-password" required><button type="button" id="eye" aria-label="إظهار">${icon("eye")}</button></div></div>
-      <button class="btn" style="width:100%;justify-content:center;margin-top:10px" type="submit">تسجيل الدخول والتحقق</button>
-      <p style="text-align:center;margin-top:12px"><button type="button" class="link-accent" id="fp">نسيت كلمة المرور؟</button></p>
-    </form>
-  </div>`;
-
-  $("#eye").onclick=()=>{const p=$("#pw");const show=p.type==="password";p.type=show?"text":"password";$("#eye").innerHTML=icon(show?"eyeoff":"eye");};
-  $("#fp").onclick=async()=>{
-    const em=$("#em").value.trim(); if(!em)return toast("اكتب بريدك أولاً","err");
-    const F=await fb();
-    try{await F.sendPasswordResetEmail(F.auth,em); toast("تم إرسال رابط الاستعادة");}catch(e){toast("خطأ في الإرسال","err");}
+  $("#botChips").innerHTML="";
+  $("#palList")?.remove();
+  const body=$("#botBody");
+  body.insertAdjacentHTML("beforeend",`<div id="palList" style="display:flex;flex-direction:column;gap:8px">${items.map((p,i)=>`
+    <div class="palette-card" data-i="${i}"><h5>${esc(p.name)}</h5>
+      <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${h}" title="${h}"></i>`).join("")}</div>
+      <p><b>الأرضيات:</b> ${esc(p.tiles||"")}</p><p><b>الأثاث:</b> ${esc(p.furniture||"")}</p>
+      <p><b>الستائر:</b> ${esc(p.curtains||"")}</p><p><b>السجاد:</b> ${esc(p.carpet||"")}</p>
+    </div>`).join("")}</div>`);
+  body.scrollTop=body.scrollHeight;
+  $("#palList").onclick=async e=>{
+    const card=e.target.closest("[data-i]"); if(!card)return;
+    botState.palette=items[+card.dataset.i]; botState.step="done";
+    await botSay(botState.palette.name,true);
+    await botSay("اختيار رائع! جهزت لك خيارات المتابعة:");
+    renderDone();
   };
+}
+function renderDone(){
+  const c=$("#botChips"); if(!c)return;
+  const tags=(botState.palette?.tags||[])[0]||"";
+  const waNum=settings.contact?.whatsappNumber||"";
+  const waMsg=encodeURIComponent(`السلام عليكم، أعجبني تصميم (${botState.cat?.name||""}) بباقة ألوان (${botState.palette?.name||""}) وأرغب بالاستفسار.`);
+  c.innerHTML=`<button class="chip active" id="bView">شاهد التصاميم المطابقة</button>
+    ${waNum?`<a class="chip" target="_blank" href="https://wa.me/${waNum}?text=${waMsg}">${icon("wa")} تواصل واتساب</a>`:""}
+    <button class="chip" id="bRestart">ابدأ من جديد</button>`;
+  $("#bView").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}&color=${encodeURIComponent(tags)}`);};
+  $("#bRestart").onclick=()=>{botState=null;$("#botBody").innerHTML="";$("#botChips").innerHTML="";botGreet();};
+}
+async function bumpStat(field){
+  try{const {db,doc,setDoc,increment}=await fb();
+    await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{[field]:increment(1)},{merge:true});
+  }catch{}
+}
+
+const SECTIONS=[["designs","layers","التصاميم"],["cats","grid","التصنيفات"],["palettes","palette","باقات البوت"],["look","eye","مظهر الموقع"],["general","gear","الإعدادات العامة"],["msgs","msg","الرسائل"],["stats","chart","الإحصائيات"],["backup","dl","نسخ احتياطي"]];
+let aSec="designs";
+async function renderAdmin(root){
+  const {auth,onAuthStateChanged}=await fb();
+  onAuthStateChanged(auth,async u=>{
+    if(!u)return loginView(root);
+    const ok=await isAdmin(u.uid);
+    if(!ok){const F=await fb();await F.signOut(auth);return loginView(root,"ليس لديك صلاحية المدير");}
+    adminShell(root);
+  });
+}
+async function isAdmin(uidv){
+  if(sessionStorage.getItem("ap_isadmin")===uidv)return true;
+  const {db,doc,getDoc}=await fb();
+  const s=await getDoc(doc(db,"admins",uidv));
+  if(s.exists()){sessionStorage.setItem("ap_isadmin",uidv);invalidateDesignsCache();return true;}
+  return false;
+}
+function loginView(root,err){
+  root.innerHTML=`<div class="login-box geo"><div style="text-align:center;margin-bottom:18px"><span class="logo">${esc(settings.initials)}</span></div>
+    <h2 style="text-align:center">لوحة التحكم</h2>
+    ${err?`<p style="color:#ff8a8a;font-size:.85rem;text-align:center">${esc(err)}</p>`:""}
+    <form id="lf"><div class="field"><label for="em">البريد الإلكتروني</label><input class="input" id="em" type="email" autocomplete="email" required></div>
+    <div class="field"><label for="pw">كلمة المرور</label><div class="pw-wrap"><input class="input" id="pw" type="password" autocomplete="current-password" required><button type="button" id="eye" aria-label="إظهار كلمة المرور">${icon("zoomin")}</button></div></div>
+    <label style="display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:14px"><input type="checkbox" id="rm"> تذكرني على هذا الجهاز</label>
+    <button class="btn" style="width:100%;justify-content:center" type="submit">تسجيل الدخول</button>
+    <p style="text-align:center;margin-top:12px"><button type="button" class="link-accent" id="fp">نسيت كلمة المرور؟</button></p></form></div>`;
+  /* ✅ أيقونة إظهار/إخفاء كلمة المرور هندسية (عدسة) بلا عيون */
+  $("#eye").onclick=()=>{const p=$("#pw");const show=p.type==="password";p.type=show?"text":"password";$("#eye").innerHTML=icon(show?"zoomout":"zoomin");};
+  $("#fp").onclick=async()=>{const em=$("#em").value;if(!em)return toast("اكتب بريدك أولاً","err");const F=await fb();await F.sendPasswordResetEmail(F.auth,em);toast("تم إرسال رابط الاستعادة");};
   $("#lf").onsubmit=async e=>{
     e.preventDefault();
     const F=await fb();
-    const em=$("#em").value.trim(), pw=$("#pw").value;
-    try{
-      const cred=await F.signInWithEmailAndPassword(F.auth, em, pw);
-      const isAdm=await checkIsAdmin(cred.user.uid);
-      if(!isAdm){
-        sessionStorage.removeItem("ap_isadmin");
-        loginView(root, "تم تسجيل الدخول لكن UID الخاص بك ("+cred.user.uid+") غير مدرج في Firestore داخل مجموعة admins.");
-      }else{
-        sessionStorage.setItem("ap_isadmin", cred.user.uid);
-        invalidateDesignsCache();
-        toast("أهلاً بك م. مهند");
-        adminShell(root);
-      }
-    }catch(err){
-      loginView(root, "فشل تسجيل الدخول: تحقق من صحة البريد وكلمة المرور.");
-    }
+    await F.setPersistence(F.auth,$("#rm").checked?F.browserLocalPersistence:F.browserSessionPersistence);
+    try{await F.signInWithEmailAndPassword(F.auth,$("#em").value,$("#pw").value);}catch{toast("بيانات الدخول غير صحيحة أو النطاق غير مصرح به","err");}
   };
 }
-
 function adminShell(root){
-  root.innerHTML=`<div class="container admin">
-    <aside class="admin-side" id="aSide">
-      ${SECTIONS.map(([k,ic,label])=>`<button data-k="${k}" class="${k===aSec?"active":""}">${icon(ic)} ${label}</button>`).join("")}
-      <button id="logoutBtn" style="color:#ff8a8a">${icon("logout")} تسجيل خروج</button>
-    </aside>
-    <main class="admin-main" id="aMain"></main>
-  </div>`;
-  $("#aSide").onclick=e=>{
-    const b=e.target.closest("[data-k]"); if(!b)return;
-    aSec=b.dataset.k; $$("#aSide [data-k]").forEach(x=>x.classList.toggle("active",x===b)); paintSection();
-  };
-  $("#logoutBtn").onclick=async()=>{
-    const F=await fb();
-    sessionStorage.removeItem("ap_isadmin");
-    invalidateDesignsCache();
-    await F.signOut(F.auth);
-    nav("/");
-  };
+  root.innerHTML=`<div class="container admin"><aside class="admin-side" id="aSide">${SECTIONS.map(([k,ic,label])=>`<button data-k="${k}" class="${k===aSec?"active":""}">${icon(ic)} ${label}</button>`).join("")}<button id="logout">${icon("logout")} خروج</button></aside><main class="admin-main" id="aMain"></main></div>`;
+  $("#aSide").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;aSec=b.dataset.k;$$("#aSide [data-k]").forEach(x=>x.classList.toggle("active",x===b));paintSection();};
+  $("#logout").onclick=async()=>{const F=await fb();sessionStorage.removeItem("ap_isadmin");invalidateDesignsCache();await F.signOut(F.auth);};
   paintSection();
 }
-
 async function paintSection(){
   const m=$("#aMain"); m.innerHTML=`<div class="skel" style="height:200px"></div>`;
-  if(aSec==="designs") secDesigns(m);
-  else if(aSec==="cats") secCats(m);
-  else if(aSec==="look") secLook(m);
-  else if(aSec==="general") secGeneral(m);
-  else if(aSec==="msgs") secMsgs(m);
-  else if(aSec==="backup") secBackup(m);
+  ({designs:secDesigns,cats:secCats,palettes:secPalettes,look:secLook,general:secGeneral,msgs:secMsgs,stats:secStats,backup:secBackup})[aSec](m);
 }
-
 async function secDesigns(m){
   const {db,collection,getDocs,deleteDoc,doc,writeBatch}=await fb();
   const all=await getAllDesigns();
   const list=[...all].sort((a,b)=>(a.order||0)-(b.order||0));
-  m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-    <h2>التصاميم المعمارية (${list.length})</h2>
-    <button class="btn sm" id="addD">${icon("plus")} إضافة تصميم جديد</button>
+  m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2>التصاميم (${list.length})</h2><button class="btn sm" id="addD">${icon("plus")} إضافة تصميم</button></div>
+  <div class="specs" style="margin-bottom:16px;padding:14px">
+    <h3 style="margin-bottom:8px">${icon("folder")} نشر مجلد صور كامل دفعة واحدة</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">كل مجلد فرعي داخل المجلد المختار يصبح تصميماً مستقلاً بكل صوره، وكل صورة في الجذر تصبح تصميماً مستقلاً. يُضغط كل شيء تلقائياً ويُ نشر فوراً.</p>
+    <div class="form-grid">
+      <div class="field"><label>تصنيف التصاميم المرفوعة</label><select class="input" id="bulkCat">${store.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+      <div class="field" style="display:flex;align-items:end"><button class="btn ghost" id="bulkBtn">${icon("folder")} اختيار مجلد ونشر كل صوره</button></div>
+    </div>
+    <input type="file" id="bulkFiles" webkitdirectory directory multiple hidden>
+    <div class="progress" hidden id="bulkProg"><i></i></div><small id="bulkTxt" style="color:var(--muted)"></small>
   </div>
-  <table class="admin-table">
-    <thead><tr><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب / مشاهدة</th><th>إجراء</th></tr></thead>
-    <tbody>${list.map(dd=>`<tr>
-      <td><b>${esc(dd.title)}</b></td>
-      <td>${esc(store.catName(dd.categoryId))}</td>
-      <td><span class="badge ${dd.status==="published"?"pub":"draft"}">${dd.status==="published"?"منشور":"مسودة"}</span></td>
-      <td>${dd.likesCount||0} ♥ / ${dd.viewsCount||0} 👁</td>
-      <td style="display:flex;gap:6px">
-        <button class="mini-btn" data-edit="${dd.id}" title="تعديل">${icon("edit")}</button>
-        <button class="mini-btn" data-del="${dd.id}" title="حذف">${icon("trash")}</button>
-      </td>
-    </tr>`).join("")}</tbody>
-  </table>`;
-
+  <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
+  <table class="admin-table"><thead><tr><th></th><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب/مشاهدة</th><th></th></tr></thead>
+  <tbody id="dRows">${list.map(dd=>`<tr draggable="true" data-id="${dd.id}"><td>${icon("drag")}</td><td>${esc(dd.title)}</td><td>${esc(store.catName(dd.categoryId))}</td><td><span class="badge ${dd.status==="published"?"pub":"draft"}">${dd.status==="published"?"منشور":"مسودة"}</span>${dd.featured?" ⭐":""}</td><td>${dd.likesCount||0} / ${dd.viewsCount||0}</td><td style="display:flex;gap:6px"><button class="mini-btn" data-edit="${dd.id}" aria-label="تعديل">${icon("edit")}</button><button class="mini-btn" data-del="${dd.id}" aria-label="حذف">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
   $("#addD").onclick=()=>editor(m,null);
+  $("#bulkBtn").onclick=()=>$("#bulkFiles").click();
+  $("#bulkFiles").onchange=async e=>{
+    const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));
+    if(!files.length)return toast("لا توجد صور في المجلد المختار","err");
+    const catId=$("#bulkCat").value;
+    const groups={};
+    for(const f of files){
+      const rel=(f.webkitRelativePath||f.name).split("/");
+      const g=rel.length>2?rel[1]:"__root__"+uid();
+      (groups[g]=groups[g]||[]).push(f);
+    }
+    const gnames=Object.keys(groups);
+    if(!confirm(`سيُنشأ ${gnames.length} تصميم من ${files.length} صورة. متابعة النشر؟`))return;
+    $("#bulkProg").hidden=false; let done=0;
+    const F=await fb();
+    for(const g of gnames){
+      const title=g.startsWith("__root__")?groups[g][0].name.replace(/\.[^.]+$/,""):g;
+      const ref=await F.addDoc(F.collection(F.db,"designs"),{title,categoryId:catId,description:"أُضيف عبر رفع مجلد كامل من لوحة التحكم.",specs:[],year:String(new Date().getFullYear()),area:"",materials:"",location:"",software:"3D Max",tags:[title],colorTags:[],status:"published",featured:false,likesCount:0,viewsCount:0,imagesCount:0,order:Date.now(),createdAt:Date.now(),updatedAt:Date.now()});
+      let firstThumb="",firstId=null,idx=0;
+      for(const f of groups[g]){
+        if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: كبير وتم تخطيه`,"err");continue;}
+        const c=await compressToFit(f,{watermark:true});
+        const t=await thumbOf(f,true);
+        const imgId=await storage.saveImage(ref.id,c,idx);
+        await F.updateDoc(F.doc(F.db,"designs",ref.id,"images",imgId),{thumb:t.data});
+        if(!firstThumb){firstThumb=t.data;firstId=imgId;}
+        idx++; done++;
+        $("#bulkProg i").style.width=Math.round(done/files.length*100)+"%";
+        $("#bulkTxt").textContent=`معالجة ونشر ${done}/${files.length} ...`;
+      }
+      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx});
+    }
+    invalidateDesignsCache(); toast("تم نشر المجلد بنجاح 🎉"); secDesigns(m);
+  };
   m.onclick=async e=>{
     const ed=e.target.closest("[data-edit]"), del=e.target.closest("[data-del]");
-    if(ed) editor(m, list.find(x=>x.id===ed.dataset.edit));
-    if(del && confirm("حذف هذا التصميم بشكل نهائي؟")){
-      await deleteDoc(doc(db,"designs",del.dataset.del));
-      invalidateDesignsCache(); toast("تم الحذف"); secDesigns(m);
+    if(ed)editor(m,list.find(x=>x.id===ed.dataset.edit));
+    if(del&&confirm("حذف التصميم وكل صوره؟ لا يمكن التراجع.")){
+      const imgs=await Base64FirestoreAdapter.listMeta(del.dataset.del);
+      for(const im of imgs)await Base64FirestoreAdapter.deleteImage(del.dataset.del,im.id);
+      await deleteDoc(doc(db,"designs",del.dataset.del)); invalidateDesignsCache(); toast("تم الحذف"); secDesigns(m);
     }
   };
+  makeSortable($("#dRows"),async ids=>{const b=writeBatch(db);ids.forEach((id,i)=>b.update(doc(db,"designs",id),{order:i}));await b.commit();invalidateDesignsCache();toast("تم الترتيب");});
 }
-
 async function editor(m,d){
-  d=d?{...d}:{title:"",categoryId:store.categories[0]?.id||"",description:"",specs:[],year:new Date().getFullYear(),area:"",materials:"",location:"",software:"3ds Max",tags:[],colorTags:[],status:"published",featured:false};
-  m.innerHTML=`<button class="back-link" id="backL">${icon("chevR")} رجوع للتصاميم</button>
-  <h2>${d.title?"تعديل التصميم":"تصميم معماري جديد"}</h2>
+  d=d?{...d}:{title:"",categoryId:store.categories[0]?.id||"",description:"",specs:[],year:"",area:"",materials:"",location:"",software:"3D Max",tags:[],colorTags:[],modelUrl:"",status:"published",featured:false,order:999};
+  m.innerHTML=`<button class="back-link" id="backL">${icon("chevR")} رجوع للقائمة</button><h2>${d.title?"تعديل تصميم":"تصميم جديد"}</h2>
   <div class="form-grid">
-    <div class="field"><label>عنوان التصميم *</label><input class="input" id="fTitle" value="${esc(d.title)}"></div>
+    <div class="field"><label>العنوان *</label><input class="input" id="fTitle" maxlength="120" value="${esc(d.title)}"></div>
     <div class="field"><label>التصنيف</label><select class="input" id="fCat">${store.categories.map(c=>`<option value="${c.id}" ${c.id===d.categoryId?"selected":""}>${esc(c.name)}</option>`).join("")}</select></div>
     <div class="field"><label>سنة التنفيذ</label><input class="input" id="fYear" value="${esc(d.year||"")}"></div>
-    <div class="field"><label>المساحة</label><input class="input" id="fArea" value="${esc(d.area||"")}"></div>
-    <div class="field"><label>المدينة / الموقع</label><input class="input" id="fLoc" value="${esc(d.location||"")}"></div>
-    <div class="field"><label>البرامج</label><input class="input" id="fSoft" value="${esc(d.software||"3ds Max")}"></div>
+    <div class="field"><label>المساحة</label><input class="input" id="fArea" placeholder="مثال: 250 م²" value="${esc(d.area||"")}"></div>
+    <div class="field"><label>الموقع</label><input class="input" id="fLoc" value="${esc(d.location||"")}"></div>
+    <div class="field"><label>البرنامج</label><input class="input" id="fSoft" value="${esc(d.software||"")}"></div>
   </div>
+  <div class="field"><label>رابط نموذج 3D اختياري (Sketchfab embed) — يفعّل زر «عرض النموذج ثلاثي الأبعاد»</label><input class="input" id="fModel" dir="ltr" placeholder="https://sketchfab.com/models/.../embed" value="${esc(d.modelUrl||"")}"></div>
   <div class="field"><label>الخامات</label><input class="input" id="fMat" value="${esc(d.materials||"")}"></div>
-  <div class="field"><label>الوصف المعماري</label><textarea class="input" id="fDesc">${esc(d.description||"")}</textarea></div>
-  <label style="display:flex;gap:8px;font-size:.85rem;margin-bottom:14px"><input type="checkbox" id="fPub" ${d.status==="published"?"checked":""}> منشور للزوار</label>
-  <h3>الصور المعمارية</h3>
-  <div class="dropzone" id="dz">اضغط أو اسحب الصور هنا (تأكد من خلوها من أي صور أو مجسمات لذوات الأرواح)</div>
+  <div class="field"><label>الوصف</label><textarea class="input" id="fDesc" maxlength="5000">${esc(d.description||"")}</textarea></div>
+  <div class="form-grid">
+    <div class="field"><label>وسوم البحث (مفصولة بفواصل)</label><input class="input" id="fTags" value="${esc((d.tags||[]).join("، "))}"></div>
+    <div class="field"><label>وسوم الألوان (مطابقة لوسوم الباقات)</label><input class="input" id="fColors" value="${esc((d.colorTags||[]).join("، "))}"></div>
+  </div>
+  <div class="field"><label>مواصفات ديناميكية (اسم / قيمة)</label><div id="specRows"></div><button class="btn sm ghost" id="addSpec">${icon("plus")} إضافة spec</button></div>
+  <label style="display:flex;gap:8px;font-size:.85rem;margin:6px 0"><input type="checkbox" id="fPub" ${d.status==="published"?"checked":""}> منشور</label>
+  <label style="display:flex;gap:8px;font-size:.85rem;margin-bottom:14px"><input type="checkbox" id="fFeat" ${d.featured?"checked":""}> مميز (يظهر بالرئيسية)</label>
+  <h3>الصور</h3>
+  <div class="dropzone" id="dz">اسحب الصور هنا أو اضغط للاختيار (عدة صور)</div>
   <input type="file" id="fFiles" accept="image/*" multiple hidden>
   <div class="row-imgs" id="imgList"></div>
-  <div style="margin-top:16px;display:flex;gap:10px"><button class="btn" id="saveD">${icon("check")} حفظ التصميم</button></div>`;
-
-  $("#backL").onclick=()=>secDesigns(m);
-  let pending=[], existing=d.id?await Base64FirestoreAdapter.listMeta(d.id):[];
+  <div class="progress" hidden id="prog"><i></i></div><small id="progTxt" style="color:var(--muted)"></small>
+  <div style="margin-top:16px;display:flex;gap:10px"><button class="btn" id="saveD">${icon("check")} حفظ</button><button class="btn ghost" id="cancelD">إلغاء</button></div>`;
+  $("#backL").onclick=$("#cancelD").onclick=()=>secDesigns(m);
+  const specs=[...(d.specs||[])];
+  const drawSpecs=()=>{$("#specRows").innerHTML=specs.map((s,i)=>`<div style="display:flex;gap:6px;margin-bottom:6px"><input class="input" data-sn="${i}" placeholder="الاسم" value="${esc(s.name||"")}"><input class="input" data-sv="${i}" placeholder="القيمة" value="${esc(s.value||"")}"><button class="mini-btn" data-sd="${i}">${icon("trash")}</button></div>`).join("");};
+  drawSpecs();
+  $("#addSpec").onclick=()=>{specs.push({name:"",value:""});drawSpecs();};
+  $("#specRows").oninput=e=>{const n=e.target.dataset.sn,v=e.target.dataset.sv;if(n)specs[+n].name=e.target.value;if(v)specs[+v].value=e.target.value;};
+  $("#specRows").onclick=e=>{const del=e.target.closest("[data-sd]");if(del){specs.splice(+del.dataset.sd,1);drawSpecs();}};
+  let pending=[], existing=d.id?await Base64FirestoreAdapter.listMeta(d.id):[], coverKey=d.coverImageId||null;
   const drawImgs=()=>{
-    $("#imgList").innerHTML=existing.map(im=>`<figure><img src="${im.thumb||im.imageUrl||""}"></figure>`).join("")+
-      pending.map(p=>`<figure><img src="${p.preview}"></figure>`).join("");
+    $("#imgList").innerHTML=
+      existing.map(im=>`<figure data-ex="${im.id}" class="${coverKey===im.id?"cover":""}"><img src="${im.thumb||im.imageUrl||""}" alt="صورة" draggable="true" onerror="__imgErr(this)"><div class="img-tools"><button class="mini-btn" data-cov="${im.id}" title="غلاف">${icon("star")}</button><button class="mini-btn" data-rmex="${im.id}" title="حذف">${icon("trash")}</button></div></figure>`).join("")+
+      pending.map(p=>`<figure data-p="${p.key}" class="${coverKey===p.key?"cover":""}"><img src="${p.preview}" alt="معاينة" draggable="true"><div class="img-tools"><button class="mini-btn" data-cov="${p.key}" title="غلاف">${icon("star")}</button><button class="mini-btn" data-rmp="${p.key}" title="حذف">${icon("trash")}</button><button class="mini-btn" data-up="${p.key}" title="تقديم">${icon("chevR")}</button><button class="mini-btn" data-dn="${p.key}" title="تأخير">${icon("chevL")}</button></div></figure>`).join("");
   };
   drawImgs();
-
-  $("#dz").onclick=()=>$("#fFiles").click();
-  $("#fFiles").onchange=async e=>{
-    for(const f of e.target.files){
-      const c=await compressToFit(f,{watermark:false});
-      const t=await thumbOf(f,false);
-      pending.push({preview:URL.createObjectURL(f), compressed:c, thumb:t.data});
+  const dz=$("#dz");
+  dz.onclick=()=>$("#fFiles").click();
+  dz.ondragover=e=>{e.preventDefault();dz.classList.add("over");}; dz.ondragleave=()=>dz.classList.remove("over");
+  dz.ondrop=e=>{e.preventDefault();dz.classList.remove("over");addFiles(e.dataTransfer.files);};
+  $("#fFiles").onchange=e=>addFiles(e.target.files);
+  async function addFiles(files){
+    for(const f of files){
+      if(!f.type.startsWith("image/"))continue;
+      if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: أكبر من ${appConfig.maxUploadMB} م.ب`,"err");continue;}
+      const c=await compressToFit(f,{watermark:true});
+      const t=await thumbOf(f,true);
+      pending.push({key:"p"+uid(),preview:URL.createObjectURL(f),compressed:c,thumb:t.data});
+      toast(`${f.name}: تم توفير ${c.saved}% من الحجم`);
     }
+    if(!coverKey&&pending.length)coverKey=pending[0].key;
     drawImgs();
+  }
+  $("#imgList").onclick=async e=>{
+    const b=e.target.closest("button"); if(!b)return;
+    if(b.dataset.cov){coverKey=b.dataset.cov;drawImgs();}
+    if(b.dataset.rmp){pending=pending.filter(p=>p.key!==b.dataset.rmp);drawImgs();}
+    if(b.dataset.rmex){if(confirm("حذف الصورة؟")){await Base64FirestoreAdapter.deleteImage(d.id,b.dataset.rmex);existing=existing.filter(x=>x.id!==b.dataset.rmex);drawImgs();}}
+    if(b.dataset.up||b.dataset.dn){const i=pending.findIndex(p=>p.key===(b.dataset.up||b.dataset.dn));const j=b.dataset.up?i-1:i+1;if(i<0||j<0||j>=pending.length)return;[pending[i],pending[j]]=[pending[j],pending[i]];drawImgs();}
   };
-
+  let dragKey=null;
+  $("#imgList").ondragstart=e=>{dragKey=e.target.closest("figure")?.dataset.p||null;};
+  $("#imgList").ondragover=e=>e.preventDefault();
+  $("#imgList").ondrop=e=>{const target=e.target.closest("figure")?.dataset.p;if(!dragKey||!target||dragKey===target)return;const from=pending.findIndex(p=>p.key===dragKey),to=pending.findIndex(p=>p.key===target);const [x]=pending.splice(from,1);pending.splice(to,0,x);dragKey=null;drawImgs();};
   $("#saveD").onclick=async()=>{
     const title=$("#fTitle").value.trim();
-    if(!title) return toast("يرجى كتابة العنوان","err");
+    if(!title)return toast("العنوان مطلوب","err");
     const F=await fb();
-    const data={
-      title, categoryId:$("#fCat").value, description:$("#fDesc").value,
-      year:$("#fYear").value, area:$("#fArea").value, location:$("#fLoc").value,
-      software:$("#fSoft").value, materials:$("#fMat").value,
-      status:$("#fPub").checked?"published":"draft", updatedAt:Date.now()
-    };
+    const data={title,categoryId:$("#fCat").value,description:$("#fDesc").value,year:$("#fYear").value,area:$("#fArea").value,location:$("#fLoc").value,software:$("#fSoft").value,materials:$("#fMat").value,modelUrl:$("#fModel").value.trim(),
+      tags:$("#fTags").value.split(/[،,]/).map(s=>s.trim()).filter(Boolean),
+      colorTags:$("#fColors").value.split(/[،,]/).map(s=>s.trim()).filter(Boolean),
+      specs:specs.filter(s=>s.name),status:$("#fPub").checked?"published":"draft",featured:$("#fFeat").checked,order:d.order??999,updatedAt:Date.now()};
     let id=d.id;
-    if(!id){
-      const ref=await F.addDoc(F.collection(F.db,"designs"),{...data,likesCount:0,viewsCount:0,imagesCount:0,createdAt:Date.now()});
-      id=ref.id;
-    }else{
-      await F.updateDoc(F.doc(F.db,"designs",id),data);
+    if(!id){const ref=await F.addDoc(F.collection(F.db,"designs"),{...data,likesCount:0,viewsCount:0,imagesCount:0,createdAt:Date.now()});id=ref.id;}
+    else await F.updateDoc(F.doc(F.db,"designs",id),data);
+    let newCoverThumb=null;
+    if(pending.length){
+      $("#prog").hidden=false;
+      for(let i=0;i<pending.length;i++){
+        const p=pending[i];
+        $("#progTxt").textContent=`رفع الصورة ${i+1} من ${pending.length}...`;
+        $("#prog i").style.width=Math.round((i/pending.length)*100)+"%";
+        const imgId=await storage.saveImage(id,p.compressed,existing.length+i);
+        await F.updateDoc(F.doc(F.db,"designs",id,"images",imgId),{thumb:p.thumb});
+        if(coverKey===p.key){coverKey=imgId;newCoverThumb=p.thumb;}
+      }
+      $("#prog i").style.width="100%";
     }
-    let firstThumb=d.thumbnail||"";
-    for(let i=0;i<pending.length;i++){
-      const p=pending[i];
-      const imgId=await storage.saveImage(id,p.compressed,existing.length+i);
-      await F.updateDoc(F.doc(F.db,"designs",id,"images",imgId),{thumb:p.thumb});
-      if(!firstThumb) firstThumb=p.thumb;
+    let thumb=d.thumbnail||"";
+    if(coverKey){
+      if(newCoverThumb)thumb=newCoverThumb;
+      else{const u=await Base64FirestoreAdapter.getImageUrl(id,coverKey);if(u)thumb=(await thumbOf(u)).data;}
     }
-    if(firstThumb) await F.updateDoc(F.doc(F.db,"designs",id),{thumbnail:firstThumb});
-    invalidateDesignsCache(); toast("تم الحفظ بنجاح"); secDesigns(m);
+    data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
+    await F.updateDoc(F.doc(F.db,"designs",id),data);
+    invalidateDesignsCache();
+    toast("تم الحفظ بنجاح"); secDesigns(m);
   };
 }
-
 async function secCats(m){
-  const {db,collection,getDocs,addDoc,deleteDoc,doc}=await fb();
+  const {db,collection,getDocs,addDoc,updateDoc,deleteDoc,doc,writeBatch}=await fb();
   const s=await getDocs(collection(db,"categories"));
-  const list=s.docs.map(x=>({id:x.id,...x.data()}));
-  m.innerHTML=`<h2>التصنيفات المعمارية</h2>
-  <div style="display:flex;gap:8px;margin:12px 0"><input class="input" id="nc" placeholder="تصنيف جديد (مثال: فلل سكنية)"><button class="btn sm" id="ac">${icon("plus")} إضافة</button></div>
-  <table class="admin-table"><tbody>${list.map(c=>`<tr><td><b>${esc(c.name)}</b></td><td><button class="mini-btn" data-del="${c.id}">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
-  $("#ac").onclick=async()=>{
-    const n=$("#nc").value.trim(); if(!n)return;
-    await addDoc(collection(db,"categories"),{name:n,slug:"c"+uid(),createdAt:Date.now()});
-    toast("تمت إضافة التصنيف"); secCats(m);
-  };
-  m.onclick=async e=>{
-    const del=e.target.closest("[data-del]");
-    if(del&&confirm("حذف هذا التصنيف؟")){
-      await deleteDoc(doc(db,"categories",del.dataset.del));
-      secCats(m);
-    }
-  };
+  const list=s.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
+  m.innerHTML=`<h2>التصنيفات</h2><div style="display:flex;gap:8px;margin:12px 0"><input class="input" id="nc" placeholder="اسم التصنيف الجديد"><button class="btn sm" id="ac">${icon("plus")} إضافة</button></div>
+  <table class="admin-table"><tbody id="cRows">${list.map(c=>`<tr draggable="true" data-id="${c.id}"><td>${icon("drag")}</td><td><input class="input" data-ren="${c.id}" value="${esc(c.name)}" style="padding:6px 10px"></td><td style="display:flex;gap:6px"><button class="mini-btn" data-del="${c.id}">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
+  $("#ac").onclick=async()=>{const n=$("#nc").value.trim();if(!n)return;await addDoc(collection(db,"categories"),{name:n,slug:"c"+uid(),order:list.length,createdAt:Date.now()});toast("تمت الإضافة — ظهرت فوراً في الموقع والبوت");secCats(m);};
+  m.oninput=debounce(async e=>{const id=e.target.dataset.ren;if(id){await updateDoc(doc(db,"categories",id),{name:e.target.value});toast("تم التعديل");}},600);
+  m.onclick=async e=>{const del=e.target.closest("[data-del]");if(del&&confirm("حذف التصنيف؟ التصاميم المرتبطة ستصبح غير مصنفة.")){await deleteDoc(doc(db,"categories",del.dataset.del));secCats(m);}};
+  makeSortable($("#cRows"),async ids=>{const b=writeBatch(db);ids.forEach((id,i)=>b.update(doc(db,"categories",id),{order:i}));await b.commit();});
 }
-
+async function secPalettes(m){
+  const {db,doc,getDoc,setDoc}=await fb();
+  m.innerHTML=`<h2>باقات ألوان البوت</h2><div class="field"><label>التصنيف</label><select class="input" id="pc">${store.categories.map(c=>`<option value="${c.id}" data-slug="${esc(c.slug)}">${esc(c.name)}</option>`).join("")}</select></div><div id="pWrap"></div>`;
+  const loadPal=async()=>{
+    const sel=$("#pc"),cid=sel.value,slug=sel.selectedOptions[0]?.dataset.slug;
+    const snap=await getDoc(doc(db,"palettes",cid));
+    let items=snap.data()?.items||JSON.parse(JSON.stringify(DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living));
+    const draw=()=>{
+      $("#pWrap").innerHTML=items.map((p,i)=>`<div class="specs" style="margin-bottom:10px;padding:14px">
+        <div class="form-grid"><div class="field"><label>اسم الباقة</label><input class="input" data-f="name" data-i="${i}" value="${esc(p.name)}"></div>
+        <div class="field"><label>الألوان (Hex بفواصل)</label><input class="input" data-f="colors" data-i="${i}" value="${esc((p.colors||[]).join(","))}"></div>
+        <div class="field"><label>البلاط/الأرضيات</label><input class="input" data-f="tiles" data-i="${i}" value="${esc(p.tiles||"")}"></div>
+        <div class="field"><label>الأثاث والكنب</label><input class="input" data-f="furniture" data-i="${i}" value="${esc(p.furniture||"")}"></div>
+        <div class="field"><label>الستائر</label><input class="input" data-f="curtains" data-i="${i}" value="${esc(p.curtains||"")}"></div>
+        <div class="field"><label>السجاد</label><input class="input" data-f="carpet" data-i="${i}" value="${esc(p.carpet||"")}"></div>
+        <div class="field"><label>وسوم المطابقة</label><input class="input" data-f="tags" data-i="${i}" value="${esc((p.tags||[]).join("، "))}"></div></div>
+        <button class="btn sm danger" data-del="${i}">${icon("trash")} حذف الباقة</button></div>`).join("")+
+        `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="addP">${icon("plus")} باقة جديدة</button><button class="btn sm ghost" id="defP">${icon("refresh")} باقات افتراضية</button><button class="btn" id="saveP">${icon("check")} حفظ الباقات</button></div>`;
+    };
+    draw();
+    $("#pWrap").oninput=e=>{const i=+e.target.dataset.i,f=e.target.dataset.f;if(!f)return;items[i][f]=f==="colors"?e.target.value.split(",").map(s=>s.trim()):f==="tags"?e.target.value.split(/[،,]/).map(s=>s.trim()):e.target.value;delete _palCache[cid];};
+    $("#pWrap").onclick=async e=>{
+      if(e.target.closest("#addP")){items.push({name:"باقة جديدة",colors:["#D8C3A5","#8C6F4E","#EFE6D8","#B49B7C"],tiles:"",furniture:"",curtains:"",carpet:"",tags:[]});draw();}
+      const del=e.target.closest("[data-del]");if(del){items.splice(+del.dataset.del,1);draw();}
+      if(e.target.closest("#defP")){items=JSON.parse(JSON.stringify(DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living));draw();}
+      if(e.target.closest("#saveP")){await setDoc(doc(db,"palettes",cid),{items});_palCache[cid]=items;toast("تم حفظ الباقات");}
+    };
+  };
+  $("#pc").onchange=loadPal; await loadPal();
+}
 function secLook(m){
   const s={...settings};
-  m.innerHTML=`<h2>مظهر المنصة</h2>
-  <div class="form-grid">
-    <div class="field"><label>لون التمييز الأساسي</label><input type="color" id="lColor" class="input" value="${s.accent||"#E10600"}" style="height:44px"></div>
-    <div class="field"><label>نوع الخط العربي</label><select class="input" id="lFont">${["Cairo","Tajawal","Almarai","IBM Plex Sans Arabic"].map(f=>`<option ${s.font===f?"selected":""}>${f}</option>`).join("")}</select></div>
+  m.innerHTML=`<h2>مظهر الموقع</h2><div class="form-grid">
+    <div class="field"><label>نوع الخط</label><select class="input" id="lFont">${["Cairo","Tajawal","Almarai","IBM Plex Sans Arabic","Noto Kufi Arabic","Changa","Amiri"].map(f=>`<option ${s.font===f?"selected":""}>${f}</option>`).join("")}</select></div>
+    <div class="field"><label>حجم الخط: <span id="fsV">${s.fontScale}</span>%</label><div class="range-row"><input type="range" id="lScale" min="85" max="125" value="${s.fontScale||100}"></div></div>
+    <div class="field"><label>لون التمييز</label><div id="lDots" style="display:flex;gap:8px;align-items:center"><span class="color-dot ${s.accent==="#E10600"?"sel":""}" data-c="#E10600" style="background:#E10600"></span><span class="color-dot ${s.accent==="#D4AF37"?"sel":""}" data-c="#D4AF37" style="background:#D4AF37"></span><input type="color" id="lColor" value="${s.accent}" style="width:44px;height:34px;background:none;border:none"></div></div>
+    <div class="field"><label>رمز الإعجاب</label><select class="input" id="lLike"><option value="heart" ${s.likeIcon==="heart"?"selected":""}>قلب ♥</option><option value="star" ${s.likeIcon==="star"?"selected":""}>نجمة ★</option></select></div>
+    <div class="field"><label>عدد الصور بالصف (حاسوب)</label><select class="input" id="lCd">${[1,2,3,4,5].map(n=>`<option ${s.colsDesktop===n?"selected":""}>${n}</option>`).join("")}</select></div>
+    <div class="field"><label>عدد الصور بالصف (جوال)</label><select class="input" id="lCm">${[1,2,3,4,5].map(n=>`<option ${s.colsMobile===n?"selected":""}>${n}</option>`).join("")}</select></div>
   </div>
-  <div class="field"><label>العنوان الترويجي الأول</label><input class="input" id="lH1" value="${esc(s.heroTitle1)}"></div>
-  <div class="field"><label>الكلمة المميزة باللون</label><input class="input" id="lHA" value="${esc(s.heroAccent)}"></div>
-  <button class="btn" id="lSave">${icon("check")} حفظ الإعدادات</button>`;
-  $("#lSave").onclick=async()=>{
-    s.accent=$("#lColor").value; s.font=$("#lFont").value;
-    s.heroTitle1=$("#lH1").value; s.heroAccent=$("#lHA").value;
-    const {db,doc,setDoc}=await fb();
-    await setDoc(doc(db,"settings","site"),s,{merge:true});
-    toast("تم حفظ التعديلات");
-  };
+  <div class="field"><label>عنوان الهيرو (جزء 1)</label><input class="input" id="lH1" value="${esc(s.heroTitle1)}"></div>
+  <div class="form-grid"><div class="field"><label>الكلمة الملونة</label><input class="input" id="lHA" value="${esc(s.heroAccent)}"></div><div class="field"><label>الجزء 3</label><input class="input" id="lH2" value="${esc(s.heroTitle2||"")}"></div></div>
+  <div class="field"><label>وصف الهيرو</label><textarea class="input" id="lHD">${esc(s.heroDesc)}</textarea></div>
+  <div class="field"><label>صورة الهيرو</label><div class="dropzone" id="lDz">${s.heroImage?`<img src="${s.heroImage}" style="max-height:120px;margin:auto;border-radius:8px">`:"اضغط لاختيار صورة"}</div><input type="file" id="lFile" accept="image/*" hidden></div>
+  <label style="display:flex;gap:8px;font-size:.85rem;margin:8px 0"><input type="checkbox" id="lWm" ${s.watermark?.enabled?"checked":""}> تفعيل العلامة المائية على الصور</label>
+  <div class="field"><label>نص العلامة المائية</label><input class="input" id="lWt" value="${esc(s.watermark?.text||"")}" placeholder="اتركه فارغاً لاستخدام اسم الموقع"></div>
+  <button class="btn" id="lSave">${icon("check")} حفظ المظهر</button>`;
+  const live=()=>{s.font=$("#lFont").value;s.fontScale=+$("#lScale").value;s.likeIcon=$("#lLike").value;s.colsDesktop=+$("#lCd").value;s.colsMobile=+$("#lCm").value;s.heroTitle1=$("#lH1").value;s.heroAccent=$("#lHA").value;s.heroTitle2=$("#lH2").value;s.heroDesc=$("#lHD").value;s.watermark={enabled:$("#lWm").checked,text:$("#lWt").value};$("#fsV").textContent=s.fontScale;Object.assign(store.settings,s);applyTheme();};
+  m.addEventListener("input",e=>{if(e.target.id!=="lColor")live();});
+  m.addEventListener("change",live);
+  $("#lDots").onclick=e=>{const dot=e.target.closest("[data-c]");if(dot){s.accent=dot.dataset.c;$("#lColor").value=s.accent;m.querySelectorAll(".color-dot").forEach(x=>x.classList.toggle("sel",x===dot));live();}};
+  $("#lColor").oninput=e=>{s.accent=e.target.value;live();};
+  $("#lDz").onclick=()=>$("#lFile").click();
+  $("#lFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;const c=await compressToFit(f,{});s.heroImage=c.data;$("#lDz").innerHTML=`<img src="${c.data}" style="max-height:120px;margin:auto;border-radius:8px">`;};
+  $("#lSave").onclick=async()=>{live();const {db,doc,setDoc}=await fb();await setDoc(doc(db,"settings","site"),s,{merge:true});toast("تم حفظ المظهر");};
 }
-
 function secGeneral(m){
   const s={...settings};
-  m.innerHTML=`<h2>بيانات المهندس والتواصل</h2>
+  m.innerHTML=`<h2>الإعدادات العامة</h2>
+  <h3 style="margin-bottom:10px">بيانات المهندس</h3>
   <div class="form-grid">
-    <div class="field"><label>اسم المهندس</label><input class="input" id="gEngN" value="${esc(s.engineerName||"")}"></div>
-    <div class="field"><label>اللقب المهني</label><input class="input" id="gEngT" value="${esc(s.engineerTitle||"")}"></div>
-    <div class="field"><label>رقم واتساب (دولي بدون +)</label><input class="input" id="gWn" value="${esc(s.contact?.whatsappNumber||"")}"></div>
-    <div class="field"><label>البريد الإلكتروني</label><input class="input" id="gE" value="${esc(s.contact?.email||"")}"></div>
+    <div class="field"><label>اسم المهندس (يظهر في الهيدر)</label><input class="input" id="gEngN" value="${esc(s.engineerName||"")}" placeholder="م. مهند المعماري"></div>
+    <div class="field"><label>اللقب الوظيفي</label><input class="input" id="gEngT" value="${esc(s.engineerTitle||"")}" placeholder="مهندس معماري ومصمم داخلي"></div>
+    <div class="field"><label>حرف الشعار الأول</label><input class="input" id="gEngI" maxlength="2" value="${esc(s.engineerInitial||"")}" placeholder="M"></div>
   </div>
-  <div class="field"><label>النبذة التعريفية</label><textarea class="input" id="gBio">${esc(s.bio||"")}</textarea></div>
-  <button class="btn" id="gSave">${icon("check")} حفظ البيانات</button>`;
+  <h3 style="margin:20px 0 10px">الموقع</h3>
+  <div class="form-grid">
+    <div class="field"><label>اسم الموقع</label><input class="input" id="gName" value="${esc(s.siteName)}"></div>
+    <div class="field"><label>حروف الشعار</label><input class="input" id="gInit" maxlength="4" value="${esc(s.initials)}"></div>
+    <div class="field"><label>سنوات الخبرة</label><input class="input" id="gY" value="${esc(s.stats?.years||"")}"></div>
+    <div class="field"><label>عدد المشاريع</label><input class="input" id="gP" value="${esc(s.stats?.projects||"")}"></div>
+    <div class="field"><label>رضا العملاء</label><input class="input" id="gS" value="${esc(s.stats?.satisfaction||"")}"></div>
+    <div class="field"><label>مسار لوحة التحكم</label><input class="input" id="gAdm" value="${esc(s.adminPath||"/admin-panel")}" dir="ltr"></div>
+  </div>
+  <div class="field"><label>النبذة</label><textarea class="input" id="gBio">${esc(s.bio)}</textarea></div>
+  <h3 style="margin:20px 0 10px">روابط التواصل الاجتماعي (الأيقونات في الهيدر)</h3>
+  <div class="form-grid">
+    <div class="field"><label>واتساب (رابط أو اتركه فارغاً ليستخدم الرقم)</label><input class="input" id="gW" value="${esc(s.links?.whatsapp||"")}" dir="ltr" placeholder="https://wa.me/966501234567"></div>
+    <div class="field"><label>رقم واتساب (دولي بدون +)</label><input class="input" id="gWn" value="${esc(s.contact?.whatsappNumber||"")}" dir="ltr" placeholder="966501234567"></div>
+    <div class="field"><label>تويتر X (رابط الحساب)</label><input class="input" id="gT" value="${esc(s.links?.twitter||"")}" dir="ltr" placeholder="https://twitter.com/username"></div>
+    <div class="field"><label>إنستغرام (رابط الحساب)</label><input class="input" id="gI" value="${esc(s.links?.instagram||"")}" dir="ltr" placeholder="https://instagram.com/username"></div>
+    <div class="field"><label>فيسبوك (رابط الحساب)</label><input class="input" id="gF" value="${esc(s.links?.facebook||"")}" dir="ltr" placeholder="https://facebook.com/username"></div>
+  </div>
+  <h3 style="margin:20px 0 10px">بيانات التواصل المباشرة</h3>
+  <div class="form-grid">
+    <div class="field"><label>البريد الإلكتروني (يأخذ الزائر مباشرة)</label><input class="input" id="gE" value="${esc(s.contact?.email||"")}" dir="ltr"></div>
+    <div class="field"><label>الهاتف</label><input class="input" id="gPh" value="${esc(s.contact?.phone||"")}" dir="ltr"></div>
+    <div class="field"><label>العنوان</label><input class="input" id="gAd" value="${esc(s.contact?.address||"")}"></div>
+  </div>
+  <button class="btn" id="gSave">${icon("check")} حفظ</button>`;
   $("#gSave").onclick=async()=>{
-    const out={...s,
-      engineerName:$("#gEngN").value, engineerTitle:$("#gEngT").value, bio:$("#gBio").value,
-      contact:{...s.contact, email:$("#gE").value, whatsappNumber:$("#gWn").value}
-    };
     const {db,doc,setDoc}=await fb();
-    await setDoc(doc(db,"settings","site"),out,{merge:true});
-    toast("تم حفظ بيانات المهندس بنجاح");
+    const out={...s,
+      engineerName:$("#gEngN").value,engineerTitle:$("#gEngT").value,engineerInitial:$("#gEngI").value,
+      siteName:$("#gName").value,initials:$("#gInit").value,bio:$("#gBio").value,adminPath:($("#gAdm").value.startsWith("/")?"":"/")+$("#gAdm").value,
+      stats:{years:$("#gY").value,projects:$("#gP").value,satisfaction:$("#gS").value},
+      links:{whatsapp:$("#gW").value,instagram:$("#gI").value,twitter:$("#gT").value,facebook:$("#gF").value},
+      contact:{email:$("#gE").value,phone:$("#gPh").value,address:$("#gAd").value,whatsappNumber:$("#gWn").value}};
+    await setDoc(doc(db,"settings","site"),out,{merge:true}); toast("تم الحفظ — التحديث يظهر فوراً");
   };
 }
-
 async function secMsgs(m){
-  const {db,collection,getDocs,deleteDoc,doc}=await fb();
+  const {db,collection,getDocs,updateDoc,deleteDoc,doc}=await fb();
   const s=await getDocs(collection(db,"messages"));
   const list=s.docs.map(dd=>({id:dd.id,...dd.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-  m.innerHTML=`<h2>رسائل العملاء (${list.length})</h2>`+(list.length===0?`<div class="empty"><p>لا توجد رسائل جديدة</p></div>`:list.map(dd=>`
-    <div class="msg-item"><div style="display:flex;justify-content:space-between"><b>${esc(dd.name)}</b><small>${fmtDate(dd.createdAt)}</small></div>
-    <p style="color:var(--muted);font-size:.85rem">${esc(dd.text)}</p>
-    <small style="color:var(--muted)" dir="ltr">${esc(dd.phone||"")} | ${esc(dd.email||"")}</small>
-    <div style="margin-top:6px"><button class="mini-btn" data-del="${dd.id}" title="حذف">${icon("trash")}</button></div></div>
-  `).join(""));
+  m.innerHTML=`<h2>الرسائل (${list.length})</h2>`+(list.length===0?`<div class="empty">${icon("msg")}<p>لا رسائل بعد</p></div>`:list.map(dd=>{const x=dd;return `<div class="msg-item ${x.read?"":"unread"}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.name)}</b><small style="color:var(--muted)">${fmtDate(x.createdAt)}</small></div><p style="color:var(--muted);font-size:.85rem" dir="auto">${esc(x.text)}</p><small style="color:var(--muted)" dir="ltr">${esc(x.phone||"")} ${esc(x.email||"")}</small><div style="margin-top:8px;display:flex;gap:6px"><button class="mini-btn" data-r="${dd.id}" title="مقروء">${icon("check")}</button><button class="mini-btn" data-del="${dd.id}" title="حذف">${icon("trash")}</button></div></div>`;}).join(""));
   m.onclick=async e=>{
-    const del=e.target.closest("[data-del]");
-    if(del&&confirm("حذف هذه الرسالة؟")){
-      await deleteDoc(doc(db,"messages",del.dataset.del));
-      toast("تم حذف الرسالة"); secMsgs(m);
-    }
+    const r=e.target.closest("[data-r]"),del=e.target.closest("[data-del]");
+    if(r){await updateDoc(doc(db,"messages",r.dataset.r),{read:true});secMsgs(m);}
+    if(del&&confirm("حذف الرسالة؟")){await deleteDoc(doc(db,"messages",del.dataset.del));secMsgs(m);}
   };
 }
-
+async function secStats(m){
+  const {db,doc,getDoc}=await fb();
+  const today=await getDoc(doc(db,"stats",new Date().toISOString().slice(0,10)));
+  const st=today.data()||{};
+  const all=await getAllDesigns();
+  const topL=[...all].sort((a,b)=>(b.likesCount||0)-(a.likesCount||0)).slice(0,5);
+  const topV=[...all].sort((a,b)=>(b.viewsCount||0)-(a.viewsCount||0)).slice(0,5);
+  const catClicks=Object.entries(st).filter(([k])=>k.startsWith("cat_"));
+  m.innerHTML=`<h2>إحصائيات اليوم</h2>
+  <div class="stat-cards"><div class="stat-card"><b>${st.visits||0}</b><span>زيارات</span></div><div class="stat-card"><b>${st.botOpens||0}</b><span>فتح البوت</span></div>${catClicks.map(([k,v])=>`<div class="stat-card"><b>${v}</b><span>نقر بوت: ${esc(store.categories.find(c=>c.slug===k.slice(4))?.name||k.slice(4))}</span></div>`).join("")}</div>
+  <div class="form-grid" style="margin-top:20px"><div><h3>الأكثر إعجاباً</h3><table class="admin-table">${topL.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.likesCount||0} ♥</td></tr>`).join("")}</table></div>
+  <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.viewsCount||0}</td></tr>`).join("")}</table></div></div>`;
+}
+async function clearAllDesigns(prog){
+  const F=await fb();
+  const ds=await F.getDocs(F.collection(F.db,"designs"));
+  let i=0;
+  for(const d of ds.docs){
+    const ims=await F.getDocs(F.collection(F.db,"designs",d.id,"images"));
+    for(const im of ims.docs) await F.deleteDoc(im.ref);
+    await F.deleteDoc(d.ref);
+    i++; prog?.(i,ds.size);
+  }
+  invalidateDesignsCache();
+}
 async function secBackup(m){
-  m.innerHTML=`<h2>النسخ الاحتياطي والبيانات الواقعية الخالية من ذوات الأرواح</h2>
-  <p style="color:var(--muted);font-size:.85rem">يمكنك تحميل التصاميم المعمارية النموذجية النقية تماماً الخالية من أي صور لبشر أو حيوانات أو تماثيل.</p>
-  <button class="btn" id="seedBtn">${icon("refresh")} استيراد التصاميم المعمارية النقية</button>`;
-  $("#seedBtn").onclick=async()=>{
-    if(!confirm("سيتم زرع تصاميم معمارية نقية بالكامل. هل ترغب بالمتابعة؟")) return;
-    toast("جارٍ تجهيز وحفظ التصاميم...");
-    await seedAll();
-    invalidateDesignsCache();
-    toast("تم تحديث البيانات بنجاح وبدون أي صور لذوات الأرواح 🎉");
+  m.innerHTML=`<h2>نسخ احتياطي وأدوات</h2>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
+    <button class="btn" id="exp">${icon("dl")} تصدير JSON</button>
+    <button class="btn ghost" id="imp">${icon("ul")} استيراد JSON</button><input type="file" id="impF" accept=".json" hidden>
+    <button class="btn ghost" id="seed">${icon("refresh")} تحميل بيانات تجريبية</button>
+    <button class="btn danger" id="wipe">${icon("trash")} حذف البيانات التجريبية</button>
+    <button class="btn ghost" id="mig">${icon("ul")} ترحيل الصور إلى Storage</button>
+  </div><div class="progress" hidden id="mProg"><i></i></div><small id="mTxt" style="color:var(--muted)"></small>`;
+  const {db,collection,getDocs,doc,setDoc}=await fb();
+  $("#exp").onclick=async()=>{
+    const out={settings,categories:store.categories,designs:[],palettes:{}};
+    const ds=await getDocs(collection(db,"designs"));
+    for(const dd of ds.docs){const imgs=await getDocs(collection(db,"designs",dd.id,"images"));out.designs.push({id:dd.id,...dd.data(),images:imgs.docs.map(i=>({id:i.id,...i.data()}))});}
+    const ps=await getDocs(collection(db,"palettes")); ps.forEach(p=>out.palettes[p.id]=p.data());
+    download("backup-"+Date.now()+".json",JSON.stringify(out)); toast("تم التصدير");
   };
+  $("#imp").onclick=()=>$("#impF").click();
+  $("#impF").onchange=async e=>{
+    const data=JSON.parse(await e.target.files[0].text());
+    if(!confirm("سيتم دمج/استبدال البيانات الحالية. متابعة؟"))return;
+    await setDoc(doc(db,"settings","site"),data.settings,{merge:true});
+    for(const c of data.categories||[])await setDoc(doc(db,"categories",c.id),c,{merge:true});
+    for(const dd of data.designs||[]){const {images,id,...rest}=dd;await setDoc(doc(db,"designs",id),rest,{merge:true});for(const im of images||[])await setDoc(doc(db,"designs",id,"images",im.id),im,{merge:true});}
+    for(const [pid,pv] of Object.entries(data.palettes||{}))await setDoc(doc(db,"palettes",pid),pv);
+    invalidateDesignsCache();
+    toast("تم الاستيراد بنجاح");
+  };
+  $("#seed").onclick=async()=>{if(confirm("سيستبدل هذا الإجراء التصاميم الحالية بـ 70 تصميماً بصور واقعية نظيفة (بدون بشر أو حيوانات). متابعة؟")){await seedAll(p=>{$("#mProg").hidden=false;$("#mTxt").textContent=p;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم زرع 70 تصميماً 🎉");}};
+  $("#wipe").onclick=async()=>{if(!confirm("تحذير: سيُحذف كل التصاميم وصورها نهائياً. متابعة؟"))return;$("#mProg").hidden=false;await clearAllDesigns((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`حذف ${i}/${t} ...`;});toast("تم حذف كل البيانات التجريبية");secBackup(m);};
+  $("#mig").onclick=async()=>{if(!confirm("ترحيل كل صور Base64 إلى Firebase Storage؟"))return;$("#mProg").hidden=false;await migrateToStorage((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`${i}/${t}`;});toast("اكتملت الهجرة");};
+}
+function makeSortable(tbody,onDone){
+  let dragId=null;
+  tbody.addEventListener("dragstart",e=>{dragId=e.target.closest("tr")?.dataset.id;e.target.closest("tr").style.opacity=.5;});
+  tbody.addEventListener("dragover",e=>{e.preventDefault();const tr=e.target.closest("tr");if(!tr||tr.dataset.id===dragId)return;tbody.querySelectorAll("tr").forEach(x=>x.classList.remove("dragover"));tr.classList.add("dragover");const rows=[...tbody.children];const from=rows.findIndex(x=>x.dataset.id===dragId),to=rows.findIndex(x=>x===tr);if(from<to)tr.after(rows[from]);else tr.before(rows[from]);});
+  tbody.addEventListener("dragend",async e=>{e.target.closest("tr").style.opacity=1;tbody.querySelectorAll("tr").forEach(x=>x.classList.remove("dragover"));const ids=[...tbody.children].map(x=>x.dataset.id);await onDone(ids);});
 }
 
 /* ============================================================
-   ✅ صور معمارية نقية 100% (خالية من البشر والحيوانات والعيون والتماثيل)
+   ✅ صور واقعية نظيفة: لا بشر، لا حيوانات، لا تماثيل
+   (استُبعدت كل صورة تحتوي رؤوس غزلان/ثيران أو أشخاص)
 ============================================================ */
-const u=(id,w=1000)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`;
-const ARCH_IMAGES={
-  living:[
-    "photo-1600210492486-724fe5c67fb0", // غرفة جلوس عصرية بيج
-    "photo-1618221195710-dd6b41faaea6", // صالة داخلية أثاث هندسي
-    "photo-1616486338812-3dadae4b4ace", // مجلس عصري فخم خالي
-    "photo-1600210491892-03d54c0aaf87"  // مقاعد خشبية معمارية
-  ],
-  bedroom:[
-    "photo-1540518614846-7eded433c457", // غرفة نوم هادئة خالية
-    "photo-1616594039964-ae9021a400a0", // سرير فندقي أبيض
-    "photo-1595526114035-0d45ed16cfbf"  // تفاصيل سرير خشبي
-  ],
-  exterior:[
-    "photo-1600596542815-ffad4c1539a9", // واجهة فيلا معمارية حجرية
-    "photo-1600607687939-ce8a6c25118c", // واجهة زجاجية حديثة
-    "photo-1512917774080-9991f1c4c750"  // تصميم خارجي راقي
-  ]
+const u=(id,w=1000)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=60`;
+const UNS={
+living:[
+"photo-1493809842364-78817add7ffb","photo-1522708323590-d24dbb6b0267",
+"photo-1502672260266-1c1ef2d93688","photo-1567767292278-a4f26aa2f082",
+"photo-1593696140826-c58b021acf8b","photo-1600210491892-03d54c0aaf87",
+"photo-1615873968403-89e068629265","photo-1616486029423-aaa4789e8c9a",
+"photo-1598928506311-c55ded91a20c","photo-1493663284031-b7e3aefcae8e"],
+bedroom:[
+"photo-1505691938895-1758d7feb511","photo-1540518614846-7eded433c457",
+"photo-1616594039964-ae9021a400a0","photo-1595526114035-0d45ed16cfbf",
+"photo-1631049307264-da0ec9d36412","photo-1566665797739-1674de7a421a",
+"photo-1617325247661-675ab4b64ae2","photo-1505693416388-ac5ce068fe85",
+"photo-1616594039964-ae9021a400a0?sat=-50","photo-1540518614846-7eded433c457?sat=-50"],
+bathroom:[
+"photo-1552321554-5fefe8c9ef14","photo-1620626011761-996317b8d101",
+"photo-1584622650111-993a426fbf0a","photo-1507652313519-d4e9174996dd",
+"photo-1600566752355-35792bedcfea","photo-1600566753086-00f18fb6b3ea",
+"photo-1620626011761-996317b8d101?sat=-60","photo-1552321554-5fefe8c9ef14?sat=-60",
+"photo-1584622650111-993a426fbf0a?sat=-60","photo-1507652313519-d4e9174996dd?sat=-60"],
+salon:[
+"photo-1600120399925-2d0bb2ed0d41","photo-1615873968403-89e068629265",
+"photo-1616486029423-aaa4789e8c9a","photo-1567016432779-094069958ea5",
+"photo-1600210491892-03d54c0aaf87","photo-1598928506311-c55ded91a20c",
+"photo-1600120399925-2d0bb2ed0d41?sat=-70","photo-1615873968403-89e068629265?sat=-70",
+"photo-1616486029423-aaa4789e8c9a?sat=-70","photo-1598928506311-c55ded91a20c?sat=-70"],
+kitchen:[
+"photo-1556911220-bff31c812dba","photo-1556909212-d5b604d0c90d",
+"photo-1600585154340-be6161a56a0c","photo-1600489000022-c2086d79f9d4",
+"photo-1588854337236-6889d631faa8","photo-1600585154526-990dced4db0d",
+"photo-1484154218962-a197022b5858","photo-1556910103-1c02745aae4d",
+"photo-1556911220-bff31c812dba?sat=-70","photo-1600585154340-be6161a56a0c?sat=-70"],
+kids:[
+"photo-1595428774223-ef52624120d2","photo-1617806118233-18e1de247200",
+"photo-1505691938895-1758d7feb511?sat=-40","photo-1540518614846-7eded433c457?sat=-40",
+"photo-1616594039964-ae9021a400a0?sat=-40","photo-1595428774223-ef52624120d2?sat=-40",
+"photo-1617806118233-18e1de247200?sat=-40","photo-1505691938895-1758d7feb511?sat=-70",
+"photo-1540518614846-7eded433c457?sat=-70","photo-1616594039964-ae9021a400a0?sat=-70"],
+exterior:[
+"photo-1600596542815-ffad4c1539a9","photo-1600607687939-ce8a6c25118c",
+"photo-1512917774080-9991f1c4c750","photo-1600585154526-990dced4db0d",
+"photo-1600047509807-ba8f99d2cdde","photo-1600607687920-4e2a09cf159d",
+"photo-1580587771525-78b9dba3b914","photo-1568605114967-8130f3a36994",
+"photo-1570129477492-45c003edd2be","photo-1600566753190-17f0baa2a6c3"]
 };
-
 function fallbackScene(){
-  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><rect width="800" height="600" fill="#12161F"/><path d="M100 450 L400 150 L700 450 Z" stroke="#E10600" stroke-width="4" fill="none"/><line x1="200" y1="450" x2="200" y2="350" stroke="#1E2430" stroke-width="3"/><line x1="600" y1="450" x2="600" y2="350" stroke="#1E2430" stroke-width="3"/><text x="400" y="520" font-family="sans-serif" font-size="24" fill="#9AA3B2" text-anchor="middle">تصميم معماري 3D</text></svg>`;
+  const c=["#3C4048","#5C6270","#9AA3B2","#D5D9E0","#22252B"];
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[2]}"/><stop offset="1" stop-color="${c[0]}"/></linearGradient></defs><rect width="800" height="430" fill="url(#w)"/><rect y="430" width="800" height="170" fill="${c[4]}"/><rect x="150" y="250" width="340" height="80" rx="22" fill="${c[1]}"/><rect x="150" y="300" width="340" height="120" rx="26" fill="${c[1]}"/><rect x="580" y="70" width="160" height="290" rx="6" fill="#ffffff" opacity=".18"/><text x="400" y="560" font-family="sans-serif" font-size="26" fill="#ffffff88" text-anchor="middle">صورة المعرض</text></svg>`;
   return "data:image/svg+xml;utf8,"+encodeURIComponent(s);
 }
-window.__imgErr=el=>{el.onerror=null; el.src=fallbackScene();};
+window.__imgErr=el=>{el.onerror=null;el.src=fallbackScene();};
 
-async function seedAll(){
-  const F=await fb();
-  const catRef=await F.addDoc(F.collection(F.db,"categories"),{name:"غرف معيشة ومجالس",slug:"living",order:1,createdAt:Date.now()});
-  const catExtRef=await F.addDoc(F.collection(F.db,"categories"),{name:"تصاميم واجهات وفلل",slug:"exterior",order:2,createdAt:Date.now()});
-
-  const des1=await F.addDoc(F.collection(F.db,"designs"),{
-    title:"مجلس مودرن — باقة رمال الصحراء", categoryId:catRef.id,
-    description:"تصميم معماري لمجلس عصري منفذ باحترافية عبر 3ds Max، خطوط معمارية ناعمة خالية تماماً من أي مجسمات أو عناصر لصور ذوات الأرواح.",
-    specs:[{name:"النمط",value:"عصري دافئ"},{name:"الإضاءة",value:"نهارية مخفية"}],
-    year:"2025", area:"140 م²", materials:"بورسلان ورخام كريمي", location:"الرياض، المملكة العربية السعودية", software:"3ds Max / V-Ray",
-    status:"published", featured:true, likesCount:18, viewsCount:124, thumbnail:u(ARCH_IMAGES.living[0],480),
-    createdAt:Date.now(), updatedAt:Date.now()
-  });
-  await F.setDoc(F.doc(F.db,"designs",des1.id,"images","img1"),{imageUrl:u(ARCH_IMAGES.living[0],1200),thumb:u(ARCH_IMAGES.living[0],480),order:0});
-  await F.setDoc(F.doc(F.db,"designs",des1.id,"images","img2"),{imageUrl:u(ARCH_IMAGES.living[1],1200),thumb:u(ARCH_IMAGES.living[1],480),order:1});
-
-  const des2=await F.addDoc(F.collection(F.db,"designs"),{
-    title:"واجهة فيلا نيو كلاسيك", categoryId:catExtRef.id,
-    description:"تصميم واجهة معمارية راقية باستخدام حجر الرياض الطبيعي والزجاج المزدوج بدون أي تماثيل أو كائنات.",
-    specs:[{name:"النمط",value:"نيو كلاسيك"},{name:"الواجهة",value:"حجر طبيعي وزجاج"}],
-    year:"2024", area:"550 م²", materials:"حجر الرياض", location:"جدة، المملكة العربية السعودية", software:"3ds Max / Corona",
-    status:"published", featured:true, likesCount:29, viewsCount:310, thumbnail:u(ARCH_IMAGES.exterior[0],480),
-    createdAt:Date.now()-10000, updatedAt:Date.now()
-  });
-  await F.setDoc(F.doc(F.db,"designs",des2.id,"images","img1"),{imageUrl:u(ARCH_IMAGES.exterior[0],1200),thumb:u(ARCH_IMAGES.exterior[0],480),order:0});
-  await F.setDoc(F.doc(F.db,"designs",des2.id,"images","img2"),{imageUrl:u(ARCH_IMAGES.exterior[1],1200),thumb:u(ARCH_IMAGES.exterior[1],480),order:1});
-
-  await F.setDoc(F.doc(F.db,"settings","site"),{heroImage:u(ARCH_IMAGES.exterior[0],1600)},{merge:true});
+const SEED_META={living:"غرفة جلوس",bedroom:"غرفة نوم",bathroom:"حمام",salon:"صالون",kitchen:"مطبخ",kids:"غرفة أطفال",exterior:"واجهة فيلا"};
+const CITIES=["الرياض، السعودية","جدة، السعودية","دبي، الإمارات","الدوحة، قطر","الكويت، الكويت","مسقط، عُمان","المنامة، البحرين","أبوظبي، الإمارات","عمّان، الأردن","الخبر، السعودية"];
+async function seedAll(progress=()=>{}){
+  const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs,deleteDoc}=F;
+  progress("تنظيف التصاميم القديمة...");
+  const old=await getDocs(collection(db,"designs"));
+  for(const od of old.docs){
+    const ims=await getDocs(collection(db,"designs",od.id,"images"));
+    for(const im of ims.docs) await deleteDoc(im.ref);
+    await deleteDoc(od.ref);
+  }
+  progress("التصنيفات والباقات...");
+  const catIds={};
+  const SEED_CATS=[["غرف جلوس","living"],["غرف نوم","bedroom"],["حمامات","bathroom"],["صالونات","salon"],["مطابخ","kitchen"],["غرف أطفال","kids"],["تصاميم خارجية","exterior"]];
+  for(let i=0;i<SEED_CATS.length;i++){
+    const [name,slug]=SEED_CATS[i];
+    const ex=await getDocs(collection(db,"categories"));
+    const found=ex.docs.find(dd=>dd.data().slug===slug);
+    catIds[slug]=found?found.id:(await addDoc(collection(db,"categories"),{name,slug,order:i,createdAt:Date.now()})).id;
+    await setDoc(doc(db,"palettes",catIds[slug]),{items:DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living},{merge:true});
+  }
+  let n=0;
+  for(const slug of Object.keys(UNS)){
+    const ids=UNS[slug], pals=DEFAULT_PALETTES[slug];
+    for(let i=0;i<10;i++){
+      const p=pals[i]; n++;
+      progress(`زرع التصاميم ${n}/70 ...`);
+      const typeName=SEED_META[slug];
+      const title=`${typeName} — باقة ${p.name}`;
+      const cover=u(ids[i],1000), coverThumb=u(ids[i],480), alt=u(ids[(i+5)%10],1000), altThumb=u(ids[(i+5)%10],480);
+      const dRef=await addDoc(collection(db,"designs"),{
+        title, categoryId:catIds[slug],
+        description:`تصميم ${typeName} منفذ بدقة عبر 3ds Max بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}، مع ${p.curtains} و${p.carpet}. إضاءة واقعية وخامات مدروسة.`,
+        specs:[{name:"الإضاءة",value:i%2?"نهارية + مخفية":"مسائية + ثريات"},{name:"النمط",value:(p.tags||[])[1]||"عصري"},{name:"الأرضيات",value:p.tiles}],
+        year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles,
+        location:CITIES[i%CITIES.length], software:"3D Max", modelUrl:"",
+        tags:[typeName,p.name,slug], colorTags:p.tags||[],
+        thumbnail:coverThumb, coverImageId:"i1", imagesCount:2,
+        likesCount:4+((i*7)%40), viewsCount:30+((i*53)%400),
+        featured:i<2, status:"published", order:n, createdAt:Date.now()-n*3600000, updatedAt:Date.now()
+      });
+      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{imageUrl:cover,thumb:coverThumb,order:0,width:1000,height:667,size:0,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{imageUrl:alt,thumb:altThumb,order:1,width:1000,height:667,size:0,chunked:false});
+    }
+  }
+  progress("الإعدادات النهائية...");
+  await setDoc(doc(db,"settings","site"),{heroImage:u(UNS.exterior[0],1600),colsDesktop:3,colsMobile:2},{merge:true});
+  progress("تم!");
 }
 
-/* ================= التوجيه والتشغيل ================= */
-route("/",renderHome);
-route("/portfolio",renderPortfolio);
-route("/design/:id",renderDesign);
-route("/about",renderAbout);
-route("/contact",renderContact);
-route("/404",render404);
-route("/admin",renderAdmin);
-
+route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
+route("/about",renderAbout); route("/contact",renderContact); route("/404",render404); route("/admin",renderAdmin);
 (async function boot(){
-  const minSplash=wait(1200);
+  const minSplash=wait(1500);
   try{
     await store.init();
     initShell();
@@ -1577,12 +1599,17 @@ route("/admin",renderAdmin);
     initBot();
   }catch(err){
     console.error(err);
-    initShell();
+    try{initShell();}catch{}
+    $("#app").innerHTML=`<div class="empty"><h2>تعذر تحميل البيانات</h2><p>تحقق من: 1) قواعد Firestore منشورة 2) إضافة نطاق الموقع في Authentication ← Settings ← Authorized domains</p><p style="font-size:.75rem;color:var(--muted);direction:ltr">${esc(String(err&&err.message||err)).slice(0,300)}</p></div>`;
   }
   await minSplash;
   $("#splash").classList.add("hide");
   setTimeout(()=>$("#splash")?.remove(),700);
   ensureAnon().then(u=>u&&loadMyLikes()).catch(()=>{});
+  try{const {db,doc,setDoc,increment}=await fb();
+    if(!sessionStorage.getItem("visit_"+new Date().toDateString())){sessionStorage.setItem("visit_"+new Date().toDateString(),"1");await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{visits:increment(1)},{merge:true});}
+  }catch{}
+  if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 })();
 </script>
 </body>
