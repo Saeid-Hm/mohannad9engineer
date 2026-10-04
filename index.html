@@ -551,47 +551,101 @@ const thumbOf=(fOrD,wm=false)=>typeof fOrD==="string"?compress(fOrD,{maxDim:480,
 /* ================= قراءة ألوان الصور تلقائياً (داخل المتصفح بلا أي مفتاح API) ================= */
 const _hex=(r,g,b)=>"#"+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("");
 function colorName(hex){
-  const n=parseInt(hex.slice(1),16),r=(n>>16)/255,g=((n>>8)&255)/255,b=(n&255)/255;
-  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
-  const s=d===0?0:d/(1-Math.abs(2*l-1));
+  const n=parseInt(String(hex).replace("#",""),16),r=(n>>16)/255,g=((n>>8)&255)/255,b=(n&255)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2;
+  const s=mx===0?0:d/mx;
   let h=0;
   if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}
-  if(l>0.93)return "أبيض";
-  if(l<0.13)return "أسود";
-  if(s<0.12)return l>0.8?"أبيض":"رمادي";
-  if(h<15||h>=345)return l<0.32?"عنابي":(l>0.8?"وردي":"أحمر");
-  if(h<45)return l>0.65?"بيج":(l<0.5?"بني":(s>0.7?"برتقالي":"بيج"));
-  if(h<68)return s<0.45?(l>0.55?"بيج":"بني"):(l<0.55?"ذهبي":"أصفر");
+  // الألوان شديدة السطوع/الانخفاض تُصنّف أولاً حتى لا تختلط مع درجات الأثاث المحايدة.
+  if(l>0.94&&s<0.10)return "أبيض";
+  if(l<0.10&&s<0.25)return "أسود";
+  if(s<0.14)return l>0.72?"أبيض":(l<0.30?"أسود":"رمادي");
+  if(h<12||h>=348)return l<0.28?"عنابي":"أحمر";
+  if(h<42)return l>0.72?"بيج":(s>0.62&&l>0.45?"برتقالي":"بني");
+  if(h<72)return s>0.28?(l<0.55?"ذهبي":"أصفر"):(l>0.58?"بيج":"بني");
   if(h<165)return "أخضر";
-  if(h<200)return "فيروزي";
+  if(h<205)return "فيروزي";
   if(h<258)return "أزرق";
-  if(h<292)return "بنفسجي";
-  return l<0.32?"عنابي":"وردي";
+  if(h<315)return "بنفسجي";
+  return l>0.58?"وردي":"عنابي";
 }
 const colorNames=cols=>[...new Set((cols||[]).map(colorName))];
-async function extractColors(src,n=5){
+
+/*
+ * استخراج الألوان بدون API:
+ * النسخة السابقة كانت ترتب الألوان حسب عدد البكسلات فقط، لذلك كان لون الجدران
+ * والرخام والبيج يطغى على الأحمر/الأصفر/البنفسجي حتى لو كانت هذه الألوان واضحة.
+ * الآن نعطي الألوان المشبعة وزناً أعلى، ونقسم درجات الطيف إلى قطاعات مستقلة،
+ * ثم نختار ألواناً متباعدة بصرياً مع الاحتفاظ ببعض الألوان المحايدة.
+ */
+async function extractColors(src,n=6){
   try{
     const img=await drawImg(src);
-    const W=56,H=Math.max(8,Math.round(W*img.height/img.width));
+    const W=96,H=Math.max(12,Math.round(W*img.height/img.width));
     const c=document.createElement("canvas"); c.width=W; c.height=H;
-    const ctx=c.getContext("2d",{willReadFrequently:true}); ctx.drawImage(img,0,0,W,H);
-    const px=ctx.getImageData(0,0,W,H).data, bins=new Map();
+    const ctx=c.getContext("2d",{willReadFrequently:true});
+    ctx.drawImage(img,0,0,W,H);
+    const px=ctx.getImageData(0,0,W,H).data;
+    const total=Math.max(1,px.length/4);
+    const chroma=new Map(), neutral=[];
     for(let i=0;i<px.length;i+=4){
-      if(px[i+3]<128)continue;
-      const r=px[i],g=px[i+1],b=px[i+2],k=((r>>4)<<8)|((g>>4)<<4)|(b>>4);
-      let o=bins.get(k); if(!o){o={n:0,r:0,g:0,b:0};bins.set(k,o);}
-      o.n++;o.r+=r;o.g+=g;o.b+=b;
+      if(px[i+3]<180)continue;
+      const r=px[i]/255,g=px[i+1]/255,b=px[i+2]/255;
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2;
+      const sat=mx===0?0:d/mx;
+      if(sat<0.16){
+        neutral.push({r:px[i],g:px[i+1],b:px[i+2],l});
+        continue;
+      }
+      let h=0;
+      if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}
+      const sector=Math.floor(h/10); // 36 قطاعات، كافية للفصل بين الأحمر/الأصفر/البنفسجي
+      let o=chroma.get(sector);
+      if(!o)o={count:0,score:0,r:0,g:0,b:0};
+      // اللون المشبع يحصل على وزن أكبر من الخلفية البيج/السمنية منخفضة التشبع.
+      const w=(0.35+2.8*sat+1.8*sat*sat)*(0.72+0.28*Math.min(1,l/0.55));
+      o.count++;o.score+=w;o.r+=px[i]*w;o.g+=px[i+1]*w;o.b+=px[i+2]*w;
+      chroma.set(sector,o);
     }
-    const arr=[...bins.values()].map(o=>{
-      const r=o.r/o.n,g=o.g/o.n,b=o.b/o.n,mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx?(mx-mn)/mx:0;
-      return {r,g,b,w:o.n*(1+sat*1.2)};
-    }).sort((a,b)=>b.w-a.w);
+    const minChromatic=Math.max(3,total*0.004); // تجاهل الضجيج/البكسلات القليلة جداً
+    const chromatic=[...chroma.entries()]
+      .filter(([,o])=>o.count>=minChromatic)
+      .map(([sector,o])=>({
+        type:"color",sector,score:o.score,count:o.count,
+        r:o.r/o.score,g:o.g/o.score,b:o.b/o.score
+      }))
+      .sort((a,b)=>b.score-a.score);
+
     const out=[];
-    for(const o of arr){
-      if(out.every(p=>Math.hypot(p.r-o.r,p.g-o.g,p.b-o.b)>58)){out.push(o);if(out.length>=n)break;}
+    // أولاً: الألوان الصريحة، مع فصل لا يسمح لدرجتين متقاربتين بأن تأخذا كل الخانات.
+    for(const o of chromatic){
+      const far=out.filter(x=>x.type==="color").every(x=>{
+        const diff=Math.abs(x.sector-o.sector),dist=Math.min(diff,36-diff);
+        return dist>=3;
+      });
+      if(far){out.push(o);if(out.length>=n)break;}
+    }
+
+    // ثانياً: لون محايد واحد/اثنان فقط إذا كانا بارزين فعلاً.
+    if(out.length<n&&neutral.length){
+      const bins=new Map();
+      for(const p of neutral){
+        const k=Math.max(0,Math.min(15,Math.floor(p.l*16)));
+        let o=bins.get(k);if(!o)o={count:0,r:0,g:0,b:0};
+        o.count++;o.r+=p.r;o.g+=p.g;o.b+=p.b;bins.set(k,o);
+      }
+      const ns=[...bins.values()].sort((a,b)=>b.count-a.count);
+      for(const o of ns){
+        if(o.count<Math.max(3,total*0.01))continue;
+        const h=_hex(o.r/o.count,o.g/o.count,o.b/o.count);
+        if(out.every(x=>Math.hypot((x.r||0)-o.r/o.count,(x.g||0)-o.g/o.count,(x.b||0)-o.b/o.count)>45)){
+          out.push({type:"neutral",r:o.r/o.count,g:o.g/o.count,b:o.b/o.count});
+          if(out.length>=n)break;
+        }
+      }
     }
     return out.map(o=>_hex(o.r,o.g,o.b));
-  }catch{return [];}
+  }catch(err){console.warn("extractColors",err);return [];}
 }
 
 const CHUNK=850*1024;
@@ -1119,7 +1173,7 @@ async function renderDesign(root,params,path){
         <div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area||"—")}</div>
         <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials||"—")}</div>
         <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
-        ${(d.colors||[]).length?`<div class="spec-row"><b>${icon("palette")} الألوان</b><div class="swatches" style="margin:0">${d.colors.map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div></div>`:""}
+        ${(d.colors||[]).length?`<div class="spec-row"><b>${icon("palette")} الألوان</b><div style="display:flex;flex-direction:column;gap:7px"><div class="swatches" style="margin:0">${d.colors.map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div><small style="color:var(--muted)">${esc(colorNames(d.colors).join("، "))}</small></div></div>`:""}
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
@@ -1473,15 +1527,22 @@ async function secDesigns(m){
   $("#addD").onclick=()=>editor(m,null);
   $("#bulkBtn").onclick=()=>$("#bulkFiles").click();
   $("#colorBtn").onclick=async()=>{
-    const F=await fb(); const todo=list.filter(x=>x.thumbnail&&!(x.colors&&x.colors.length));
-    if(!todo.length)return toast("كل التصاميم محللة الألوان مسبقاً");
+    const F=await fb();
+    // أعد التحليل لكل تصميم لديه صورة، حتى تُصلح الألوان القديمة التي تم استخراجها بالخوارزمية السابقة.
+    const todo=list.filter(x=>x.thumbnail);
+    if(!todo.length)return toast("لا توجد صور لتحليلها");
     let i=0,ok=0;
     for(const x of todo){
-      i++; $("#colorTxt").textContent=`${i}/${todo.length}`;
-      const cols=await extractColors(x.thumbnail);
-      if(cols.length>=2){await F.updateDoc(F.doc(F.db,"designs",x.id),{colors:cols,colorTags:[...new Set([...(x.colorTags||[]),...colorNames(cols)])]});ok++;}
+      i++; $("#colorTxt").textContent=`تحليل ${i}/${todo.length}`;
+      const cols=await extractColors(x.thumbnail,6);
+      if(cols.length>=2){
+        const names=colorNames(cols);
+        await F.updateDoc(F.doc(F.db,"designs",x.id),{colors:cols,colorTags:names});
+        ok++;
+      }
     }
-    invalidateDesignsCache(); toast(`تم تحليل ألوان ${ok} تصميم`); secDesigns(m);
+    $("#colorTxt").textContent="";
+    invalidateDesignsCache(); toast(`تمت إعادة تحليل ألوان ${ok} تصميم`); secDesigns(m);
   };
   $("#bulkFiles").onchange=async e=>{
     const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));
@@ -1626,8 +1687,11 @@ async function editor(m,d){
       else{const u=await Base64FirestoreAdapter.getImageUrl(id,coverKey);if(u)thumb=(await thumbOf(u)).data;}
     }
     const coverChanged=(coverKey||null)!==(d.coverImageId||null);
-    let cols=newCoverCols&&newCoverCols.length?newCoverCols:((thumb&&(coverChanged||!(d.colors&&d.colors.length)))?await extractColors(thumb):(d.colors||[]));
-    data.colors=cols; data.colorTags=[...new Set([...(data.colorTags||[]),...colorNames(cols)])];
+    // عند وجود صورة غلاف نعيد تحليلها دائماً، لأن بيانات الألوان القديمة قد تكون غير دقيقة.
+    let cols=thumb?await extractColors(thumb,6):(d.colors||[]);
+    data.colors=cols;
+    // الألوان المكتوبة يدوياً تبقى متاحة، لكن نضيف إليها أسماء الألوان المكتشفة فعلياً من الصورة.
+    data.colorTags=[...new Set([...(data.colorTags||[]),...colorNames(cols)])];
     data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
     await F.updateDoc(F.doc(F.db,"designs",id),data);
     invalidateDesignsCache();
