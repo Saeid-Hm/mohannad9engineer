@@ -302,6 +302,22 @@ async function fb(){
   return _fbApi;
 }
 
+/* ================= ذاكرة مؤقتة لجميع التصاميم (بدون فهارس) ================= */
+let _allDesignsCache=null;
+let _allDesignsPromise=null;
+async function getAllDesigns(){
+  if(_allDesignsCache) return _allDesignsCache;
+  if(_allDesignsPromise) return _allDesignsPromise;
+  _allDesignsPromise=(async()=>{
+    const {db,collection,getDocs}=await fb();
+    const snap=await getDocs(collection(db,"designs"));
+    _allDesignsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    return _allDesignsCache;
+  })();
+  return _allDesignsPromise;
+}
+function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=null; }
+
 /* ================= الإعدادات والتصنيفات (Cache + بث) ================= */
 const FALLBACK_SETTINGS={siteName:"بيت التصميم",initials:"AR",heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية منفذة عبر 3ds Max.",heroImage:"",accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:4,colsMobile:2,bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية منفذة بدقة عبر 3ds Max.",stats:{years:"5+",projects:"50+",satisfaction:"100%"},links:{whatsapp:"",instagram:"",twitter:"",facebook:""},contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},watermark:{enabled:false,text:""},adminPath:"/admin-panel"};
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
@@ -411,8 +427,8 @@ const Base64FirestoreAdapter={
     await deleteDoc(doc(db,"designs",designId,"images",imgId));
   },
   async listMeta(designId){
-    const {db,collection,query,orderBy,getDocs}=await fb();
-    const s=await getDocs(query(collection(db,"designs",designId,"images"),orderBy("order")));
+    const {db,collection,getDocs}=await fb();
+    const s=await getDocs(collection(db,"designs",designId,"images"));
     return s.docs.map(d=>({id:d.id,...d.data()}));
   }
 };
@@ -433,19 +449,19 @@ const FirebaseStorageAdapter={
 const storage=appConfig.storageMode==="storage"?FirebaseStorageAdapter:Base64FirestoreAdapter;
 async function migrateToStorage(onProgress){
   const F=await fb();
-  const designs=await F.getDocs(F.collection(F.db,"designs"));
+  const designs=await getAllDesigns();
   let i=0,total=0;
-  for(const d of designs.docs) total+=(await F.getDocs(F.collection(F.db,"designs",d.id,"images"))).size;
-  for(const d of designs.docs){
-    const imgs=await F.getDocs(F.collection(F.db,"designs",d.id,"images"));
-    for(const im of imgs.docs){
-      const data=im.data().data; i++; onProgress?.(i,total);
+  for(const d of designs) total+=(await Base64FirestoreAdapter.listMeta(d.id)).length;
+  for(const d of designs){
+    const imgs=await Base64FirestoreAdapter.listMeta(d.id);
+    for(const im of imgs){
+      const data=im.data; i++; onProgress?.(i,total);
       if(!data)continue;
       const bin=await (await fetch(data)).blob();
       const ref=F.storageApi.ref(F.storage,`designs/${d.id}/${im.id}`);
       await F.storageApi.uploadBytes(ref,bin,{contentType:bin.type});
       const imageUrl=await F.storageApi.getDownloadURL(ref);
-      await F.updateDoc(im.ref,{imageUrl});
+      await F.updateDoc(F.doc(F.db,"designs",d.id,"images",im.id),{imageUrl});
     }
   }
 }
@@ -494,6 +510,7 @@ async function toggleLike(id,btn,countEl){
       if(l.exists()){t.delete(lRef);t.update(dRef,{likesCount:Math.max(0,c-1)});}
       else{t.set(lRef,{designId:id,uid:u,createdAt:Date.now()});t.update(dRef,{likesCount:c+1});}
     });
+    invalidateDesignsCache();
   }catch(e){
     liked?myLikes.add(id):myLikes.delete(id);
     paintLike(btn,id); if(countEl)countEl.textContent=Math.max(0,(+countEl.textContent||0)+(liked?1:-1));
@@ -582,7 +599,7 @@ const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="s
 const emptyState=(msg="لا توجد تصاميم بعد")=>`<div class="empty">${icon("image")}<p>${esc(msg)}</p></div>`;
 const bindCards=root=>bindLikeButtons(root);
 
-/* ================= الصفحات العامة ================= */
+/* ================= الصفحات العامة (بدون فهارس: ترتيب وترشيح في الذاكرة) ================= */
 async function renderHome(root){
   const s=settings;
   root.innerHTML=`
@@ -598,11 +615,17 @@ async function renderHome(root){
     <div class="section-head"><h2 class="section-title">أحدث المشاريع</h2><a class="link-accent" href="#/portfolio">عرض الكل ${icon("chevL")}</a></div>
     <div id="homeGrid">${skeletonGrid(8)}</div>
   </section>`;
-  const {db,collection,query,where,orderBy,limit,getDocs}=await fb();
-  let snap=await getDocs(query(collection(db,"designs"),where("status","==","published"),where("featured","==",true),limit(8)));
-  if(snap.empty)snap=await getDocs(query(collection(db,"designs"),where("status","==","published"),orderBy("createdAt","desc"),limit(8)));
+  const all=await getAllDesigns();
+  const published=all.filter(d=>d.status==="published");
+  let items=published.filter(d=>d.featured===true);
+  if(items.length<8){
+    const sorted=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+    items=sorted.slice(0,8);
+  }else{
+    items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8);
+  }
   const grid=$("#homeGrid");
-  grid.innerHTML=snap.empty?emptyState():`<div class="grid">${snap.docs.map(d=>designCard(d.data(),store.catName(d.data().categoryId))).join("")}</div>`;
+  grid.innerHTML=items.length?`<div class="grid">${items.map(d=>designCard(d,store.catName(d.categoryId))).join("")}</div>`:emptyState();
   bindCards(grid);
 }
 async function renderAbout(root){
@@ -651,10 +674,10 @@ async function renderContact(root){
 }
 function render404(root){root.innerHTML=`<div class="empty" style="padding:120px 20px">${icon("search")}<h1>404</h1><p>الصفحة التي تبحث عنها غير موجودة</p><a class="btn" href="#/">العودة للرئيسية</a></div>`;}
 
-/* ================= المعرض ================= */
+/* ================= المعرض (بدون فهارس: استعلام واحد + ترشيح وترتيب في الذاكرة) ================= */
 let pState=null;
 async function renderPortfolio(root,params){
-  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],cursors:[],done:false,loading:false};
+  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
     <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية المنفذة عبر 3ds Max.</p>
@@ -684,34 +707,25 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){pState.items=[];pState.cursors=[];pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
+async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
-  const {db,collection,query,where,orderBy,limit,getDocs,startAfter}=await fb();
-  let docs=[]; const orderF=pState.sort==="likes"?"likesCount":"createdAt";
+  const all=await getAllDesigns();
+  let pool=all.filter(d=>d.status==="published");
+  if(pState.cat) pool=pool.filter(d=>d.categoryId===catIdBySlug(pState.cat));
+  if(pState.color) pool=pool.filter(d=>(d.colorTags||[]).includes(pState.color));
   if(pState.q){
-    const base=[where("status","==","published")];
-    if(pState.cat)base.push(where("categoryId","==",catIdBySlug(pState.cat)));
-    const s=await getDocs(query(collection(db,"designs"),...base,limit(300)));
     const q=pState.q.toLowerCase();
-    docs=s.docs.filter(d=>{const x=d.data();return (x.title||"").toLowerCase().includes(q)||(x.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(x.categoryId).toLowerCase().includes(q);});
-    docs.sort((a,b)=>(b.data()[orderF]||0)-(a.data()[orderF]||0));
-    pState.done=true;
-  }else if(pState.color){
-    const base=[where("status","==","published"),where("colorTags","array-contains-any",[pState.color])];
-    if(pState.cat)base.push(where("categoryId","==",catIdBySlug(pState.cat)));
-    const s=await getDocs(query(collection(db,"designs"),...base,orderBy(orderF,"desc"),limit(50)));
-    docs=s.docs; pState.done=true;
-  }else{
-    const base=[where("status","==","published")];
-    if(pState.cat)base.push(where("categoryId","==",catIdBySlug(pState.cat)));
-    let qy=query(collection(db,"designs"),...base,orderBy(orderF,"desc"),limit(appConfig.pageSize));
-    if(pState.cursors.length)qy=query(collection(db,"designs"),...base,orderBy(orderF,"desc"),startAfter(pState.cursors[pState.cursors.length-1]),limit(appConfig.pageSize));
-    const s=await getDocs(qy); docs=s.docs;
-    if(docs.length<appConfig.pageSize)pState.done=true; else pState.cursors.push(docs[docs.length-1]);
+    pool=pool.filter(d=>(d.title||"").toLowerCase().includes(q)||(d.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(d.categoryId).toLowerCase().includes(q));
   }
-  pState.items.push(...docs.map(d=>({id:d.id,...d.data()})));
+  const orderF=pState.sort==="likes"?"likesCount":"createdAt";
+  pool.sort((a,b)=>(b[orderF]||0)-(a[orderF]||0));
+  const start=pState.page*appConfig.pageSize, end=start+appConfig.pageSize;
+  const slice=pool.slice(start,end);
+  pState.items.push(...slice);
+  if(slice.length<appConfig.pageSize||end>=pool.length) pState.done=true;
+  pState.page++;
   paintGrid(); pState.loading=false;
 }
 function paintGrid(){
@@ -720,16 +734,16 @@ function paintGrid(){
   bindCards(g); $("#more").hidden=pState.done;
 }
 
-/* ================= صفحة التفصيل ================= */
+/* ================= صفحة التفصيل (بدون فهارس: ترشيح مشابهة في الذاكرة) ================= */
 async function renderDesign(root,params,path){
   const id=path.split("/")[2];
-  const {db,doc,getDoc,collection,query,orderBy,getDocs,updateDoc,increment,where,limit}=await fb();
+  const {db,doc,getDoc,collection,query,orderBy,getDocs,updateDoc,increment}=await fb();
   const snap=await getDoc(doc(db,"designs",id));
   if(!snap.exists()||(snap.data().status!=="published"&&!sessionStorage.getItem("ap_isadmin")))return render404(root);
   const d={id,...snap.data()};
   if(!sessionStorage.getItem("viewed_"+id)){sessionStorage.setItem("viewed_"+id,"1");updateDoc(doc(db,"designs",id),{viewsCount:increment(1)}).catch(()=>{});}
-  const imgsSnap=await getDocs(query(collection(db,"designs",id,"images"),orderBy("order")));
-  const imgs=imgsSnap.docs.map(x=>({id:x.id,...x.data()}));
+  const imgsSnap=await getDocs(collection(db,"designs",id,"images"));
+  const imgs=imgsSnap.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
   const thumbs=imgs.map(i=>i.thumb||d.thumbnail).filter(Boolean);
   const main0=imgs.find(i=>i.id===d.coverImageId)?.thumb||d.thumbnail||"";
   const specs=(d.specs||[]).filter(s=>s.name);
@@ -775,9 +789,10 @@ async function renderDesign(root,params,path){
     if(confirm("مشاركة عبر واتساب؟\n(موافق = واتساب / إلغاء = نسخ الرابط)"))window.open(`https://wa.me/?text=${encodeURIComponent(d.title+" "+url())}`);
     else{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}
   };
-  const sim=await getDocs(query(collection(db,"designs"),where("status","==","published"),where("categoryId","==",d.categoryId),limit(5)));
-  const list=sim.docs.filter(x=>x.id!==id).slice(0,4);
-  $("#sim").innerHTML=list.length?`<div class="grid">${list.map(x=>designCard({id:x.id,...x.data()},store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
+  // تصاميم مشابهة من الذاكرة (بدون فهارس)
+  const all=await getAllDesigns();
+  const list=all.filter(x=>x.status==="published"&&x.categoryId===d.categoryId&&x.id!==id).slice(0,4);
+  $("#sim").innerHTML=list.length?`<div class="grid">${list.map(x=>designCard(x,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
   bindCards($("#sim"));
   document.title=`${d.title} | ${settings.siteName}`;
   const md=document.querySelector('meta[name="description"]'); if(md)md.setAttribute("content",(d.description||d.title).slice(0,150));
@@ -970,9 +985,9 @@ async function paintSection(){
   ({designs:secDesigns,cats:secCats,palettes:secPalettes,look:secLook,general:secGeneral,msgs:secMsgs,stats:secStats,backup:secBackup})[aSec](m);
 }
 async function secDesigns(m){
-  const {db,collection,query,orderBy,getDocs,deleteDoc,doc,writeBatch}=await fb();
-  const s=await getDocs(query(collection(db,"designs"),orderBy("order")));
-  const list=s.docs.map(d=>({id:d.id,...d.data()}));
+  const {db,collection,getDocs,deleteDoc,doc,writeBatch}=await fb();
+  const all=await getAllDesigns();
+  const list=[...all].sort((a,b)=>(a.order||0)-(b.order||0));
   m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2>التصاميم (${list.length})</h2><button class="btn sm" id="addD">${icon("plus")} إضافة تصميم</button></div>
   <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
   <table class="admin-table"><thead><tr><th></th><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب/مشاهدة</th><th></th></tr></thead>
@@ -984,10 +999,10 @@ async function secDesigns(m){
     if(del&&confirm("حذف التصميم وكل صوره؟ لا يمكن التراجع.")){
       const imgs=await Base64FirestoreAdapter.listMeta(del.dataset.del);
       for(const im of imgs)await Base64FirestoreAdapter.deleteImage(del.dataset.del,im.id);
-      await deleteDoc(doc(db,"designs",del.dataset.del)); toast("تم الحذف"); secDesigns(m);
+      await deleteDoc(doc(db,"designs",del.dataset.del)); invalidateDesignsCache(); toast("تم الحذف"); secDesigns(m);
     }
   };
-  makeSortable($("#dRows"),async ids=>{const b=writeBatch(db);ids.forEach((id,i)=>b.update(doc(db,"designs",id),{order:i}));await b.commit();toast("تم الترتيب");});
+  makeSortable($("#dRows"),async ids=>{const b=writeBatch(db);ids.forEach((id,i)=>b.update(doc(db,"designs",id),{order:i}));await b.commit();invalidateDesignsCache();toast("تم الترتيب");});
 }
 async function editor(m,d){
   d=d?{...d}:{title:"",categoryId:store.categories[0]?.id||"",description:"",specs:[],year:"",area:"",materials:"",location:"",software:"3D Max",tags:[],colorTags:[],status:"published",featured:false,order:999};
@@ -1088,13 +1103,14 @@ async function editor(m,d){
     }
     data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
     await F.updateDoc(F.doc(F.db,"designs",id),data);
+    invalidateDesignsCache();
     toast("تم الحفظ بنجاح"); secDesigns(m);
   };
 }
 async function secCats(m){
-  const {db,collection,query,orderBy,getDocs,addDoc,updateDoc,deleteDoc,doc,writeBatch}=await fb();
-  const s=await getDocs(query(collection(db,"categories"),orderBy("order")));
-  const list=s.docs.map(x=>({id:x.id,...x.data()}));
+  const {db,collection,getDocs,addDoc,updateDoc,deleteDoc,doc,writeBatch}=await fb();
+  const s=await getDocs(collection(db,"categories"));
+  const list=s.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
   m.innerHTML=`<h2>التصنيفات</h2><div style="display:flex;gap:8px;margin:12px 0"><input class="input" id="nc" placeholder="اسم التصنيف الجديد"><button class="btn sm" id="ac">${icon("plus")} إضافة</button></div>
   <table class="admin-table"><tbody id="cRows">${list.map(c=>`<tr draggable="true" data-id="${c.id}"><td>${icon("drag")}</td><td><input class="input" data-ren="${c.id}" value="${esc(c.name)}" style="padding:6px 10px"></td><td style="display:flex;gap:6px"><button class="mini-btn" data-del="${c.id}">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
   $("#ac").onclick=async()=>{const n=$("#nc").value.trim();if(!n)return;await addDoc(collection(db,"categories"),{name:n,slug:"c"+uid(),order:list.length,createdAt:Date.now()});toast("تمت الإضافة — ظهرت فوراً في الموقع والبوت");secCats(m);};
@@ -1190,9 +1206,10 @@ function secGeneral(m){
   };
 }
 async function secMsgs(m){
-  const {db,collection,query,orderBy,getDocs,updateDoc,deleteDoc,doc}=await fb();
-  const s=await getDocs(query(collection(db,"messages"),orderBy("createdAt","desc")));
-  m.innerHTML=`<h2>الرسائل (${s.size})</h2>`+(s.empty?`<div class="empty">${icon("msg")}<p>لا رسائل بعد</p></div>`:s.docs.map(dd=>{const x=dd.data();return `<div class="msg-item ${x.read?"":"unread"}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.name)}</b><small style="color:var(--muted)">${fmtDate(x.createdAt)}</small></div><p style="color:var(--muted);font-size:.85rem" dir="auto">${esc(x.text)}</p><small style="color:var(--muted)" dir="ltr">${esc(x.phone||"")} ${esc(x.email||"")}</small><div style="margin-top:8px;display:flex;gap:6px"><button class="mini-btn" data-r="${dd.id}" title="مقروء">${icon("check")}</button><button class="mini-btn" data-del="${dd.id}" title="حذف">${icon("trash")}</button></div></div>`;}).join(""));
+  const {db,collection,getDocs,updateDoc,deleteDoc,doc}=await fb();
+  const s=await getDocs(collection(db,"messages"));
+  const list=s.docs.map(dd=>({id:dd.id,...dd.data()})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  m.innerHTML=`<h2>الرسائل (${list.length})</h2>`+(list.length===0?`<div class="empty">${icon("msg")}<p>لا رسائل بعد</p></div>`:list.map(dd=>{const x=dd;return `<div class="msg-item ${x.read?"":"unread"}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(x.name)}</b><small style="color:var(--muted)">${fmtDate(x.createdAt)}</small></div><p style="color:var(--muted);font-size:.85rem" dir="auto">${esc(x.text)}</p><small style="color:var(--muted)" dir="ltr">${esc(x.phone||"")} ${esc(x.email||"")}</small><div style="margin-top:8px;display:flex;gap:6px"><button class="mini-btn" data-r="${dd.id}" title="مقروء">${icon("check")}</button><button class="mini-btn" data-del="${dd.id}" title="حذف">${icon("trash")}</button></div></div>`;}).join(""));
   m.onclick=async e=>{
     const r=e.target.closest("[data-r]"),del=e.target.closest("[data-del]");
     if(r){await updateDoc(doc(db,"messages",r.dataset.r),{read:true});secMsgs(m);}
@@ -1200,16 +1217,17 @@ async function secMsgs(m){
   };
 }
 async function secStats(m){
-  const {db,doc,getDoc,collection,query,orderBy,limit,getDocs}=await fb();
+  const {db,doc,getDoc}=await fb();
   const today=await getDoc(doc(db,"stats",new Date().toISOString().slice(0,10)));
   const st=today.data()||{};
-  const topL=await getDocs(query(collection(db,"designs"),orderBy("likesCount","desc"),limit(5)));
-  const topV=await getDocs(query(collection(db,"designs"),orderBy("viewsCount","desc"),limit(5)));
+  const all=await getAllDesigns();
+  const topL=[...all].sort((a,b)=>(b.likesCount||0)-(a.likesCount||0)).slice(0,5);
+  const topV=[...all].sort((a,b)=>(b.viewsCount||0)-(a.viewsCount||0)).slice(0,5);
   const catClicks=Object.entries(st).filter(([k])=>k.startsWith("cat_"));
   m.innerHTML=`<h2>إحصائيات اليوم</h2>
   <div class="stat-cards"><div class="stat-card"><b>${st.visits||0}</b><span>زيارات</span></div><div class="stat-card"><b>${st.botOpens||0}</b><span>فتح البوت</span></div>${catClicks.map(([k,v])=>`<div class="stat-card"><b>${v}</b><span>نقر بوت: ${esc(store.categories.find(c=>c.slug===k.slice(4))?.name||k.slice(4))}</span></div>`).join("")}</div>
-  <div class="form-grid" style="margin-top:20px"><div><h3>الأكثر إعجاباً</h3><table class="admin-table">${topL.docs.map(dd=>`<tr><td>${esc(dd.data().title)}</td><td>${dd.data().likesCount||0} ♥</td></tr>`).join("")}</table></div>
-  <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.docs.map(dd=>`<tr><td>${esc(dd.data().title)}</td><td>${dd.data().viewsCount||0} 👁</td></tr>`).join("")}</table></div></div>`;
+  <div class="form-grid" style="margin-top:20px"><div><h3>الأكثر إعجاباً</h3><table class="admin-table">${topL.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.likesCount||0} ♥</td></tr>`).join("")}</table></div>
+  <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.viewsCount||0} 👁</td></tr>`).join("")}</table></div></div>`;
 }
 async function secBackup(m){
   m.innerHTML=`<h2>نسخ احتياطي وأدوات</h2>
@@ -1235,9 +1253,10 @@ async function secBackup(m){
     for(const c of data.categories||[])await setDoc(doc(db,"categories",c.id),c,{merge:true});
     for(const dd of data.designs||[]){const {images,id,...rest}=dd;await setDoc(doc(db,"designs",id),rest,{merge:true});for(const im of images||[])await setDoc(doc(db,"designs",id,"images",im.id),im,{merge:true});}
     for(const [pid,pv] of Object.entries(data.palettes||{}))await setDoc(doc(db,"palettes",pid),pv);
+    invalidateDesignsCache();
     toast("تم الاستيراد بنجاح");
   };
-  $("#seed").onclick=async()=>{if(confirm("زرع بيانات تجريبية؟")){await seedAll(p=>$("#mTxt").textContent=p);toast("تم زرع البيانات");}};
+  $("#seed").onclick=async()=>{if(confirm("زرع بيانات تجريبية؟")){await seedAll(p=>$("#mTxt").textContent=p);invalidateDesignsCache();toast("تم زرع البيانات");}};
   $("#mig").onclick=async()=>{if(!confirm("ترحيل كل صور Base64 إلى Firebase Storage؟"))return;$("#mProg").hidden=false;await migrateToStorage((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`${i}/${t}`;});toast("اكتملت الهجرة");};
 }
 function makeSortable(tbody,onDone){
