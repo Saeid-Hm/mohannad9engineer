@@ -1,0 +1,12 @@
+{
+  "name": "معرض التصاميم الهندسية",
+  "short_name": "المعرض",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0B0E14",
+  "theme_color": "#0B0E14",
+  "dir": "rtl",
+  "lang": "ar",
+  "icons": [{ "src": "./icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
