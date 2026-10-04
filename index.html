@@ -7,8 +7,8 @@
 <meta name="description" content="معرض تصاميم داخلية وخارجية منفذة عبر 3ds Max">
 <meta property="og:title" content="معرض التصاميم"><meta property="og:description" content="تصاميم داخلية وخارجية بمنتهى الإتقان">
 <meta property="og:type" content="website"><meta name="theme-color" content="#0B0E14">
-<link rel="manifest" href="./manifest.json">
-<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230B0E14%27/%3E%3Cpath d=%27M12 50 32 12l20 38M20 38h24%27 fill=%27none%27 stroke=%27%23E10600%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -17,7 +17,6 @@
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font),system-ui,sans-serif;font-size:1rem;line-height:1.7;overflow-x:hidden}
-body.lb-open{overflow:hidden}
 img{max-width:100%;display:block}
 a{color:inherit;text-decoration:none}
 button{font-family:inherit;color:inherit}
@@ -257,6 +256,17 @@ input[type=range]{accent-color:var(--accent);flex:1}
 .toast{background:var(--card);border:1px solid var(--line);border-inline-start:3px solid var(--accent);border-radius:10px;padding:10px 18px;font-size:.85rem;box-shadow:var(--shadow);animation:tin .3s ease}
 .toast.err{border-inline-start-color:#ff5c5c}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}}
+.lightbox{overscroll-behavior:contain}
+.v3{position:fixed;inset:0;z-index:170;background:#05070a;display:flex;flex-direction:column;touch-action:none;overscroll-behavior:contain}
+.v3-top{display:flex;align-items:center;gap:10px;padding:10px 14px;padding-top:calc(10px + env(safe-area-inset-top));background:rgba(18,22,31,.96);border-bottom:1px solid var(--line);flex-wrap:wrap}
+.v3-top h3{margin:0;font-size:.95rem;flex:1;min-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v3-tools{display:flex;gap:6px;flex-wrap:wrap}
+.v3-stage{position:relative;flex:1;min-height:0;overflow:hidden}
+.v3-stage canvas{display:block;width:100%;height:100%;cursor:grab;touch-action:none;outline:none}
+.v3-stage canvas:active{cursor:grabbing}
+.v3-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);max-width:92%;background:rgba(18,22,31,.85);border:1px solid var(--line);border-radius:99px;padding:6px 16px;font-size:.78rem;color:var(--muted);pointer-events:none;text-align:center;transition:opacity .5s}
+.v3-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);background:#05070a;z-index:2;text-align:center;padding:20px}
+.dropzone.has{border-color:var(--accent);color:var(--text)}
 </style>
 </head>
 <body>
@@ -320,8 +330,15 @@ const bytes=b64=>Math.round((b64.length-(b64.indexOf(",")+1))*0.75);
 const fmtDate=ts=>{try{return new Date(ts?.seconds?ts.seconds*1000:ts).toLocaleDateString("ar-SA");}catch{return "";}};
 function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
 function toast(msg,type="ok"){const t=document.createElement("div");t.className="toast"+(type==="err"?" err":"");t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),400);},3200);}
-/* ✅ لا أيقونات عيون/وجوه/أيدي إطلاقاً — كل الرموز هندسية أو قلوب/نجوم */
-const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<path d="M4 20c1.2-3.4 4.4-5 8-5s6.8 1.6 8 5M12 4l4 4-4 4-4-4z"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',cube:'<path d="M12 2 21 7v10l-9 5-9-5V7z"/><path d="M12 12 21 7M12 12v10M12 12 3 7"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
+const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M8.5 14a4.5 4.5 0 0 0 7 0"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
+Object.assign(IP,{
+ user:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M7 10h6M7 14h10"/>',
+ eye:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+ eyeoff:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/>',
+ smile:'<circle cx="12" cy="12" r="9"/><path d="m8 12.2 2.7 2.7L16 9.5"/>',
+ cube:'<path d="M12 3 3.5 7.6v8.8L12 21l8.5-4.6V7.6L12 3z"/><path d="M3.5 7.6 12 12.2l8.5-4.6M12 12.2V21"/>',
+ theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor"/>'
+});
 const icon=(n,cls="")=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||""}</svg>`;
 
 /* ================= Firebase ================= */
@@ -341,6 +358,7 @@ async function fb(){
   return _fbApi;
 }
 
+const isOldStock=d=>/images\.unsplash\.com/.test(d.thumbnail||"");
 let _allDesignsCache=null;
 let _allDesignsPromise=null;
 async function getAllDesigns(){
@@ -353,13 +371,14 @@ async function getAllDesigns(){
       ? await F.getDocs(F.collection(F.db,"designs"))
       : await F.getDocs(F.query(F.collection(F.db,"designs"),F.where("status","==","published")));
     _allDesignsCache=snap.docs.map(dd=>({id:dd.id,...dd.data()}));
+    if(!adminSession)_allDesignsCache=_allDesignsCache.filter(d=>!isOldStock(d));
     return _allDesignsCache;
   })();
   return _allDesignsPromise;
 }
 function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=null; }
 
-/* ================= الإعدادات ================= */
+/* ================= الإعدادات مع حقول المهندس ================= */
 const FALLBACK_SETTINGS={
   siteName:"بيت التصميم",initials:"AR",
   engineerName:"م. مهند المعماري",engineerTitle:"مهندس معماري ومصمم داخلي",engineerInitial:"M",
@@ -371,6 +390,7 @@ const FALLBACK_SETTINGS={
   contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},
   watermark:{enabled:false,text:""},adminPath:"/admin-panel"
 };
+const cleanSettings=s=>{if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
 const store={
   get settings(){return settings;},
@@ -378,11 +398,11 @@ const store={
   onChange(fn){_sListeners.push(fn);},
   catName(id){return categories.find(c=>c.id===id)?.name||"غير مصنف";},
   async init(){
-    try{const s=localStorage.getItem("ap_settings");if(s)settings={...FALLBACK_SETTINGS,...JSON.parse(s)};}catch{}
+    try{const s=localStorage.getItem("ap_settings");if(s)settings=cleanSettings({...FALLBACK_SETTINGS,...JSON.parse(s)});}catch{}
     try{const c=localStorage.getItem("ap_categories");if(c)categories=JSON.parse(c);}catch{}
     applyTheme();
     const {db,doc,onSnapshot,collection}=await fb();
-    onSnapshot(doc(db,"settings","site"),snap=>{if(snap.exists()){settings={...FALLBACK_SETTINGS,...snap.data()};localStorage.setItem("ap_settings",JSON.stringify(settings));applyTheme();_sListeners.forEach(f=>f("settings"));}},()=>{});
+    onSnapshot(doc(db,"settings","site"),snap=>{if(snap.exists()){settings=cleanSettings({...FALLBACK_SETTINGS,...snap.data()});localStorage.setItem("ap_settings",JSON.stringify(settings));applyTheme();_sListeners.forEach(f=>f("settings"));}},()=>{});
     onSnapshot(collection(db,"categories"),snap=>{categories=snap.docs.map(dd=>({id:dd.id,...dd.data()}));localStorage.setItem("ap_categories",JSON.stringify(categories));_sListeners.forEach(f=>f("categories"));},()=>{});
   }
 };
@@ -407,6 +427,7 @@ function parseHash(){const raw=location.hash.replace(/^#/,"")||"/";const [path,q
 async function startRouter(){
   const go=async()=>{
     const {path,params}=parseHash(); _curPath=path;
+    stopAdminWatch(); close3D(); if(lbOpen)closeLightbox();
     const adminPath=settings.adminPath||"/admin-panel";
     const root=$("#app"); root.innerHTML="";
     $("#drawer").classList.remove("open"); $("#drawerOverlay").classList.remove("show"); $("#drawerOverlay").hidden=true;
@@ -439,9 +460,11 @@ async function compress(dataUrl,{maxDim=1600,quality=0.82,watermark=false}={}){
 }
 async function compressToFit(file,{maxDim=1600,quality=0.82,watermark=false}={}){
   const src=await loadFile(file);
+  let isPano=false;
+  if(maxDim>=1600){const pr=await drawImg(src);const ar=pr.width/pr.height;if(ar>1.9&&ar<2.1&&pr.width>=2000){isPano=true;maxDim=3000;watermark=false;}}
   let out=await compress(src,{maxDim,quality,watermark}), q=quality, dim=maxDim;
   for(let i=0;i<6&&out.size>900*1024;i++){q=Math.max(0.45,q-0.1);dim=Math.round(dim*0.85);out=await compress(src,{maxDim:dim,quality:q,watermark});}
-  out.saved=Math.max(0,Math.round((1-out.size/file.size)*100));
+  out.saved=Math.max(0,Math.round((1-out.size/file.size)*100)); out.pano=isPano;
   return out;
 }
 const thumbOf=(fOrD,wm=false)=>typeof fOrD==="string"?compress(fOrD,{maxDim:480,quality:0.75,watermark:wm}):compressToFit(fOrD,{maxDim:480,quality:0.75,watermark:wm});
@@ -557,7 +580,7 @@ async function toggleLike(id,btn,countEl){
       if(l.exists()){t.delete(lRef);t.update(dRef,{likesCount:Math.max(0,c-1)});}
       else{t.set(lRef,{designId:id,uid:u,createdAt:Date.now()});t.update(dRef,{likesCount:c+1});}
     });
-    invalidateDesignsCache();
+    const cd=(_allDesignsCache||[]).find(x=>x.id===id); if(cd)cd.likesCount=Math.max(0,(cd.likesCount||0)+(liked?-1:1));
   }catch(e){
     liked?myLikes.add(id):myLikes.delete(id);
     paintLike(btn,id); if(countEl)countEl.textContent=Math.max(0,(+countEl.textContent||0)+(liked?1:-1));
@@ -565,47 +588,59 @@ async function toggleLike(id,btn,countEl){
   }
 }
 
-/* ============================================================
-   ✅ عارض الصور المُصلح: الأزرار والأسهم والإغلاق تعمل دائماً
-   (لم نعد نأسر المؤشر عند الضغط على الأزرار)
-============================================================ */
-let lbImgs=[],lbIdx=0,lbScale=1,lbTx=0,lbTy=0; const lbPointers=new Map(); let lbPinch0=0,lbScale0=1;
+/* ================= قفل تمرير الصفحة أثناء العارض ================= */
+let _lockY=0,_locks=0;
+function lockScroll(){
+  if(_locks++>0)return;
+  _lockY=window.scrollY; const b=document.body;
+  b.style.position="fixed"; b.style.top=`-${_lockY}px`; b.style.left="0"; b.style.right="0"; b.style.width="100%";
+}
+function unlockScroll(){
+  if(_locks===0||--_locks>0)return;
+  const b=document.body; b.style.position=b.style.top=b.style.left=b.style.right=b.style.width="";
+  window.scrollTo({top:_lockY,behavior:"instant"});
+}
+
+/* ================= عارض الصور (مُصلح: الأسهم والإغلاق يعملان) ================= */
+let lbImgs=[],lbIdx=0,lbScale=1,lbTx=0,lbTy=0,lbOpen=false,lbDX=0; const lbPointers=new Map(); let lbPinch0=0,lbScale0=1;
+function lbKey(e){
+  if(e.key==="Escape")closeLightbox();
+  else if(e.key==="ArrowRight")lbStep(-1);
+  else if(e.key==="ArrowLeft")lbStep(1);
+}
 function closeLightbox(){
-  const lb=$("#lightbox");
-  lb.setAttribute("hidden","");
-  lb.style.display="none";
-  document.body.classList.remove("lb-open");
-  document.onkeydown=null;
+  const lb=$("#lightbox"); if(!lb)return;
+  lb.setAttribute("hidden",""); lb.style.display="none"; lb.innerHTML="";
+  lb.onpointerdown=lb.onpointermove=lb.onpointerup=lb.onpointercancel=lb.onwheel=lb.onclick=null;
+  document.removeEventListener("keydown",lbKey); lbPointers.clear();
+  if(lbOpen){lbOpen=false;unlockScroll();}
 }
 function openLightbox(list,start=0){
-  lbImgs=list; lbIdx=start; lbScale=1; lbTx=lbTy=0; lbPointers.clear();
+  if(!list||!list.length)return;
+  lbImgs=list; lbIdx=Math.max(0,Math.min(start,list.length-1)); lbScale=1; lbTx=lbTy=0; lbDX=0;
   const lb=$("#lightbox");
-  lb.removeAttribute("hidden");
-  lb.style.display="flex";
-  document.body.classList.add("lb-open");
+  lb.removeAttribute("hidden"); lb.style.display="flex";
+  if(!lbOpen){lbOpen=true;lockScroll();}
+  const multi=list.length>1;
   lb.innerHTML=`<button class="lb-btn lb-close" aria-label="إغلاق">${icon("close")}</button>
-    <button class="lb-btn lb-prev" aria-label="السابق">${icon("chevR")}</button>
-    <button class="lb-btn lb-next" aria-label="التالي">${icon("chevL")}</button>
+    ${multi?`<button class="lb-btn lb-prev" aria-label="السابق">${icon("chevR")}</button>
+    <button class="lb-btn lb-next" aria-label="التالي">${icon("chevL")}</button>`:""}
     <div class="lb-zoom"><button class="lb-btn" id="lbIn" aria-label="تكبير">${icon("zoomin")}</button><button class="lb-btn" id="lbOut" aria-label="تصغير">${icon("zoomout")}</button></div>
     <span class="lb-count"></span><img alt="صورة مكبرة" draggable="false">`;
-  lb.querySelector(".lb-close").onclick=(e)=>{e.stopPropagation();closeLightbox();};
-  lb.querySelector(".lb-prev").onclick=(e)=>{e.stopPropagation();lbStep(-1);};
-  lb.querySelector(".lb-next").onclick=(e)=>{e.stopPropagation();lbStep(1);};
-  lb.querySelector("#lbIn").onclick=(e)=>{e.stopPropagation();lbSetScale(lbScale*1.3);};
-  lb.querySelector("#lbOut").onclick=(e)=>{e.stopPropagation();lbSetScale(lbScale/1.3);};
-  lb.querySelector("img").onload=()=>lbApply();
-  lb.querySelector("img").onerror=()=>{const im=lb.querySelector("img");im.onerror=null;im.src=fallbackScene();};
-  document.onkeydown=e=>{
-    if(e.key==="Escape"){closeLightbox();closeModelOverlay();return;}
-    if(e.key==="ArrowRight")lbStep(-1);
-    if(e.key==="ArrowLeft")lbStep(1);
-  };
-  const dist=()=>{const [a,b]=[...lbPointers.values()];return Math.hypot(a[0]-b[0],a[1]-b[1]);};
-  /* ✅ لا نأسر المؤشر إذا كان الضغط على زر — حتى تعمل النقرات */
+  lb.querySelector(".lb-close").onclick=closeLightbox;
+  if(multi){lb.querySelector(".lb-prev").onclick=()=>lbStep(-1);lb.querySelector(".lb-next").onclick=()=>lbStep(1);}
+  lb.querySelector("#lbIn").onclick=()=>lbSetScale(lbScale*1.3);
+  lb.querySelector("#lbOut").onclick=()=>lbSetScale(lbScale/1.3);
+  const im=lb.querySelector("img");
+  im.onload=()=>lbApply();
+  im.onerror=()=>{im.onerror=null;im.src=fallbackScene();};
+  im.ondblclick=()=>lbSetScale(lbScale>1?1:2.5);
+  document.removeEventListener("keydown",lbKey); document.addEventListener("keydown",lbKey);
+  const dist=()=>{const [a,b]=[...lbPointers.values()];return Math.hypot(a[0]-b[0],a[1]-b[1])||1;};
+  /* ✅ السبب القديم: setPointerCapture على الخلفية كان يبتلع نقرات الأزرار. الآن نتجاهل الأزرار تماماً */
   lb.onpointerdown=e=>{
     if(e.target.closest(".lb-btn"))return;
-    lbPointers.set(e.pointerId,[e.clientX,e.clientY]);
-    lb.setPointerCapture(e.pointerId);
+    lbPointers.set(e.pointerId,[e.clientX,e.clientY]); lbDX=0;
     if(lbPointers.size===2){lbPinch0=dist();lbScale0=lbScale;}
   };
   lb.onpointermove=e=>{
@@ -613,58 +648,243 @@ function openLightbox(list,start=0){
     const prev=lbPointers.get(e.pointerId); lbPointers.set(e.pointerId,[e.clientX,e.clientY]);
     if(lbPointers.size===2)lbSetScale(lbScale0*(dist()/lbPinch0));
     else if(lbScale>1){lbTx+=e.clientX-prev[0];lbTy+=e.clientY-prev[1];lbApply();}
-    else lb.dataset.dx=(+(lb.dataset.dx||0))+(e.clientX-prev[0]);
+    else lbDX+=e.clientX-prev[0];
   };
   lb.onpointerup=lb.onpointercancel=e=>{
     if(!lbPointers.has(e.pointerId))return;
-    const swipe=lbPointers.size===1&&lbScale===1&&Math.abs(+(lb.dataset.dx||0))>60;
-    if(swipe)lbStep(+(lb.dataset.dx||0)>0?-1:1);
-    lb.dataset.dx=0; lbPointers.delete(e.pointerId);
+    const swipe=multi&&lbPointers.size===1&&lbScale===1&&Math.abs(lbDX)>60, dx=lbDX;
+    lbPointers.delete(e.pointerId); lbDX=0;
+    if(swipe)lbStep(dx>0?-1:1);
   };
+  lb.onclick=e=>{if(e.target===lb)closeLightbox();};
+  lb.onwheel=e=>{e.preventDefault();lbSetScale(lbScale*(e.deltaY<0?1.15:.87));};
   lbShow();
 }
 function lbSetScale(s){lbScale=Math.min(5,Math.max(1,s));if(lbScale===1)lbTx=lbTy=0;lbApply();}
 function lbApply(){const img=$("#lightbox img");if(img)img.style.transform=`translate(${lbTx}px,${lbTy}px) scale(${lbScale})`;}
 function lbShow(){const lb=$("#lightbox");lb.querySelector("img").src=lbImgs[lbIdx];lb.querySelector(".lb-count").textContent=`${lbIdx+1} / ${lbImgs.length}`;lbScale=1;lbTx=lbTy=0;lbApply();}
-function lbStep(d){lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;lbShow();}
+function lbStep(d){if(lbImgs.length<2)return;lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;lbShow();}
 
-/* ================= عارض النموذج ثلاثي الأبعاد (Sketchfab embed) ================= */
-function openModelOverlay(url){
-  closeLightbox();
-  let ov=$("#modelOverlay");
-  if(!ov){ov=document.createElement("div");ov.id="modelOverlay";ov.style.cssText="position:fixed;inset:0;z-index:160;background:rgba(5,7,10,.97);display:flex;align-items:center;justify-content:center";document.body.appendChild(ov);}
-  ov.innerHTML=`<button class="lb-btn lb-close" id="mClose" aria-label="إغلاق">${icon("close")}</button>
-    <iframe src="${esc(url)}" title="نموذج ثلاثي الأبعاد" style="width:min(1000px,94vw);height:min(640px,86vh);border:1px solid var(--line);border-radius:12px;background:#000" allowfullscreen allow="xr; fullscreen; autoplay"></iframe>`;
-  ov.removeAttribute("hidden"); ov.style.display="flex";
-  document.body.classList.add("lb-open");
-  $("#mClose").onclick=()=>closeModelOverlay();
+/* ================= نموذج GLB (مقسّم إلى أجزاء داخل Firestore) ================= */
+async function getModelBuffer(id){
+  const {db,doc,getDoc,collection,getDocs}=await fb();
+  const m=await getDoc(doc(db,"designs",id,"models","main")); if(!m.exists())return null;
+  const cs=await getDocs(collection(db,"designs",id,"models","main","chunks"));
+  const parts=cs.docs.map(x=>x.data()).sort((a,b)=>a.i-b.i).map(x=>x.data);
+  const r=await fetch("data:application/octet-stream;base64,"+parts.join(""));
+  return r.arrayBuffer();
 }
-function closeModelOverlay(){
-  const ov=$("#modelOverlay");
-  if(ov){ov.style.display="none";ov.innerHTML="";}
-  document.body.classList.remove("lb-open");
+async function deleteModel(id){
+  const F=await fb();
+  try{const cs=await F.getDocs(F.collection(F.db,"designs",id,"models","main","chunks"));for(const c of cs.docs)await F.deleteDoc(c.ref);}catch{}
+  try{await F.deleteDoc(F.doc(F.db,"designs",id,"models","main"));}catch{}
+}
+async function saveModel(id,file,onProg){
+  const F=await fb();
+  const u8=new Uint8Array(await file.arrayBuffer()); let bin="";
+  for(let i=0;i<u8.length;i+=0x8000)bin+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));
+  const b64=btoa(bin); await deleteModel(id);
+  const parts=[]; for(let i=0;i<b64.length;i+=CHUNK)parts.push(b64.slice(i,i+CHUNK));
+  for(let i=0;i<parts.length;i++){await F.setDoc(F.doc(F.db,"designs",id,"models","main","chunks",String(i)),{i,data:parts[i]});onProg?.(i+1,parts.length);}
+  await F.setDoc(F.doc(F.db,"designs",id,"models","main"),{name:file.name,size:file.size,chunks:parts.length,createdAt:Date.now()});
 }
 
-/* ================= القشرة + أيقونات التواصل ================= */
-const NAV=[{href:"#/",path:"/",label:"الرئيسية",ic:"home"},{href:"#/portfolio",path:"/portfolio",label:"الأعمال",ic:"grid"},{href:"#/about",path:"/about",label:"من أنا",ic:"user"},{href:"#/contact",path:"/contact",label:"تواصل",ic:"phone"}];
-function socialIconsHTML(){
+/* ================= عارض ثلاثي الأبعاد حقيقي (three.js) =================
+   • نموذج GLB (يُصدَّر من 3ds Max / Blender)
+   • جولة 360° للصور البانورامية (نسبة 2:1) من 3ds Max / V-Ray
+   • عرض مجسّم منحني لأي صورة عادية                                    */
+let _three=null,_v3=null;
+async function loadThree(){
+  if(_three)return _three;
+  const THREE=await import("three");
+  const {OrbitControls}=await import("three/addons/controls/OrbitControls.js");
+  const {GLTFLoader}=await import("three/addons/loaders/GLTFLoader.js");
+  return _three={THREE,OrbitControls,GLTFLoader};
+}
+function close3D(){
+  if(!_v3)return;
+  const v=_v3; _v3=null;
+  cancelAnimationFrame(v.raf);
+  try{v.ro?.disconnect();}catch{}
+  try{v.cleanup?.();}catch{}
+  try{v.renderer?.dispose();v.renderer?.forceContextLoss?.();}catch{}
+  document.removeEventListener("keydown",v.key);
+  try{if(document.fullscreenElement)document.exitFullscreen();}catch{}
+  v.el.remove(); unlockScroll();
+}
+async function open3D({title,images=[],hasModel=false,loadModel,start=0}){
+  close3D();
+  const hasPano=images.length>0, anyPano=images.some(x=>x.pano);
+  const el=document.createElement("div"); el.className="v3"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true");
+  el.innerHTML=`<div class="v3-top">
+      <button class="icon-btn" data-a="close" aria-label="إغلاق">${icon("close")}</button>
+      <h3>${esc(title||"عرض ثلاثي الأبعاد")}</h3>
+      <div class="v3-tools">
+        ${hasModel?`<button class="chip" data-m="model">نموذج 3D</button>`:""}
+        ${hasPano?`<button class="chip" data-m="pano">${anyPano?"جولة 360°":"عرض مجسّم"}</button>`:""}
+        <button class="chip active" data-a="rot">دوران تلقائي</button>
+        <button class="chip" data-a="full">ملء الشاشة</button>
+      </div></div>
+    <div class="v3-stage"><div class="v3-load">جاري التحميل...</div><div class="v3-hint"></div>
+      <button class="lb-btn lb-prev" data-a="prev" aria-label="السابق" style="display:none">${icon("chevR")}</button>
+      <button class="lb-btn lb-next" data-a="next" aria-label="التالي" style="display:none">${icon("chevL")}</button></div>`;
+  document.body.appendChild(el); lockScroll();
+  const stage=el.querySelector(".v3-stage"), loadEl=el.querySelector(".v3-load"), hintEl=el.querySelector(".v3-hint");
+  const st={mode:null,idx:Math.max(0,Math.min(start,images.length-1)),auto:true};
+  const v={el,raf:0,renderer:null,key:null,ro:null,cleanup:null}; _v3=v;
+  let scene=null,camera=null,ctl=null,dom=null,lon=0,lat=0,lim={lon:1e9,lat:85},tok=0,hintT=0;
+  const setLoad=t=>{loadEl.textContent=t||"";loadEl.style.display=t?"grid":"none";};
+  const hint=t=>{hintEl.textContent=t;hintEl.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>hintEl.style.opacity=0,6500);};
+  const paintBtns=()=>{
+    el.querySelectorAll("[data-m]").forEach(b=>b.classList.toggle("active",b.dataset.m===st.mode));
+    el.querySelector('[data-a="rot"]')?.classList.toggle("active",st.auto);
+  };
+  el.onclick=e=>{
+    const b=e.target.closest("[data-a],[data-m]"); if(!b)return;
+    if(b.dataset.m){startMode(b.dataset.m);return;}
+    const a=b.dataset.a;
+    if(a==="close")close3D();
+    else if(a==="rot"){st.auto=!st.auto;if(ctl)ctl.autoRotate=st.auto;paintBtns();}
+    else if(a==="full"){if(document.fullscreenElement)document.exitFullscreen?.();else el.requestFullscreen?.().catch(()=>toast("المتصفح لا يدعم ملء الشاشة","err"));}
+    else if(a==="prev")step(-1); else if(a==="next")step(1);
+  };
+  v.key=e=>{
+    if(e.key==="Escape")close3D();
+    else if(st.mode==="pano"){if(e.key==="ArrowRight")step(-1);if(e.key==="ArrowLeft")step(1);}
+  };
+  document.addEventListener("keydown",v.key);
+
+  let T; try{T=await loadThree();}catch(err){console.error(err);setLoad("تعذر تحميل مكتبة العرض ثلاثي الأبعاد — تأكد من الاتصال بالإنترنت");return;}
+  if(_v3!==v)return;
+  const {THREE}=T; let renderer;
+  try{renderer=new THREE.WebGLRenderer({antialias:true});}catch(err){setLoad("متصفحك أو جهازك لا يدعم WebGL المطلوب للعرض ثلاثي الأبعاد");return;}
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+  renderer.outputColorSpace=THREE.SRGBColorSpace;
+  v.renderer=renderer; dom=renderer.domElement; stage.insertBefore(dom,stage.firstChild);
+  const size=()=>{const w=stage.clientWidth||innerWidth,h=stage.clientHeight||Math.max(200,innerHeight-60);renderer.setSize(w,h);if(camera){camera.aspect=w/h;camera.updateProjectionMatrix();}};
+  v.ro=new ResizeObserver(size); v.ro.observe(stage);
+
+  function disposeScene(){
+    if(ctl){ctl.dispose();ctl=null;}
+    dom.onpointerdown=dom.onpointermove=dom.onpointerup=dom.onpointercancel=dom.onwheel=null;
+    if(scene){
+      scene.traverse(o=>{
+        if(o.geometry)o.geometry.dispose();
+        const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];
+        ms.forEach(m=>{for(const k in m){const t=m[k];if(t&&t.isTexture)t.dispose();}m.dispose();});
+      });
+      scene.environment?.dispose?.();
+    }
+    scene=null;camera=null;
+  }
+  v.cleanup=()=>{tok++;disposeScene();};
+
+  function bindPanoControls(){
+    let down=null,p0=0,f0=0; const pts=new Map();
+    const dist=()=>{const [a,b]=[...pts.values()];return Math.hypot(a[0]-b[0],a[1]-b[1])||1;};
+    dom.onpointerdown=e=>{
+      dom.setPointerCapture(e.pointerId); pts.set(e.pointerId,[e.clientX,e.clientY]);
+      down={x:e.clientX,y:e.clientY,lon,lat}; st.auto=false; paintBtns();
+      if(pts.size===2){p0=dist();f0=camera.fov;}
+    };
+    dom.onpointermove=e=>{
+      if(!pts.has(e.pointerId))return; pts.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pts.size===2){camera.fov=Math.max(25,Math.min(100,f0*p0/dist()));camera.updateProjectionMatrix();return;}
+      if(down){const k=camera.fov/(dom.clientHeight||600);lon=down.lon-(e.clientX-down.x)*k;lat=down.lat+(e.clientY-down.y)*k;}
+    };
+    dom.onpointerup=dom.onpointercancel=e=>{
+      pts.delete(e.pointerId); down=null;
+      if(pts.size===1){const [x,y]=[...pts.values()][0];down={x,y,lon,lat};}
+    };
+    dom.onwheel=e=>{e.preventDefault();camera.fov=Math.max(25,Math.min(100,camera.fov+e.deltaY*0.05));camera.updateProjectionMatrix();};
+  }
+  async function setupPano(){
+    const my=++tok; disposeScene(); setLoad("جاري تحميل الصورة...");
+    const im=images[st.idx]; let url=""; try{url=await im.get();}catch{}
+    if(my!==tok||_v3!==v)return; if(!url){setLoad("تعذر تحميل الصورة");return;}
+    const tex=await new Promise(res=>{const l=new THREE.TextureLoader();l.setCrossOrigin("anonymous");l.load(url,res,undefined,()=>res(null));});
+    if(my!==tok||_v3!==v){tex?.dispose();return;} if(!tex){setLoad("تعذر قراءة الصورة");return;}
+    tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
+    const ar=tex.image.width/tex.image.height, full=!!im.pano||ar>1.9;
+    scene=new THREE.Scene(); scene.background=new THREE.Color(0x05070a);
+    camera=new THREE.PerspectiveCamera(full?75:60,1,1,1100);
+    let geo;
+    if(full){geo=new THREE.SphereGeometry(500,64,40);lim={lon:1e9,lat:85};}
+    else{
+      const thD=64,th=THREE.MathUtils.degToRad(thD),ph=Math.min(Math.PI*1.7,th*ar*1.05);
+      geo=new THREE.SphereGeometry(500,64,32,-ph/2,ph,Math.PI/2-th/2,th);
+      lim={lon:THREE.MathUtils.radToDeg(ph)/2,lat:thD/2}; camera.fov=thD*0.95;
+    }
+    geo.scale(-1,1,1);
+    scene.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex})));
+    lon=0;lat=0; size(); camera.updateProjectionMatrix(); setLoad("");
+    hint(full?"اسحب للتدوير 360° • عجلة الماوس أو قرصتان للتكبير":"اسحب للنظر حول التصميم • عجلة الماوس أو قرصتان للتكبير");
+    bindPanoControls();
+  }
+  async function setupModel(){
+    const my=++tok; disposeScene(); setLoad("جاري تحميل النموذج ثلاثي الأبعاد...");
+    let buf=null; try{buf=await loadModel?.();}catch(err){console.error(err);}
+    if(my!==tok||_v3!==v)return; if(!buf){setLoad("لا يوجد نموذج مرفوع لهذا التصميم");return;}
+    let gltf; try{gltf=await new Promise((res,rej)=>new T.GLTFLoader().parse(buf,"",res,rej));}catch(err){console.error(err);setLoad("تعذر قراءة النموذج — يجب أن يكون ملف GLB صالحاً");return;}
+    if(my!==tok||_v3!==v)return;
+    scene=new THREE.Scene(); scene.background=new THREE.Color(0x0b0e14);
+    try{const {RoomEnvironment}=await import("three/addons/environments/RoomEnvironment.js");const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;pm.dispose();}catch{}
+    scene.add(new THREE.HemisphereLight(0xffffff,0x444455,.9));
+    const dl=new THREE.DirectionalLight(0xffffff,1.6); dl.position.set(6,10,8); scene.add(dl);
+    const root=gltf.scene, box=new THREE.Box3().setFromObject(root), sz=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
+    root.position.sub(ctr); scene.add(root);
+    const m=Math.max(sz.x,sz.y,sz.z)||1;
+    camera=new THREE.PerspectiveCamera(45,1,m/200,m*60); camera.position.set(m*1.1,m*0.7,m*1.5);
+    ctl=new T.OrbitControls(camera,dom); ctl.enableDamping=true; ctl.autoRotate=st.auto; ctl.autoRotateSpeed=1.4;
+    ctl.minDistance=m*.25; ctl.maxDistance=m*8; ctl.target.set(0,0,0); ctl.update();
+    size(); setLoad(""); hint("اسحب للتدوير • عجلة الماوس أو قرصتان للتكبير • سحب بإصبعين للتحريك");
+  }
+  function startMode(mode){
+    st.mode=mode; paintBtns();
+    stage.querySelectorAll(".lb-prev,.lb-next").forEach(b=>b.style.display=(mode==="pano"&&images.length>1)?"grid":"none");
+    return mode==="model"?setupModel():setupPano();
+  }
+  function step(d){st.idx=(st.idx+d+images.length)%images.length;setupPano();}
+
+  const tick=()=>{
+    v.raf=requestAnimationFrame(tick); if(!scene||!camera)return;
+    if(st.mode==="pano"){
+      if(st.auto){if(lim.lon>1e8)lon+=0.07;else lon=Math.sin(performance.now()/2200)*lim.lon*0.55;}
+      lat=Math.max(-lim.lat,Math.min(lim.lat,lat)); lon=Math.max(-lim.lon,Math.min(lim.lon,lon));
+      const ph=THREE.MathUtils.degToRad(90-lat),th=THREE.MathUtils.degToRad(lon);
+      camera.lookAt(500*Math.sin(ph)*Math.cos(th),500*Math.cos(ph),500*Math.sin(ph)*Math.sin(th));
+    }else if(ctl)ctl.update();
+    renderer.render(scene,camera);
+  };
+  v.raf=requestAnimationFrame(tick);
+  if(hasModel)startMode("model"); else if(hasPano)startMode("pano"); else setLoad("لا توجد صور أو نموذج لعرضها");
+}
+
+/* ================= توليد أيقونات التواصل المباشر ================= */
+function socialIconsHTML(compact=false){
   const l=settings.links||{}, c=settings.contact||{};
   const items=[];
-  const num=(c.whatsappNumber||"").replace(/\D/g,"");
-  const waUrl=num?`https://wa.me/${num}`:(l.whatsapp||"");
-  if(waUrl)items.push(`<a class="wa" href="${esc(waUrl)}" target="_blank" rel="noopener" aria-label="واتساب">${icon("wa")}</a>`);
+  if(c.whatsappNumber||l.whatsapp){
+    const num=(c.whatsappNumber||"").replace(/\D/g,"");
+    const url=num?`https://wa.me/${num}`:l.whatsapp;
+    if(url)items.push(`<a class="wa" href="${esc(url)}" target="_blank" rel="noopener" aria-label="واتساب">${icon("wa")}</a>`);
+  }
   if(l.twitter)items.push(`<a class="x" href="${esc(l.twitter)}" target="_blank" rel="noopener" aria-label="تويتر">${icon("x")}</a>`);
   if(l.instagram)items.push(`<a class="ig" href="${esc(l.instagram)}" target="_blank" rel="noopener" aria-label="إنستغرام">${icon("ig")}</a>`);
   if(l.facebook)items.push(`<a class="fb" href="${esc(l.facebook)}" target="_blank" rel="noopener" aria-label="فيسبوك">${icon("fb")}</a>`);
   if(c.email)items.push(`<a class="mail" href="mailto:${esc(c.email)}" aria-label="البريد الإلكتروني">${icon("mail")}</a>`);
   return items.join("");
 }
+
+/* ================= القشرة ================= */
+const NAV=[{href:"#/",path:"/",label:"الرئيسية",ic:"home"},{href:"#/portfolio",path:"/portfolio",label:"الأعمال",ic:"grid"},{href:"#/about",path:"/about",label:"من أنا",ic:"user"},{href:"#/contact",path:"/contact",label:"تواصل",ic:"phone"}];
 function initShell(){
   $("#searchBtn").innerHTML=icon("search"); $("#menuBtn").innerHTML=icon("menu"); $("#drawerClose").innerHTML=icon("close");
   $("#searchBtn").onclick=()=>nav("/portfolio?focus=1");
   $("#menuBtn").onclick=()=>openDrawer(true);
   $("#drawerClose").onclick=()=>openDrawer(false);
   $("#drawerOverlay").onclick=()=>openDrawer(false);
+  /* ✅ إصلاح الضغط 5 مرات: استخدام location.hash مباشرة بدلاً من nav() */
   let clicks=0,t;
   $("#logoBtn").onclick=(e)=>{
     e.preventDefault();
@@ -674,7 +894,9 @@ function initShell(){
     if(clicks>=5){
       clicks=0;
       const adminPath=settings.adminPath||"/admin-panel";
-      window.location.hash=adminPath.startsWith("/")?adminPath:"/"+adminPath;
+      const target=adminPath.startsWith("/")?adminPath:"/"+adminPath;
+      window.location.hash=target;
+      toast("تم فتح لوحة التحكم");
     }
   };
   renderShell(_curPath);
@@ -689,6 +911,8 @@ function renderShell(path){
   $("#topnav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${n.label}</a>`).join("");
   $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
   $("#bottomNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}" aria-label="${n.label}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
+
+  /* ✅ اسم المهندس + أيقونات التواصل في الهيدر */
   const engName=s.engineerName||"المهندس المعماري";
   const engTitle=s.engineerTitle||"مهندس معماري";
   const engInitial=(s.engineerInitial||engName.charAt(0)).toUpperCase();
@@ -696,14 +920,28 @@ function renderShell(path){
   $("#engName").textContent=engName;
   $("#engTitle").textContent=engTitle;
   const engIcons=socialIconsHTML();
-  if(engIcons){$("#engBadge").hidden=false;const ic=$("#engIcons");ic.innerHTML=engIcons;ic.hidden=false;}
-  else{$("#engBadge").hidden=true;$("#engIcons").hidden=true;}
+  if(engIcons){
+    $("#engBadge").hidden=false;
+    const ic=$("#engIcons");
+    ic.innerHTML=engIcons;
+    ic.hidden=false;
+  }else{
+    $("#engBadge").hidden=true;
+    $("#engIcons").hidden=true;
+  }
+
+  /* ✅ اسم المهندس في Drawer */
   $("#drawerEngAv").textContent=engInitial;
   $("#drawerEngName").textContent=engName;
   $("#drawerEngTitle").textContent=engTitle;
   $("#drawerEng").hidden=false;
-  $("#drawerSocial").innerHTML=`<div class="social-icons" style="justify-content:center;gap:10px">${engIcons}</div>`;
-  const footerSoc=engIcons;
+
+  /* ✅ أيقونات التواصل في Drawer + Footer */
+  const soc=socialIconsHTML();
+  $("#drawerSocial").innerHTML=`<div class="social-icons" style="justify-content:center;gap:10px">${soc}</div>`;
+
+  const footerSoc=[[s.links?.whatsapp||`https://wa.me/${s.contact?.whatsappNumber||""}`,"wa","واتساب"],[s.links?.instagram,"ig","إنستغرام"],[s.links?.twitter,"x","تويتر"],[s.links?.facebook,"fb","فيسبوك"],[s.contact?.email,"mail","البريد"]].filter(([u])=>u).map(([u,ic,label])=>`<a href="${esc(u.startsWith("mailto:")?u:(u.includes("@")?`mailto:${u}`:u))}" target="_blank" rel="noopener" aria-label="${label}">${icon(ic)}</a>`).join("");
+
   $("#footer").innerHTML=`<div class="container footer-in">
     <div class="footer-engineer">
       <div class="av">${esc(engInitial)}</div>
@@ -733,7 +971,7 @@ async function renderHome(root){
   const s=settings;
   root.innerHTML=`
   <section class="hero geo">
-    ${s.heroImage?`<div class="hero-bg" style="background-image:url('${s.heroImage}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
+    ${heroSrc()?`<div class="hero-bg" style="background-image:url('${heroSrc()}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
     <div class="container hero-in">
       <h1>${esc(s.heroTitle1)} <span class="accent">${esc(s.heroAccent)}</span> ${esc(s.heroTitle2||"")}</h1>
       <p>${esc(s.heroDesc)}</p>
@@ -763,15 +1001,15 @@ async function renderAbout(root){
       <div class="stats-row">
         <div class="stat-card">${icon("clock")}<b>${esc(s.stats?.years||"0")}</b><span>سنوات خبرة</span></div>
         <div class="stat-card">${icon("flag")}<b>${esc(s.stats?.projects||"0")}</b><span>مشروع منجز</span></div>
-        <div class="stat-card">${icon("heart")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
+        <div class="stat-card">${icon("smile")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
       </div></div>
-    <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="صورة المشروع" onerror="__imgErr(this)">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
+    <div class="about-img">${heroSrc()?`<img src="${heroSrc()}" alt="صورة المشروع" onerror="__imgErr(this)">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
   </div></section>`;
 }
 async function renderContact(root){
   const s=settings,c=s.contact||{};
   root.innerHTML=`<section class="hero geo" style="min-height:320px">
-    ${s.heroImage?`<div class="hero-bg" style="background-image:url('${s.heroImage}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
+    ${heroSrc()?`<div class="hero-bg" style="background-image:url('${heroSrc()}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
     <div class="container hero-in">
       <h1>لنبني شيئاً مذهلاً</h1>
       <p>لديك مشروع في ذهنك؟ يسعدني سماع رأيك.</p>
@@ -839,7 +1077,7 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){pState.items=[];pState.page=0;pState.done=false;invalidateDesignsCache();$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
+async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
@@ -875,7 +1113,7 @@ async function renderDesign(root,params,path){
   if(!sessionStorage.getItem("viewed_"+id)){sessionStorage.setItem("viewed_"+id,"1");updateDoc(doc(db,"designs",id),{viewsCount:increment(1)}).catch(()=>{});}
   const imgsSnap=await getDocs(collection(db,"designs",id,"images"));
   const imgs=imgsSnap.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  const thumbs=imgs.map(i=>i.thumb||d.thumbnail).filter(Boolean);
+  const thumbs=imgs.map(i=>i.thumb||d.thumbnail||"");
   const main0=imgs.find(i=>i.id===d.coverImageId)?.thumb||d.thumbnail||"";
   const specs=(d.specs||[]).filter(s=>s.name);
   root.innerHTML=`<div class="container">
@@ -894,13 +1132,13 @@ async function renderDesign(root,params,path){
         <p style="color:var(--muted);font-size:.9rem">${esc(d.description||"")}</p>
         <div class="spec-row"><b>${icon("layers")} النوع</b>${esc(store.catName(d.categoryId))}</div>
         <div class="spec-row"><b>${icon("pin")} الموقع</b>${esc(d.location||"—")}</div>
-        <div class="spec-row"><b>${icon("cube")} البرنامج</b>${esc(d.software||"3D Max")}</div>
+        <div class="spec-row"><b>${icon("gear")} البرنامج</b>${esc(d.software||"3D Max")}</div>
         <div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area||"—")}</div>
         <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials||"—")}</div>
         <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
-          <button class="btn sm" id="view3d">${icon("cube")} عرض النموذج ثلاثي الأبعاد</button>
+          <button class="btn sm" id="view3d">${icon("cube")} عرض ثلاثي الأبعاد 3D</button>
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
           ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
@@ -910,17 +1148,21 @@ async function renderDesign(root,params,path){
     <section class="section"><div class="section-head"><h2 class="section-title">تصاميم مشابهة</h2></div><div id="sim"></div></section>
   </div>`;
   bindLikeButtons(root);
-  let bigCache=[];
-  const bigUrls=async()=>{if(bigCache.length)return bigCache;bigCache=await Promise.all(imgs.map(i=>i.imageUrl||storage.getImageUrl(id,i.id)));return bigCache;};
-  $("#dThumbs").onclick=async e=>{const t=e.target.closest("img");if(!t)return;$("#dThumbs").querySelectorAll("img").forEach(x=>x.classList.remove("sel"));t.classList.add("sel");const u=await bigUrls();$("#mainImg").src=u[+t.dataset.i]||t.src;};
-  $("#mainImg").onclick=async()=>{const u=await bigUrls();openLightbox(u.length?u:[$("#mainImg").src],0);};
-  /* ✅ الثلاثي الأبعاد: إن وُجد رابط نموذج يُفتح عارض 3D، وإلا المعرض الكامل */
-  $("#view3d").onclick=async()=>{
-    if(d.modelUrl){openModelOverlay(d.modelUrl);return;}
-    const u=await bigUrls();
-    if(!u.length){toast("لا توجد صور لهذا التصميم","err");return;}
-    toast("لا يوجد نموذج 3D مرفوع — يُعرض المعرض بالحجم الكامل (أضف رابط Sketchfab من لوحة التحكم)");
-    openLightbox(u,0);
+  let cur=0; const bigMemo={};
+  const bigAt=i=>{const im=imgs[i];if(!im)return Promise.resolve("");return bigMemo[i]||(bigMemo[i]=Promise.resolve(im.imageUrl||storage.getImageUrl(id,im.id)).catch(()=>""));};
+  const bigUrls=()=>Promise.all(imgs.map((_,i)=>bigAt(i)));
+  const isPano=im=>im.width&&im.height&&im.width/im.height>1.9&&im.width/im.height<2.1;
+  const showMain=async i=>{
+    cur=i; $("#dThumbs").querySelectorAll("img").forEach(x=>x.classList.toggle("sel",+x.dataset.i===i));
+    if(thumbs[i])$("#mainImg").src=thumbs[i];
+    const u=await bigAt(i); if(cur===i&&u)$("#mainImg").src=u;
+  };
+  $("#dThumbs").onclick=e=>{const t=e.target.closest("img");if(!t)return;showMain(+t.dataset.i);};
+  if(imgs.length)showMain(Math.max(0,imgs.findIndex(i=>i.id===d.coverImageId)));
+  $("#mainImg").onclick=async()=>{const u=await bigUrls();const list=u.map((x,i)=>x||thumbs[i]).filter(Boolean);openLightbox(list.length?list:[$("#mainImg").src],Math.min(cur,Math.max(0,list.length-1)));};
+  $("#view3d").onclick=()=>{
+    const list=imgs.map((im,i)=>({get:()=>bigAt(i),pano:isPano(im)}));
+    open3D({title:d.title,images:list.length?list:[{get:async()=>$("#mainImg").src,pano:false}],hasModel:!!d.hasModel,loadModel:()=>getModelBuffer(id),start:cur});
   };
   const url=()=>location.href;
   $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
@@ -980,6 +1222,11 @@ function makeDraggable(ic){
       if(moved){ic.dataset.dragged="1";localStorage.setItem("ap_bot_pos",JSON.stringify({x:ic.offsetLeft,y:ic.offsetTop}));}};
     ic.addEventListener("pointermove",mv); ic.addEventListener("pointerup",up);});
 }
+function showBubble(txt){
+  const b=$("#botBubble"),ic=$("#botIcon"); if(!b||!ic||botOpen)return;
+  b.textContent=txt; b.style.left=Math.min(ic.offsetLeft+60,innerWidth-200)+"px"; b.style.top=ic.offsetTop+6+"px";
+  b.classList.add("show"); setTimeout(()=>b.classList.remove("show"),4000);
+}
 function scheduleBubble(){
   clearTimeout(bubbleTimer);
   bubbleTimer=setTimeout(()=>{
@@ -1033,6 +1280,7 @@ function renderCats(){
     bumpStat("cat_"+b.dataset.slug);
     botToggle(false);
     nav(`/portfolio?cat=${encodeURIComponent(b.dataset.slug)}`);
+    setTimeout(()=>showBubble("ما هي ألوانك المفضلة؟ اضغط عليّ"),2500);
   };
 }
 async function renderPalettes(){
@@ -1080,47 +1328,98 @@ async function bumpStat(field){
   }catch{}
 }
 
-const SECTIONS=[["designs","layers","التصاميم"],["cats","grid","التصنيفات"],["palettes","palette","باقات البوت"],["look","eye","مظهر الموقع"],["general","gear","الإعدادات العامة"],["msgs","msg","الرسائل"],["stats","chart","الإحصائيات"],["backup","dl","نسخ احتياطي"]];
+const SECTIONS=[["designs","layers","التصاميم"],["cats","grid","التصنيفات"],["palettes","palette","باقات البوت"],["look","theme","مظهر الموقع"],["general","gear","الإعدادات العامة"],["msgs","msg","الرسائل"],["stats","chart","الإحصائيات"],["backup","dl","نسخ احتياطي"]];
 let aSec="designs";
+let _adminUnsub=null,_justLogged=false;
+function stopAdminWatch(){if(_adminUnsub){try{_adminUnsub();}catch{}_adminUnsub=null;}}
+const authMsg=e=>{
+  const c=e?.code||"";
+  if(/invalid-credential|wrong-password|user-not-found|invalid-email/.test(c))return "البريد أو كلمة المرور غير صحيحة";
+  if(c==="auth/too-many-requests")return "محاولات كثيرة — انتظر قليلاً ثم أعد المحاولة";
+  if(c==="auth/network-request-failed")return "تعذر الاتصال بالإنترنت";
+  if(c==="auth/unauthorized-domain")return "النطاق غير مصرح به: أضفه في Firebase ← Authentication ← Settings ← Authorized domains";
+  if(c==="auth/operation-not-allowed")return "فعّل تسجيل الدخول بالبريد وكلمة المرور في Firebase ← Authentication ← Sign-in method";
+  return "تعذر تسجيل الدخول"+(c?` (${c})`:"");
+};
 async function renderAdmin(root){
-  const {auth,onAuthStateChanged}=await fb();
-  onAuthStateChanged(auth,async u=>{
-    if(!u)return loginView(root);
+  const F=await fb(); stopAdminWatch();
+  _adminUnsub=F.onAuthStateChanged(F.auth,async u=>{
+    if(currentPath()!==(settings.adminPath||"/admin-panel"))return;
+    /* الزائر العادي (مجهول) لا يُعتبر مسجلاً: تظهر له شاشة الدخول دائماً */
+    if(!u||u.isAnonymous){if(!$("#lf"))loginView(root);return;}
     const ok=await isAdmin(u.uid);
-    if(!ok){const F=await fb();await F.signOut(auth);return loginView(root,"ليس لديك صلاحية المدير");}
-    adminShell(root);
+    if(!ok){
+      sessionStorage.removeItem("ap_unlocked"); _justLogged=false;
+      toast("هذا الحساب ليس مديراً للموقع","err");
+      await F.signOut(F.auth); return;
+    }
+    const remembered=localStorage.getItem("ap_remember")===u.uid;
+    if(_justLogged||remembered||sessionStorage.getItem("ap_unlocked")===u.uid){
+      _justLogged=false; sessionStorage.setItem("ap_unlocked",u.uid); return adminShell(root);
+    }
+    unlockView(root,u);
   });
 }
 async function isAdmin(uidv){
   if(sessionStorage.getItem("ap_isadmin")===uidv)return true;
   const {db,doc,getDoc}=await fb();
-  const s=await getDoc(doc(db,"admins",uidv));
-  if(s.exists()){sessionStorage.setItem("ap_isadmin",uidv);invalidateDesignsCache();return true;}
+  try{const s=await getDoc(doc(db,"admins",uidv));
+    if(s.exists()){sessionStorage.setItem("ap_isadmin",uidv);invalidateDesignsCache();return true;}
+  }catch{}
   return false;
 }
+const _pwField=(id,label="كلمة المرور",ac="current-password")=>`<div class="field"><label for="${id}">${label}</label><div class="pw-wrap"><input class="input" id="${id}" type="password" autocomplete="${ac}" required><button type="button" data-eye="${id}" aria-label="إظهار/إخفاء كلمة المرور">${icon("eye")}</button></div></div>`;
+function _bindEyes(){$$("[data-eye]").forEach(b=>b.onclick=()=>{const p=$("#"+b.dataset.eye);const show=p.type==="password";p.type=show?"text":"password";b.innerHTML=icon(show?"eyeoff":"eye");});}
+function _afterAuthChange(){_anon=undefined;myLikes=new Set();invalidateDesignsCache();}
 function loginView(root,err){
   root.innerHTML=`<div class="login-box geo"><div style="text-align:center;margin-bottom:18px"><span class="logo">${esc(settings.initials)}</span></div>
     <h2 style="text-align:center">لوحة التحكم</h2>
     ${err?`<p style="color:#ff8a8a;font-size:.85rem;text-align:center">${esc(err)}</p>`:""}
-    <form id="lf"><div class="field"><label for="em">البريد الإلكتروني</label><input class="input" id="em" type="email" autocomplete="email" required></div>
-    <div class="field"><label for="pw">كلمة المرور</label><div class="pw-wrap"><input class="input" id="pw" type="password" autocomplete="current-password" required><button type="button" id="eye" aria-label="إظهار كلمة المرور">${icon("zoomin")}</button></div></div>
-    <label style="display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:14px"><input type="checkbox" id="rm"> تذكرني على هذا الجهاز</label>
-    <button class="btn" style="width:100%;justify-content:center" type="submit">تسجيل الدخول</button>
+    <form id="lf"><div class="field"><label for="em">البريد الإلكتروني</label><input class="input" id="em" type="email" autocomplete="username" required></div>
+    ${_pwField("pw")}
+    <label style="display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:14px"><input type="checkbox" id="rm"> تذكرني على هذا الجهاز (دخول مباشر دون كلمة مرور)</label>
+    <button class="btn" style="width:100%;justify-content:center" type="submit" id="lbtn">تسجيل الدخول</button>
     <p style="text-align:center;margin-top:12px"><button type="button" class="link-accent" id="fp">نسيت كلمة المرور؟</button></p></form></div>`;
-  /* ✅ أيقونة إظهار/إخفاء كلمة المرور هندسية (عدسة) بلا عيون */
-  $("#eye").onclick=()=>{const p=$("#pw");const show=p.type==="password";p.type=show?"text":"password";$("#eye").innerHTML=icon(show?"zoomout":"zoomin");};
-  $("#fp").onclick=async()=>{const em=$("#em").value;if(!em)return toast("اكتب بريدك أولاً","err");const F=await fb();await F.sendPasswordResetEmail(F.auth,em);toast("تم إرسال رابط الاستعادة");};
+  _bindEyes();
+  $("#fp").onclick=async()=>{const em=$("#em").value;if(!em)return toast("اكتب بريدك أولاً","err");const F=await fb();try{await F.sendPasswordResetEmail(F.auth,em);toast("تم إرسال رابط الاستعادة إلى بريدك");}catch(e){toast(authMsg(e),"err");}};
   $("#lf").onsubmit=async e=>{
-    e.preventDefault();
-    const F=await fb();
-    await F.setPersistence(F.auth,$("#rm").checked?F.browserLocalPersistence:F.browserSessionPersistence);
-    try{await F.signInWithEmailAndPassword(F.auth,$("#em").value,$("#pw").value);}catch{toast("بيانات الدخول غير صحيحة أو النطاق غير مصرح به","err");}
+    e.preventDefault(); const btn=$("#lbtn"); btn.disabled=true;
+    const F=await fb(); const rm=$("#rm").checked;
+    try{
+      _justLogged=true;
+      await F.setPersistence(F.auth,rm?F.browserLocalPersistence:F.browserSessionPersistence);
+      const cred=await F.signInWithEmailAndPassword(F.auth,$("#em").value.trim(),$("#pw").value);
+      if(rm)localStorage.setItem("ap_remember",cred.user.uid);else localStorage.removeItem("ap_remember");
+      _afterAuthChange();
+    }catch(err){_justLogged=false;toast(authMsg(err),"err");btn.disabled=false;}
   };
 }
+function unlockView(root,u){
+  root.innerHTML=`<div class="login-box geo"><div style="text-align:center;margin-bottom:14px"><span class="logo">${esc(settings.initials)}</span></div>
+    <h2 style="text-align:center">تأكيد الدخول</h2>
+    <p style="color:var(--muted);font-size:.85rem;text-align:center;direction:ltr">${esc(u.email||"")}</p>
+    <form id="uf">${_pwField("upw")}
+    <label style="display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--muted);margin-bottom:14px"><input type="checkbox" id="urm"> تذكرني على هذا الجهاز</label>
+    <button class="btn" style="width:100%;justify-content:center" type="submit" id="ubtn">دخول</button>
+    <p style="text-align:center;margin-top:12px"><button type="button" class="link-accent" id="other">الدخول بحساب آخر</button></p></form></div>`;
+  _bindEyes();
+  $("#other").onclick=async()=>{const F=await fb();sessionStorage.removeItem("ap_unlocked");localStorage.removeItem("ap_remember");sessionStorage.removeItem("ap_isadmin");await F.signOut(F.auth);};
+  $("#uf").onsubmit=async e=>{
+    e.preventDefault(); const btn=$("#ubtn"); btn.disabled=true;
+    const F=await fb();
+    try{
+      await F.reauthenticateWithCredential(u,F.EmailAuthProvider.credential(u.email,$("#upw").value));
+      sessionStorage.setItem("ap_unlocked",u.uid);
+      if($("#urm").checked)localStorage.setItem("ap_remember",u.uid);
+      adminShell(root);
+    }catch(err){toast(authMsg(err),"err");btn.disabled=false;}
+  };
+}
+
 function adminShell(root){
   root.innerHTML=`<div class="container admin"><aside class="admin-side" id="aSide">${SECTIONS.map(([k,ic,label])=>`<button data-k="${k}" class="${k===aSec?"active":""}">${icon(ic)} ${label}</button>`).join("")}<button id="logout">${icon("logout")} خروج</button></aside><main class="admin-main" id="aMain"></main></div>`;
   $("#aSide").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;aSec=b.dataset.k;$$("#aSide [data-k]").forEach(x=>x.classList.toggle("active",x===b));paintSection();};
-  $("#logout").onclick=async()=>{const F=await fb();sessionStorage.removeItem("ap_isadmin");invalidateDesignsCache();await F.signOut(F.auth);};
+  $("#logout").onclick=async()=>{const F=await fb();["ap_isadmin","ap_unlocked"].forEach(k=>sessionStorage.removeItem(k));localStorage.removeItem("ap_remember");_afterAuthChange();await F.signOut(F.auth);ensureAnon().then(u=>u&&loadMyLikes()).catch(()=>{});};
   paintSection();
 }
 async function paintSection(){
@@ -1186,13 +1485,13 @@ async function secDesigns(m){
     if(del&&confirm("حذف التصميم وكل صوره؟ لا يمكن التراجع.")){
       const imgs=await Base64FirestoreAdapter.listMeta(del.dataset.del);
       for(const im of imgs)await Base64FirestoreAdapter.deleteImage(del.dataset.del,im.id);
-      await deleteDoc(doc(db,"designs",del.dataset.del)); invalidateDesignsCache(); toast("تم الحذف"); secDesigns(m);
+      await deleteModel(del.dataset.del); await deleteDoc(doc(db,"designs",del.dataset.del)); invalidateDesignsCache(); toast("تم الحذف"); secDesigns(m);
     }
   };
   makeSortable($("#dRows"),async ids=>{const b=writeBatch(db);ids.forEach((id,i)=>b.update(doc(db,"designs",id),{order:i}));await b.commit();invalidateDesignsCache();toast("تم الترتيب");});
 }
 async function editor(m,d){
-  d=d?{...d}:{title:"",categoryId:store.categories[0]?.id||"",description:"",specs:[],year:"",area:"",materials:"",location:"",software:"3D Max",tags:[],colorTags:[],modelUrl:"",status:"published",featured:false,order:999};
+  d=d?{...d}:{title:"",categoryId:store.categories[0]?.id||"",description:"",specs:[],year:"",area:"",materials:"",location:"",software:"3D Max",tags:[],colorTags:[],status:"published",featured:false,order:999};
   m.innerHTML=`<button class="back-link" id="backL">${icon("chevR")} رجوع للقائمة</button><h2>${d.title?"تعديل تصميم":"تصميم جديد"}</h2>
   <div class="form-grid">
     <div class="field"><label>العنوان *</label><input class="input" id="fTitle" maxlength="120" value="${esc(d.title)}"></div>
@@ -1202,7 +1501,6 @@ async function editor(m,d){
     <div class="field"><label>الموقع</label><input class="input" id="fLoc" value="${esc(d.location||"")}"></div>
     <div class="field"><label>البرنامج</label><input class="input" id="fSoft" value="${esc(d.software||"")}"></div>
   </div>
-  <div class="field"><label>رابط نموذج 3D اختياري (Sketchfab embed) — يفعّل زر «عرض النموذج ثلاثي الأبعاد»</label><input class="input" id="fModel" dir="ltr" placeholder="https://sketchfab.com/models/.../embed" value="${esc(d.modelUrl||"")}"></div>
   <div class="field"><label>الخامات</label><input class="input" id="fMat" value="${esc(d.materials||"")}"></div>
   <div class="field"><label>الوصف</label><textarea class="input" id="fDesc" maxlength="5000">${esc(d.description||"")}</textarea></div>
   <div class="form-grid">
@@ -1217,6 +1515,11 @@ async function editor(m,d){
   <input type="file" id="fFiles" accept="image/*" multiple hidden>
   <div class="row-imgs" id="imgList"></div>
   <div class="progress" hidden id="prog"><i></i></div><small id="progTxt" style="color:var(--muted)"></small>
+  <h3 style="margin-top:22px">${icon("cube")} العرض ثلاثي الأبعاد (اختياري)</h3>
+  <p style="color:var(--muted);font-size:.8rem;margin:0 0 8px">• <b>جولة 360°</b>: ارفع صورة بانورامية بنسبة 2:1 (من V-Ray/Corona في 3ds Max) وستُكتشف تلقائياً.<br>• <b>نموذج مجسّم</b>: ارفع ملف <b>GLB</b> (حتى 6 م.ب) مُصدَّراً من 3ds Max أو Blender.<br>• بدونهما يُعرض الزائر الصورة بشكل مجسّم منحني.</p>
+  <div class="dropzone ${d.hasModel?"has":""}" id="mdz">${d.hasModel?"يوجد نموذج GLB مرفوع — اضغط لاستبداله":"اضغط لاختيار ملف GLB"}</div>
+  <input type="file" id="mFile" accept=".glb" hidden>
+  <div id="mInfo" style="margin:8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
   <div style="margin-top:16px;display:flex;gap:10px"><button class="btn" id="saveD">${icon("check")} حفظ</button><button class="btn ghost" id="cancelD">إلغاء</button></div>`;
   $("#backL").onclick=$("#cancelD").onclick=()=>secDesigns(m);
   const specs=[...(d.specs||[])];
@@ -1260,11 +1563,27 @@ async function editor(m,d){
   $("#imgList").ondragstart=e=>{dragKey=e.target.closest("figure")?.dataset.p||null;};
   $("#imgList").ondragover=e=>e.preventDefault();
   $("#imgList").ondrop=e=>{const target=e.target.closest("figure")?.dataset.p;if(!dragKey||!target||dragKey===target)return;const from=pending.findIndex(p=>p.key===dragKey),to=pending.findIndex(p=>p.key===target);const [x]=pending.splice(from,1);pending.splice(to,0,x);dragKey=null;drawImgs();};
+  let modelFile=null, modelRemove=false; const hadModel=!!d.hasModel;
+  const paintModel=()=>{
+    const info=$("#mInfo");
+    info.innerHTML=modelFile?`<span class="badge pub">سيُرفع: ${esc(modelFile.name)} (${(modelFile.size/1048576).toFixed(1)} م.ب)</span><button class="btn sm danger" id="mClr">إلغاء</button>`
+      :(hadModel&&!modelRemove?`<span class="badge pub">نموذج مرفوع</span><button class="btn sm danger" id="mDel">حذف النموذج</button>`:(modelRemove?`<span class="badge draft">سيُحذف النموذج عند الحفظ</span>`:""));
+    $("#mClr")&&($("#mClr").onclick=()=>{modelFile=null;paintModel();});
+    $("#mDel")&&($("#mDel").onclick=()=>{modelRemove=true;paintModel();});
+  };
+  paintModel();
+  $("#mdz").onclick=()=>$("#mFile").click();
+  $("#mFile").onchange=e=>{
+    const f=e.target.files[0]; if(!f)return;
+    if(!/\.glb$/i.test(f.name))return toast("الملف يجب أن يكون بصيغة GLB","err");
+    if(f.size>6*1048576)return toast("حجم النموذج أكبر من 6 م.ب — قلّل جودة الخامات عند التصدير","err");
+    modelFile=f; modelRemove=false; paintModel();
+  };
   $("#saveD").onclick=async()=>{
     const title=$("#fTitle").value.trim();
     if(!title)return toast("العنوان مطلوب","err");
     const F=await fb();
-    const data={title,categoryId:$("#fCat").value,description:$("#fDesc").value,year:$("#fYear").value,area:$("#fArea").value,location:$("#fLoc").value,software:$("#fSoft").value,materials:$("#fMat").value,modelUrl:$("#fModel").value.trim(),
+    const data={title,categoryId:$("#fCat").value,description:$("#fDesc").value,year:$("#fYear").value,area:$("#fArea").value,location:$("#fLoc").value,software:$("#fSoft").value,materials:$("#fMat").value,
       tags:$("#fTags").value.split(/[،,]/).map(s=>s.trim()).filter(Boolean),
       colorTags:$("#fColors").value.split(/[،,]/).map(s=>s.trim()).filter(Boolean),
       specs:specs.filter(s=>s.name),status:$("#fPub").checked?"published":"draft",featured:$("#fFeat").checked,order:d.order??999,updatedAt:Date.now()};
@@ -1289,6 +1608,9 @@ async function editor(m,d){
       if(newCoverThumb)thumb=newCoverThumb;
       else{const u=await Base64FirestoreAdapter.getImageUrl(id,coverKey);if(u)thumb=(await thumbOf(u)).data;}
     }
+    if(modelFile){$("#prog").hidden=false;await saveModel(id,modelFile,(i,t)=>{$("#progTxt").textContent=`رفع النموذج ${i}/${t}...`;$("#prog i").style.width=Math.round(i/t*100)+"%";});data.hasModel=true;}
+    else if(modelRemove){await deleteModel(id);data.hasModel=false;}
+    else data.hasModel=hadModel;
     data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
     await F.updateDoc(F.doc(F.db,"designs",id),data);
     invalidateDesignsCache();
@@ -1429,19 +1751,7 @@ async function secStats(m){
   m.innerHTML=`<h2>إحصائيات اليوم</h2>
   <div class="stat-cards"><div class="stat-card"><b>${st.visits||0}</b><span>زيارات</span></div><div class="stat-card"><b>${st.botOpens||0}</b><span>فتح البوت</span></div>${catClicks.map(([k,v])=>`<div class="stat-card"><b>${v}</b><span>نقر بوت: ${esc(store.categories.find(c=>c.slug===k.slice(4))?.name||k.slice(4))}</span></div>`).join("")}</div>
   <div class="form-grid" style="margin-top:20px"><div><h3>الأكثر إعجاباً</h3><table class="admin-table">${topL.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.likesCount||0} ♥</td></tr>`).join("")}</table></div>
-  <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.viewsCount||0}</td></tr>`).join("")}</table></div></div>`;
-}
-async function clearAllDesigns(prog){
-  const F=await fb();
-  const ds=await F.getDocs(F.collection(F.db,"designs"));
-  let i=0;
-  for(const d of ds.docs){
-    const ims=await F.getDocs(F.collection(F.db,"designs",d.id,"images"));
-    for(const im of ims.docs) await F.deleteDoc(im.ref);
-    await F.deleteDoc(d.ref);
-    i++; prog?.(i,ds.size);
-  }
-  invalidateDesignsCache();
+  <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.viewsCount||0} مشاهدة</td></tr>`).join("")}</table></div></div>`;
 }
 async function secBackup(m){
   m.innerHTML=`<h2>نسخ احتياطي وأدوات</h2>
@@ -1471,8 +1781,8 @@ async function secBackup(m){
     invalidateDesignsCache();
     toast("تم الاستيراد بنجاح");
   };
-  $("#seed").onclick=async()=>{if(confirm("سيستبدل هذا الإجراء التصاميم الحالية بـ 70 تصميماً بصور واقعية نظيفة (بدون بشر أو حيوانات). متابعة؟")){await seedAll(p=>{$("#mProg").hidden=false;$("#mTxt").textContent=p;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم زرع 70 تصميماً 🎉");}};
-  $("#wipe").onclick=async()=>{if(!confirm("تحذير: سيُحذف كل التصاميم وصورها نهائياً. متابعة؟"))return;$("#mProg").hidden=false;await clearAllDesigns((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`حذف ${i}/${t} ...`;});toast("تم حذف كل البيانات التجريبية");secBackup(m);};
+  $("#seed").onclick=async()=>{if(confirm("سيُنشئ 70 تصميماً تجريبياً برسوم آمنة (بلا بشر ولا حيوانات) ويحذف التصاميم التجريبية القديمة فقط. أعمالك الحقيقية لا تُمسّ. متابعة؟")){await seedAll(p=>{$("#mProg").hidden=false;$("#mTxt").textContent=p;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم إنشاء 70 تصميماً تجريبياً آمناً 🎉");}};
+  $("#wipe").onclick=async()=>{if(!confirm("سيُحذف التصاميم التجريبية فقط (القديمة والجديدة). أعمالك الحقيقية آمنة. متابعة؟"))return;$("#mProg").hidden=false;const nDel=await clearAllDesigns((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`حذف ${i}/${t} ...`;});toast(`تم حذف ${nDel} تصميماً تجريبياً`);secBackup(m);};
   $("#mig").onclick=async()=>{if(!confirm("ترحيل كل صور Base64 إلى Firebase Storage؟"))return;$("#mProg").hidden=false;await migrateToStorage((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`${i}/${t}`;});toast("اكتملت الهجرة");};
 }
 function makeSortable(tbody,onDone){
@@ -1483,54 +1793,197 @@ function makeSortable(tbody,onDone){
 }
 
 /* ============================================================
-   ✅ صور واقعية نظيفة: لا بشر، لا حيوانات، لا تماثيل
-   (استُبعدت كل صورة تحتوي رؤوس غزلان/ثيران أو أشخاص)
+   مشاهد مرسومة (SVG) آمنة 100%: بلا بشر ولا حيوانات ولا عيون
+   ولا أيدي ولا تماثيل — وألوانها مأخوذة من باقة كل تصميم
 ============================================================ */
-const u=(id,w=1000)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=60`;
-const UNS={
-living:[
-"photo-1493809842364-78817add7ffb","photo-1522708323590-d24dbb6b0267",
-"photo-1502672260266-1c1ef2d93688","photo-1567767292278-a4f26aa2f082",
-"photo-1593696140826-c58b021acf8b","photo-1600210491892-03d54c0aaf87",
-"photo-1615873968403-89e068629265","photo-1616486029423-aaa4789e8c9a",
-"photo-1598928506311-c55ded91a20c","photo-1493663284031-b7e3aefcae8e"],
-bedroom:[
-"photo-1505691938895-1758d7feb511","photo-1540518614846-7eded433c457",
-"photo-1616594039964-ae9021a400a0","photo-1595526114035-0d45ed16cfbf",
-"photo-1631049307264-da0ec9d36412","photo-1566665797739-1674de7a421a",
-"photo-1617325247661-675ab4b64ae2","photo-1505693416388-ac5ce068fe85",
-"photo-1616594039964-ae9021a400a0?sat=-50","photo-1540518614846-7eded433c457?sat=-50"],
-bathroom:[
-"photo-1552321554-5fefe8c9ef14","photo-1620626011761-996317b8d101",
-"photo-1584622650111-993a426fbf0a","photo-1507652313519-d4e9174996dd",
-"photo-1600566752355-35792bedcfea","photo-1600566753086-00f18fb6b3ea",
-"photo-1620626011761-996317b8d101?sat=-60","photo-1552321554-5fefe8c9ef14?sat=-60",
-"photo-1584622650111-993a426fbf0a?sat=-60","photo-1507652313519-d4e9174996dd?sat=-60"],
-salon:[
-"photo-1600120399925-2d0bb2ed0d41","photo-1615873968403-89e068629265",
-"photo-1616486029423-aaa4789e8c9a","photo-1567016432779-094069958ea5",
-"photo-1600210491892-03d54c0aaf87","photo-1598928506311-c55ded91a20c",
-"photo-1600120399925-2d0bb2ed0d41?sat=-70","photo-1615873968403-89e068629265?sat=-70",
-"photo-1616486029423-aaa4789e8c9a?sat=-70","photo-1598928506311-c55ded91a20c?sat=-70"],
-kitchen:[
-"photo-1556911220-bff31c812dba","photo-1556909212-d5b604d0c90d",
-"photo-1600585154340-be6161a56a0c","photo-1600489000022-c2086d79f9d4",
-"photo-1588854337236-6889d631faa8","photo-1600585154526-990dced4db0d",
-"photo-1484154218962-a197022b5858","photo-1556910103-1c02745aae4d",
-"photo-1556911220-bff31c812dba?sat=-70","photo-1600585154340-be6161a56a0c?sat=-70"],
-kids:[
-"photo-1595428774223-ef52624120d2","photo-1617806118233-18e1de247200",
-"photo-1505691938895-1758d7feb511?sat=-40","photo-1540518614846-7eded433c457?sat=-40",
-"photo-1616594039964-ae9021a400a0?sat=-40","photo-1595428774223-ef52624120d2?sat=-40",
-"photo-1617806118233-18e1de247200?sat=-40","photo-1505691938895-1758d7feb511?sat=-70",
-"photo-1540518614846-7eded433c457?sat=-70","photo-1616594039964-ae9021a400a0?sat=-70"],
-exterior:[
-"photo-1600596542815-ffad4c1539a9","photo-1600607687939-ce8a6c25118c",
-"photo-1512917774080-9991f1c4c750","photo-1600585154526-990dced4db0d",
-"photo-1600047509807-ba8f99d2cdde","photo-1600607687920-4e2a09cf159d",
-"photo-1580587771525-78b9dba3b914","photo-1568605114967-8130f3a36994",
-"photo-1570129477492-45c003edd2be","photo-1600566753190-17f0baa2a6c3"]
-};
+const _h2r=h=>{h=h.replace("#","");if(h.length===3)h=h.split("").map(c=>c+c).join("");return[parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)];};
+const _r2h=a=>"#"+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("");
+const lum=h=>{const[a,b,c]=_h2r(h);return(0.2126*a+0.7152*b+0.0722*c)/255;};
+const mixC=(a,b,t)=>{const x=_h2r(a),y=_h2r(b);return _r2h(x.map((v,i)=>v+(y[i]-v)*t));};
+const shade=(c,t)=>t<0?mixC(c,"#000000",-t):mixC(c,"#ffffff",t);
+function rng(seed){let a=seed>>>0;return()=>{a=(a+0x6D2B79F5)|0;let t=Math.imul(a^(a>>>15),1|a);t=(t+Math.imul(t^(t>>>7),61|t))^t;return((t^(t>>>14))>>>0)/4294967296;};}
+const R_=(x,y,w,h,f,rx=0,o=1)=>`<rect x="${+x.toFixed(1)}" y="${+y.toFixed(1)}" width="${+w.toFixed(1)}" height="${+h.toFixed(1)}" rx="${+rx.toFixed(1)}" fill="${f}"${o<1?` opacity="${o}"`:""}/>`;
+const P_=(pts,f,o=1)=>`<polygon points="${pts}" fill="${f}"${o<1?` opacity="${o}"`:""}/>`;
+const E_=(x,y,rx,ry,f,o=1)=>`<ellipse cx="${+x.toFixed(1)}" cy="${+y.toFixed(1)}" rx="${+rx.toFixed(1)}" ry="${+ry.toFixed(1)}" fill="${f}"${o<1?` opacity="${o}"`:""}/>`;
+const L_=(x1,y1,x2,y2,s,w=2,o=1)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${s}" stroke-width="${w}"${o<1?` stroke-opacity="${o}"`:""}/>`;
+
+function _win(x,y,w,h,c){
+  let o=R_(x-8,y-8,w+16,h+16,shade(c.wall,-.16),6)+R_(x,y,w,h,"url(#gg)",3);
+  o+=L_(x+w/2,y,x+w/2,y+h,shade(c.wall,-.1),5)+L_(x,y+h*.45,x+w,y+h*.45,shade(c.wall,-.1),5);
+  o+=P_(`${x},${y+h} ${x+w*.32},${y} ${x+w*.5},${y} ${x+w*.18},${y+h}`,"#ffffff",.12);
+  return o;
+}
+function _frame(x,y,w,h,k,c){
+  let o=R_(x,y,w,h,c.dark,5)+R_(x+7,y+7,w-14,h-14,c.light,3);
+  const ix=x+7,iy=y+7,iw=w-14,ih=h-14;
+  if(k===0)o+=R_(ix,iy,iw/2,ih,c.main,0)+R_(ix+iw/2,iy,iw/2,ih,c.sec,0);
+  else if(k===1)o+=P_(`${ix+8},${iy+ih-8} ${ix+iw/2},${iy+10} ${ix+iw-8},${iy+ih-8}`,c.main)+R_(ix+8,iy+ih-18,iw-16,10,c.sec,0);
+  else o+=P_(`${ix},${iy+ih*.7} ${ix+iw},${iy+ih*.2} ${ix+iw},${iy+ih*.5} ${ix},${iy+ih}`,c.main)+P_(`${ix},${iy+ih*.45} ${ix+iw},${iy} ${ix+iw},${iy+ih*.12} ${ix},${iy+ih*.65}`,c.sec,.8);
+  return o;
+}
+function _sofa(x,y,w,h,col,cu1,cu2,n,foot){
+  const arm=h*.42;let o="";
+  o+=R_(x+arm*.5,y,w-arm,h*.62,shade(col,-.08),h*.2);
+  o+=R_(x,y+h*.28,arm,h*.72,shade(col,-.16),h*.18)+R_(x+w-arm,y+h*.28,arm,h*.72,shade(col,-.16),h*.18);
+  o+=R_(x+arm*.7,y+h*.46,w-arm*1.4,h*.42,col,h*.14);
+  const cw=(w-arm*2.2)/n;
+  for(let k=0;k<n;k++)o+=R_(x+arm*1.1+k*cw+3,y+h*.16,cw-6,h*.36,k%2?cu1:cu2,h*.1,.95);
+  o+=R_(x+arm*.5,y+h*.9,12,h*.12,foot,3)+R_(x+w-arm*.5-12,y+h*.9,12,h*.12,foot,3);
+  return o;
+}
+function _lamp(x,y,c,floor){
+  let o=`<circle cx="${x}" cy="${y-40}" r="90" fill="url(#gl)"/>`;
+  if(floor)o+=R_(x-3,y,6,170,c.dark,2)+E_(x,y+172,26,7,c.dark);
+  o+=P_(`${x-34},${y} ${x+34},${y} ${x+22},${y-52} ${x-22},${y-52}`,mixC(c.light,"#ffe6b0",.5));
+  return o;
+}
+function _plant(x,y,c){
+  let o=P_(`${x-26},${y} ${x+26},${y} ${x+18},${y+60} ${x-18},${y+60}`,c.main);
+  const g=mixC("#2f6b4a",c.mid,.2);
+  for(let k=0;k<7;k++){const a=-80+k*27;o+=`<ellipse cx="${x+Math.sin(a*Math.PI/180)*34}" cy="${y-40-Math.cos(a*Math.PI/180)*30}" rx="14" ry="48" transform="rotate(${a} ${x+Math.sin(a*Math.PI/180)*34} ${y-40-Math.cos(a*Math.PI/180)*30})" fill="${k%2?g:shade(g,-.18)}"/>`;}
+  return o;
+}
+function _rug(cx,cy,rx,ry,c){return E_(cx,cy,rx,ry,c.mid,.92)+E_(cx,cy,rx*.82,ry*.78,c.d2,.55)+E_(cx,cy,rx*.6,ry*.55,c.mid,.7);}
+
+function sLiving(c,rnd){
+  let o="";const wx=rnd()>.5?70:670;
+  o+=_win(wx,80,260,220,c);
+  const fx=wx>300?250:470;
+  o+=_frame(fx,110,96,130,0,c)+_frame(fx+114,110,96,130,1,c)+_frame(fx+228,110,96,130,2,c);
+  o+=_rug(500,565,340,72,c);
+  o+=_sofa(215,330,570,170,c.main,c.sec,c.l2,3,c.dark);
+  o+=R_(390,528,220,20,c.dark,8)+R_(410,546,10,30,c.dark)+R_(580,546,10,30,c.dark);
+  o+=R_(470,500,22,28,c.sec,6)+E_(481,498,13,4,shade(c.sec,.2));
+  o+=wx>300?_lamp(120,300,c,true)+_plant(890,440,c):_lamp(880,300,c,true)+_plant(110,440,c);
+  return o;
+}
+function sBedroom(c,rnd){
+  let o="";const wx=rnd()>.5?70:690;
+  o+=_win(wx,90,240,200,c);
+  o+=R_(wx>300?60:700,70,240,300,c.sec,4,.55)+R_(wx>300?740:60,70,200,300,c.sec,4,.55);
+  o+=_rug(500,590,360,60,c);
+  o+=R_(250,230,500,210,shade(c.main,-.05),26)+R_(270,250,460,170,c.main,18);
+  for(let k=0;k<4;k++)o+=L_(270+k*115+60,262,270+k*115+60,408,shade(c.main,-.22),3,.6);
+  o+=R_(225,410,550,110,shade(c.main,-.28),18)+R_(235,395,530,110,c.l2,16)+R_(235,440,530,70,c.sec,14)+R_(235,440,530,14,shade(c.sec,.25),6);
+  o+=R_(300,372,190,64,c.light,26)+R_(510,372,190,64,c.light,26)+R_(330,386,130,36,shade(c.light,-.07),16);
+  o+=R_(110,420,95,105,c.dark,8)+R_(795,420,95,105,c.dark,8)+R_(110,455,95,6,shade(c.dark,.25))+R_(795,455,95,6,shade(c.dark,.25));
+  o+=_lamp(157,420,c,false)+_lamp(843,420,c,false);
+  o+=_frame(430,110,140,100,wx>300?0:2,c);
+  return o;
+}
+function sBathroom(c,rnd){
+  let o="";const grid=shade(c.wall,-.12);
+  for(let x=0;x<=1000;x+=50)o+=L_(x,0,x,430,grid,1.5,.7);
+  for(let y=0;y<=430;y+=50)o+=L_(0,y,1000,y,grid,1.5,.7);
+  o+=R_(0,300,1000,130,c.main,0,.22);
+  o+=R_(80,415,500,110,shade(c.light,-.04),55)+R_(100,425,460,84,shade(c.light,-.16),42)+R_(92,520,24,10,c.dark,3)+R_(544,520,24,10,c.dark,3);
+  o+=R_(325,300,10,110,c.dark,4)+R_(300,296,60,10,c.dark,5);
+  o+=E_(330,470,150,22,"#bfe0f2",.45);
+  o+=R_(650,340,260,170,c.main,10)+L_(780,345,780,505,shade(c.main,-.25),3)+R_(752,410,16,6,c.light,3)+R_(792,410,16,6,c.light,3);
+  o+=R_(638,318,284,24,c.light,8)+E_(780,320,64,9,shade(c.light,-.18))+R_(776,282,8,40,c.dark,3)+R_(776,280,34,7,c.dark,3);
+  o+=R_(685,90,190,190,shade(c.dark,.1),14)+R_(695,100,170,170,mixC(c.light,"#cfe3f0",.55),9);
+  o+=P_("700,260 760,110 800,110 740,260","#ffffff",.35)+P_("790,260 830,110 850,110 810,260","#ffffff",.22);
+  o+=R_(690,58,180,16,c.light,6)+`<circle cx="780" cy="70" r="110" fill="url(#gl)"/>`;
+  o+=L_(110,170,260,170,c.dark,5)+R_(125,172,48,110,c.sec,4)+R_(182,172,48,98,c.l2,4);
+  o+=R_(60,560,260,50,c.sec,18,.8);
+  return o;
+}
+function sSalon(c,rnd){
+  let o="";const lat=c.d2;
+  o+=`<rect x="60" y="40" width="880" height="390" fill="url(#pat)" opacity=".7"/>`;
+  o+=`<path d="M400 430V280A100 100 0 0 1 600 280V430Z" fill="${shade(c.dark,.05)}"/><path d="M418 430V286A82 82 0 0 1 582 286V430Z" fill="${shade(c.main,-.1)}"/>`;
+  o+=L_(500,0,500,90,c.dark,4)+P_("440,90 560,90 542,118 458,118",c.l2)+P_("415,118 585,118 556,150 444,150",c.mid)+`<circle cx="500" cy="125" r="140" fill="url(#gl)"/>`;
+  o+=P_("270,500 730,500 920,655 80,655",c.mid,.95)+P_("320,512 680,512 810,640 190,640",c.d2,.55)+P_("390,525 610,525 690,632 310,632",c.mid,.8);
+  o+=_sofa(150,330,700,150,c.main,c.sec,c.l2,6,c.dark);
+  o+=P_("55,310 190,345 190,505 55,545",shade(c.main,-.16))+P_("945,310 810,345 810,505 945,545",shade(c.main,-.16));
+  o+=E_(500,560,95,24,c.dark)+R_(494,566,12,34,c.dark)+E_(500,600,50,9,c.dark)+E_(500,555,70,14,c.l2,.9);
+  return o;
+}
+function sKitchen(c,rnd){
+  let o="";const grid=shade(c.wall,-.14);
+  o+=`<rect x="0" y="235" width="1000" height="100" fill="url(#tl)"/>`;
+  for(let k=0;k<7;k++){if(k===3)continue;const x=40+k*135;o+=R_(x,60,125,165,c.main,6)+R_(x+8,68,109,149,shade(c.main,-.08),4)+R_(x+(k<3?100:12),130,5,40,c.light,2);}
+  o+=P_("420,60 580,60 545,165 455,165",c.dark)+R_(478,0,44,62,shade(c.dark,.1),0);
+  o+=R_(30,345,940,115,c.main,4);
+  for(let k=0;k<7;k++)o+=L_(30+k*134,350,30+k*134,455,shade(c.main,-.3),3)+R_(55+k*134,372,60,5,c.light,2);
+  o+=R_(20,328,960,20,c.light,4)+R_(405,322,190,8,c.dark,3);
+  o+=R_(405,320,190,6,shade(c.dark,.2),3);
+  o+=R_(230,505,540,115,c.sec,8)+R_(215,490,570,22,c.light,8)+R_(235,610,12,22,c.dark)+R_(753,610,12,22,c.dark);
+  for(let k=0;k<3;k++){const x=300+k*200;o+=E_(x,640,36,8,c.dark)+R_(x-4,560,8,80,c.dark)+E_(x,555,40,10,c.mid)}
+  for(let k=0;k<3;k++){const x=290+k*210;o+=L_(x,0,x,120,c.dark,3)+P_(`${x-34},150 ${x+34},150 ${x+20},112 ${x-20},112`,c.light)+`<circle cx="${x}" cy="150" r="60" fill="url(#gl)"/>`;}
+  return o;
+}
+function sKids(c,rnd){
+  let o="";
+  o+=R_(0,250,1000,180,c.sec,0,.35)+R_(0,244,1000,8,c.light,0,.9);
+  const star=(x,y,r,f)=>{let p="";for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.45:r;p+=`${(x+Math.cos(a)*rr).toFixed(1)},${(y+Math.sin(a)*rr).toFixed(1)} `;}return P_(p,f);};
+  for(let k=0;k<9;k++)o+=star(70+rnd()*860,50+rnd()*170,10+rnd()*16,k%2?c.main:c.l2);
+  const cloud=(x,y,s)=>E_(x,y,50*s,24*s,"#ffffff",.7)+E_(x+34*s,y-14*s,36*s,22*s,"#ffffff",.7)+E_(x-34*s,y-8*s,34*s,20*s,"#ffffff",.7);
+  o+=cloud(180,95,1)+cloud(780,70,1.2);
+  o+=E_(500,590,330,62,c.main,.85)+E_(500,590,270,50,c.sec,.9)+E_(500,590,210,38,c.l2,.9)+E_(500,590,150,26,c.main,.9);
+  o+=P_("240,300 400,215 560,300",shade(c.main,-.05))+R_(240,300,320,150,c.main,10)+R_(255,385,290,100,c.light,14)+R_(255,420,290,64,c.sec,12);
+  for(let k=0;k<4;k++)o+=R_(270+k*70,420,34,64,c.l2,0,.55);
+  o+=R_(270,360,110,52,"#ffffff",20)+R_(225,478,12,22,c.dark)+R_(563,478,12,22,c.dark);
+  o+=R_(640,150,300,14,c.dark,4)+R_(660,164,8,34,c.dark)+R_(912,164,8,34,c.dark);
+  [[672,110,36,40,c.main],[716,92,36,58,c.sec],[760,102,40,48,c.l2],[808,86,36,64,c.main],[850,106,40,44,c.sec]].forEach(([x,y,w,h,f])=>o+=R_(x,y,w,h,f,3));
+  o+=R_(640,330,300,140,c.dark,10)+R_(640,330,300,30,shade(c.dark,.15),10)+R_(780,372,20,8,c.light,3);
+  o+=R_(660,288,48,42,c.main,5)+R_(712,300,40,30,c.sec,5)+P_("760,330 790,270 820,330",c.l2)+R_(826,296,40,34,c.main,5);
+  return o;
+}
+function sExterior(c,rnd,W){
+  let o="";
+  for(let k=0;k<26;k++)o+=`<circle cx="${(rnd()*1000).toFixed(0)}" cy="${(rnd()*230).toFixed(0)}" r="${(0.8+rnd()*1.4).toFixed(1)}" fill="#fff" opacity="${(.3+rnd()*.5).toFixed(2)}"/>`;
+  o+=R_(0,520,1000,147,mixC("#1c3326",c.dark,.3),0)+P_("430,520 590,520 760,667 250,667",mixC(c.light,"#999",.3),.85);
+  const glass="url(#gw2)";
+  o+=R_(150,326,560,200,shade(c.light,-.02),0);
+  o+=R_(290,196,490,136,c.mid,0)+R_(300,206,260,116,glass,2)+R_(580,206,190,116,glass,2);
+  o+=L_(430,206,430,322,c.dark,5)+L_(300,264,560,264,c.dark,5)+L_(675,206,675,322,c.dark,5);
+  o+=R_(130,314,600,16,c.dark,3)+R_(270,184,530,16,c.dark,3);
+  o+=R_(170,350,60,172,c.main,0)+R_(240,352,330,150,glass,2)+L_(405,352,405,502,c.dark,5)+L_(240,420,570,420,c.dark,4);
+  o+=R_(600,352,92,170,c.dark,3)+R_(612,364,68,146,"#ffd7a0",2,.9)+R_(676,430,6,22,c.light,2);
+  o+=`<circle cx="405" cy="430" r="190" fill="url(#gl)" opacity=".6"/>`;
+  o+=R_(270,330,12,200,shade(c.light,-.1),0)+R_(702,330,12,200,shade(c.light,-.1),0);
+  o+=E_(150,545,70,22,"#173b2a")+E_(110,540,50,30,"#1d4a35")+E_(740,548,80,24,"#173b2a");
+  o+=R_(842,420,14,110,"#3a2a1e",3)+E_(849,385,62,70,"#1d4a35")+E_(820,410,44,48,"#26593f")+E_(878,408,42,46,"#173b2a");
+  return o;
+}
+function sceneSVG(slug,pal,i=0){
+  const rnd=rng([...slug].reduce((a,ch)=>a*31+ch.charCodeAt(0),7)+i*977);
+  const S=[...pal].sort((a,b)=>lum(a)-lum(b));
+  const dark=S[0],d2=S[1],mid=S[2],l2=S[3],light=S[4];
+  let main=pal[0];if(Math.abs(lum(main)-lum(light))<.22)main=dark;
+  let sec=pal[1];if(sec===main)sec=pal[2]||l2;
+  const wall=(slug==="kitchen"||slug==="bathroom")?mixC(light,mid,.12):light;
+  const floor=mixC(mid,dark,.55);
+  const c={main,sec,dark,d2,mid,l2,light,wall};
+  const rooms={living:sLiving,bedroom:sBedroom,bathroom:sBathroom,salon:sSalon,kitchen:sKitchen,kids:sKids};
+  let bg="",body="";
+  if(slug==="exterior"){
+    bg=`<rect width="1000" height="667" fill="url(#sky)"/>`;body=sExterior(c,rnd);
+  }else{
+    bg=`<rect width="1000" height="430" fill="url(#gw)"/><rect y="430" width="1000" height="237" fill="${floor}"/>`;
+    for(let k=-7;k<=7;k++)bg+=L_(500+k*62,430,500+k*175,667,"#000",2,.12);
+    bg+=R_(0,424,1000,12,shade(wall,-.2))+R_(0,0,1000,26,shade(wall,-.1));
+    body=(rooms[slug]||sLiving)(c,rnd);
+  }
+  const defs=`<defs>
+<linearGradient id="gw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shade(wall,-.07)}"/><stop offset="1" stop-color="${wall}"/></linearGradient>
+<linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9f4fb"/><stop offset="1" stop-color="${mixC("#9cc4e0",light,.25)}"/></linearGradient>
+<linearGradient id="gw2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe2b0"/><stop offset="1" stop-color="#ffb066"/></linearGradient>
+<linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0d1530"/><stop offset=".55" stop-color="${mixC("#3a3560",dark,.25)}"/><stop offset="1" stop-color="#e59a62"/></linearGradient>
+<radialGradient id="gl"><stop offset="0" stop-color="#fff2c9" stop-opacity=".75"/><stop offset="1" stop-color="#fff2c9" stop-opacity="0"/></radialGradient>
+<radialGradient id="vg" cx=".5" cy=".5" r=".75"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".38"/></radialGradient>
+<pattern id="tl" width="60" height="50" patternUnits="userSpaceOnUse" y="235"><path d="M0 0H60M0 25H60M0 0V25M30 25V50" fill="none" stroke="${shade(wall,-.14)}" stroke-width="1.5"/></pattern>
+<pattern id="pat" width="60" height="60" patternUnits="userSpaceOnUse"><path d="M30 4 56 30 30 56 4 30Z" fill="none" stroke="${shade(mid,-.1)}" stroke-width="2"/><path d="M30 18 42 30 30 42 18 30Z" fill="${shade(mid,.1)}" opacity=".45"/></pattern>
+</defs>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 667" width="1000" height="667" preserveAspectRatio="xMidYMid slice">${defs}${bg}${body}<rect width="1000" height="667" fill="url(#vg)"/></svg>`;
+}
+function sceneURI(slug,pal,i=0){
+  return "data:image/svg+xml;charset=utf-8,"+encodeURIComponent(sceneSVG(slug,pal,i)).replace(/'/g,"%27").replace(/\(/g,"%28").replace(/\)/g,"%29");
+}
+let _heroURI=null;
+const heroSrc=()=>settings.heroImage||(_heroURI||(_heroURI=sceneURI("exterior",["#6B717B","#8D939C","#D5D8DD","#4A4F58","#22252B"],3)));
+
 function fallbackScene(){
   const c=["#3C4048","#5C6270","#9AA3B2","#D5D9E0","#22252B"];
   const s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[2]}"/><stop offset="1" stop-color="${c[0]}"/></linearGradient></defs><rect width="800" height="430" fill="url(#w)"/><rect y="430" width="800" height="170" fill="${c[4]}"/><rect x="150" y="250" width="340" height="80" rx="22" fill="${c[1]}"/><rect x="150" y="300" width="340" height="120" rx="26" fill="${c[1]}"/><rect x="580" y="70" width="160" height="290" rx="6" fill="#ffffff" opacity=".18"/><text x="400" y="560" font-family="sans-serif" font-size="26" fill="#ffffff88" text-anchor="middle">صورة المعرض</text></svg>`;
@@ -1540,51 +1993,62 @@ window.__imgErr=el=>{el.onerror=null;el.src=fallbackScene();};
 
 const SEED_META={living:"غرفة جلوس",bedroom:"غرفة نوم",bathroom:"حمام",salon:"صالون",kitchen:"مطبخ",kids:"غرفة أطفال",exterior:"واجهة فيلا"};
 const CITIES=["الرياض، السعودية","جدة، السعودية","دبي، الإمارات","الدوحة، قطر","الكويت، الكويت","مسقط، عُمان","المنامة، البحرين","أبوظبي، الإمارات","عمّان، الأردن","الخبر، السعودية"];
-async function seedAll(progress=()=>{}){
-  const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs,deleteDoc}=F;
-  progress("تنظيف التصاميم القديمة...");
-  const old=await getDocs(collection(db,"designs"));
-  for(const od of old.docs){
-    const ims=await getDocs(collection(db,"designs",od.id,"images"));
-    for(const im of ims.docs) await deleteDoc(im.ref);
-    await deleteDoc(od.ref);
+const isDemoDoc=d=>d.demo===true||/images\.unsplash\.com/.test(d.thumbnail||"");
+async function clearAllDesigns(prog){
+  /* يحذف التصاميم التجريبية فقط — أعمالك الحقيقية لا تُمسّ */
+  const F=await fb();
+  const ds=await F.getDocs(F.collection(F.db,"designs"));
+  const list=ds.docs.filter(x=>isDemoDoc(x.data()));
+  let i=0;
+  for(const d of list){
+    const ims=await F.getDocs(F.collection(F.db,"designs",d.id,"images"));
+    for(const im of ims.docs)await F.deleteDoc(im.ref);
+    await deleteModel(d.id);
+    await F.deleteDoc(d.ref);
+    i++; prog?.(i,list.length);
   }
+  invalidateDesignsCache();
+  return list.length;
+}
+async function seedAll(progress=()=>{}){
+  const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs}=F;
+  progress("حذف التصاميم التجريبية القديمة (أعمالك الحقيقية آمنة)...");
+  await clearAllDesigns();
   progress("التصنيفات والباقات...");
   const catIds={};
   const SEED_CATS=[["غرف جلوس","living"],["غرف نوم","bedroom"],["حمامات","bathroom"],["صالونات","salon"],["مطابخ","kitchen"],["غرف أطفال","kids"],["تصاميم خارجية","exterior"]];
+  const ex=await getDocs(collection(db,"categories"));
   for(let i=0;i<SEED_CATS.length;i++){
     const [name,slug]=SEED_CATS[i];
-    const ex=await getDocs(collection(db,"categories"));
     const found=ex.docs.find(dd=>dd.data().slug===slug);
     catIds[slug]=found?found.id:(await addDoc(collection(db,"categories"),{name,slug,order:i,createdAt:Date.now()})).id;
     await setDoc(doc(db,"palettes",catIds[slug]),{items:DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living},{merge:true});
   }
   let n=0;
-  for(const slug of Object.keys(UNS)){
-    const ids=UNS[slug], pals=DEFAULT_PALETTES[slug];
+  for(const slug of Object.keys(SEED_META)){
+    const pals=DEFAULT_PALETTES[slug];
     for(let i=0;i<10;i++){
       const p=pals[i]; n++;
-      progress(`زرع التصاميم ${n}/70 ...`);
+      progress(`إنشاء التصاميم ${n}/70 ...`);
       const typeName=SEED_META[slug];
-      const title=`${typeName} — باقة ${p.name}`;
-      const cover=u(ids[i],1000), coverThumb=u(ids[i],480), alt=u(ids[(i+5)%10],1000), altThumb=u(ids[(i+5)%10],480);
+      const cover=sceneURI(slug,p.colors,i), alt=sceneURI(slug,p.colors,i+11);
       const dRef=await addDoc(collection(db,"designs"),{
-        title, categoryId:catIds[slug],
-        description:`تصميم ${typeName} منفذ بدقة عبر 3ds Max بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}، مع ${p.curtains} و${p.carpet}. إضاءة واقعية وخامات مدروسة.`,
+        title:`${typeName} — باقة ${p.name}`, categoryId:catIds[slug], demo:true,
+        description:`تصميم ${typeName} بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}، مع ${p.curtains} و${p.carpet}. (عمل تجريبي — احذفه من النسخ الاحتياطي ← حذف البيانات التجريبية)`,
         specs:[{name:"الإضاءة",value:i%2?"نهارية + مخفية":"مسائية + ثريات"},{name:"النمط",value:(p.tags||[])[1]||"عصري"},{name:"الأرضيات",value:p.tiles}],
         year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles,
-        location:CITIES[i%CITIES.length], software:"3D Max", modelUrl:"",
+        location:CITIES[i%CITIES.length], software:"3D Max",
         tags:[typeName,p.name,slug], colorTags:p.tags||[],
-        thumbnail:coverThumb, coverImageId:"i1", imagesCount:2,
+        thumbnail:cover, coverImageId:"i1", imagesCount:2,
         likesCount:4+((i*7)%40), viewsCount:30+((i*53)%400),
         featured:i<2, status:"published", order:n, createdAt:Date.now()-n*3600000, updatedAt:Date.now()
       });
-      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{imageUrl:cover,thumb:coverThumb,order:0,width:1000,height:667,size:0,chunked:false});
-      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{imageUrl:alt,thumb:altThumb,order:1,width:1000,height:667,size:0,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{imageUrl:cover,thumb:cover,order:0,width:1000,height:667,size:0,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{imageUrl:alt,thumb:alt,order:1,width:1000,height:667,size:0,chunked:false});
     }
   }
   progress("الإعدادات النهائية...");
-  await setDoc(doc(db,"settings","site"),{heroImage:u(UNS.exterior[0],1600),colsDesktop:3,colsMobile:2},{merge:true});
+  await setDoc(doc(db,"settings","site"),{heroImage:"",colsDesktop:3,colsMobile:2},{merge:true});
   progress("تم!");
 }
 
@@ -1609,7 +2073,6 @@ route("/about",renderAbout); route("/contact",renderContact); route("/404",rende
   try{const {db,doc,setDoc,increment}=await fb();
     if(!sessionStorage.getItem("visit_"+new Date().toDateString())){sessionStorage.setItem("visit_"+new Date().toDateString(),"1");await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{visits:increment(1)},{merge:true});}
   }catch{}
-  if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));
 })();
 </script>
 </body>
