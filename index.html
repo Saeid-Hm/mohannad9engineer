@@ -1049,12 +1049,18 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
+async function pReset(){
+  pState.items=[];pState.page=0;pState.done=false;
+  const host=$("#pGrid");
+  if(host)host.innerHTML=`<div class="empty" style="padding:38px 20px"><p style="margin:0;color:var(--muted)">${pState.cat?"جارٍ التحقق من التصاميم والصور المنشورة…":"جارٍ تحميل التصاميم…"}</p></div>`;
+  await fetchPage();
+}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
   const all=await getAllDesigns();
-  let pool=all.filter(dd=>dd.status==="published");
+  /* لا نعرض تصميماً على أنه صورة منشورة إلا إذا كان له غلاف وصور فعلية. */
+  let pool=all.filter(dd=>dd.status==="published" && !!dd.thumbnail && Number(dd.imagesCount||0)>0);
   if(pState.cat) pool=pool.filter(dd=>dd.categoryId===catIdBySlug(pState.cat));
   if(pState.color) pool=pool.filter(dd=>(dd.colorTags||[]).includes(pState.color));
   if(pState.featured) pool=pool.filter(dd=>dd.featured===true);
@@ -1247,18 +1253,26 @@ function renderCats(){
     botState={step:"colors",cat:{slug:b.dataset.slug,id:b.dataset.id,name:b.textContent}};
     await botSay(b.textContent,true);
     bumpStat("cat_"+b.dataset.slug);
-    botToggle(false);
-    nav(`/portfolio?cat=${encodeURIComponent(b.dataset.slug)}`);
-    setTimeout(()=>showBubble("ما هي ألوانك المفضلة؟ اضغط عليّ"),2500);
+    /* ابقِ المستخدم داخل البوت: سنفحص الصور أولاً ثم نعرض الألوان المأخوذة منها فقط. */
+    await renderPalettes();
   };
 }
 const reducedMotion=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
-function designPalettes(cid){
-  return getAllDesigns().then(all=>all
-    .filter(d=>d.status==="published"&&d.categoryId===cid&&Array.isArray(d.colors)&&d.colors.length>=3)
-    .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
-    .map(d=>({name:d.title,colors:d.colors.slice(0,6),tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:d.colorTags||colorNames(d.colors),designId:d.id,auto:true}))
-  ).catch(()=>[]);
+async function designPalettes(cid){
+  try{
+    const all=await getAllDesigns();
+    const source=all
+      /* لا نستخدم أي ألوان محفوظة من تصميم بلا صورة فعلية. */
+      .filter(d=>d.status==="published" && d.categoryId===cid && !!d.thumbnail && Number(d.imagesCount||0)>0)
+      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+    const out=[];
+    for(const d of source){
+      const colors=await extractColors(d.thumbnail,6);
+      if(colors.length<3)continue;
+      out.push({name:d.title,colors,tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:colorNames(colors),designId:d.id,auto:true,source:"image"});
+    }
+    return out;
+  }catch{return []}
 }
 async function prefetchPalettes(){
   try{const {db,collection,getDocs}=await fb();const s=await getDocs(collection(db,"palettes"));
@@ -1267,20 +1281,25 @@ async function prefetchPalettes(){
 async function renderPalettes(){
   botState.step="colors";
   const cid=botState.cat.id;
-  let base=_palCache[cid];
-  if(!base){
-    try{const {db,doc,getDoc}=await fb();const s=await getDoc(doc(db,"palettes",cid));base=s.data()?.items;}catch{}
-    if(!base||!base.length)base=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
-    _palCache[cid]=base;
-  }
   const autos=await designPalettes(cid);
-  const items=[...autos,...base];
+  const body=$("#botBody"); if(!body)return;
   $("#botChips").innerHTML="";
   $("#palList")?.remove();
-  const body=$("#botBody"); if(!body)return;
   const line=(l,v)=>v?`<p><b>${l}:</b> ${esc(v)}</p>`:"";
+  if(!autos.length){
+    body.insertAdjacentHTML("beforeend",`<div id="palList" class="empty" style="padding:28px 10px">
+      ${icon("image")}<p><b>لا توجد صور منشورة في تصنيف «${esc(botState.cat.name)}» حالياً.</b></p>
+      <p style="font-size:.78rem">لن أعرض ألواناً على أنها مستخرجة من الصور ما دامت لا توجد صور فعلية لتحليلها.</p>
+    </div>`);
+    $("#botChips").innerHTML=`<button class="chip active" id="bGoCat">فتح التصنيف</button><button class="chip" id="bRestart">ابدأ من جديد</button>`;
+    $("#bGoCat").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}`);};
+    $("#bRestart").onclick=()=>{botState=null;botGreet();};
+    return;
+  }
+  /* الباقات اليدوية لا تُخلط مع تحليل الصور حتى لا تبدو وكأنها مستخرجة منها. */
+  const items=autos;
   body.insertAdjacentHTML("beforeend",`<div id="palList" style="display:flex;flex-direction:column;gap:8px">${items.map((p,i)=>`
-    <div class="palette-card" data-i="${i}"><h5>${p.auto?`<span class="badge pub" style="margin-inline-end:6px">من أعمالنا</span>`:""}${esc(p.name)}</h5>
+    <div class="palette-card" data-i="${i}"><h5><span class="badge pub" style="margin-inline-end:6px">من ألوان صورنا</span>${esc(p.name)}</h5>
       <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div>
       ${line("الأرضيات",p.tiles)}${line("الأثاث",p.furniture)}${line("الستائر",p.curtains)}${line("السجاد",p.carpet)}
       ${p.auto&&(p.tags||[]).length?line("الألوان",(p.tags||[]).slice(0,4).join("، ")):""}
