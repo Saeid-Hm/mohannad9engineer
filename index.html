@@ -4,11 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>معرض التصاميم | نصمم مساحات أفضل</title>
-<meta name="description" content="معرض تصاميم داخلية وخارجية منفذة عبر 3ds Max">
+<meta name="description" content="معرض تصاميم داخلية وخارجية">
 <meta property="og:title" content="معرض التصاميم"><meta property="og:description" content="تصاميم داخلية وخارجية بمنتهى الإتقان">
 <meta property="og:type" content="website"><meta name="theme-color" content="#0B0E14">
 <link rel="manifest" href="./manifest.json">
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <link rel="icon" href="./icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
@@ -410,7 +409,6 @@ async function getAllDesigns(){
       : await F.getDocs(F.query(F.collection(F.db,"designs"),F.where("status","==","published")));
     _allDesignsCache=snap.docs.map(dd=>({id:dd.id,...dd.data()}));
     if(!adminSession)_allDesignsCache=_allDesignsCache.filter(d=>!isOldStock(d));
-    if(!_allDesignsCache.length&&!adminSession){_allDesignsCache=localDemos();}
     return _allDesignsCache;
   })();
   return _allDesignsPromise;
@@ -421,15 +419,16 @@ function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=nul
 const FALLBACK_SETTINGS={
   siteName:"بيت التصميم",initials:"AR",
   engineerName:"م. مهند المعماري",engineerTitle:"مهندس معماري ومصمم داخلي",engineerInitial:"M",
-  heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية منفذة عبر 3ds Max.",heroImage:"",
+  heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية.",heroImage:"",
   accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:3,colsMobile:2,
-  bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية منفذة بدقة عبر 3ds Max.",
+  bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية.",
   stats:{years:"5+",projects:"50+",satisfaction:"100%"},
   links:{whatsapp:"",instagram:"",twitter:"",facebook:""},
   contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},
   watermark:{enabled:false,text:""},adminPath:"/admin-panel"
 };
-const cleanSettings=s=>{if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
+const stripMax=t=>typeof t==="string"?t.replace(/\s*(المنفذة|منفذة|منفذ)\s+(بدقة\s+)?عبر\s*3ds\s*max\.?/gi,"").replace(/\s+\./g,".").trim():t;
+const cleanSettings=s=>{s.heroDesc=stripMax(s.heroDesc);s.bio=stripMax(s.bio);if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
 const store={
   get settings(){return settings;},
@@ -751,201 +750,12 @@ function lbApply(){const img=$("#lightbox img");if(img)img.style.transform=`tran
 function lbShow(){const lb=$("#lightbox");lb.querySelector("img").src=lbImgs[lbIdx];lb.querySelector(".lb-count").textContent=`${lbIdx+1} / ${lbImgs.length}`;lbScale=1;lbTx=lbTy=0;lbApply();}
 function lbStep(d){if(lbImgs.length<2)return;lbIdx=(lbIdx+d+lbImgs.length)%lbImgs.length;lbShow();}
 
-/* ================= نموذج GLB (مقسّم إلى أجزاء داخل Firestore) ================= */
-async function getModelBuffer(id){
-  const {db,doc,getDoc,collection,getDocs}=await fb();
-  const m=await getDoc(doc(db,"designs",id,"models","main")); if(!m.exists())return null;
-  const cs=await getDocs(collection(db,"designs",id,"models","main","chunks"));
-  const parts=cs.docs.map(x=>x.data()).sort((a,b)=>a.i-b.i).map(x=>x.data);
-  const r=await fetch("data:application/octet-stream;base64,"+parts.join(""));
-  return r.arrayBuffer();
-}
 async function deleteModel(id){
   const F=await fb();
   try{const cs=await F.getDocs(F.collection(F.db,"designs",id,"models","main","chunks"));for(const c of cs.docs)await F.deleteDoc(c.ref);}catch{}
   try{await F.deleteDoc(F.doc(F.db,"designs",id,"models","main"));}catch{}
 }
-async function saveModel(id,file,onProg){
-  const F=await fb();
-  const u8=new Uint8Array(await file.arrayBuffer()); let bin="";
-  for(let i=0;i<u8.length;i+=0x8000)bin+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000));
-  const b64=btoa(bin); await deleteModel(id);
-  const parts=[]; for(let i=0;i<b64.length;i+=CHUNK)parts.push(b64.slice(i,i+CHUNK));
-  for(let i=0;i<parts.length;i++){await F.setDoc(F.doc(F.db,"designs",id,"models","main","chunks",String(i)),{i,data:parts[i]});onProg?.(i+1,parts.length);}
-  await F.setDoc(F.doc(F.db,"designs",id,"models","main"),{name:file.name,size:file.size,chunks:parts.length,createdAt:Date.now()});
-}
-
-/* ================= عارض ثلاثي الأبعاد حقيقي (three.js) =================
-   • نموذج GLB (يُصدَّر من 3ds Max / Blender)
-   • جولة 360° للصور البانورامية (نسبة 2:1) من 3ds Max / V-Ray
-   • عرض مجسّم منحني لأي صورة عادية                                    */
-let _three=null,_v3=null;
-async function loadThree(){
-  if(_three)return _three;
-  const THREE=await import("three");
-  const {OrbitControls}=await import("three/addons/controls/OrbitControls.js");
-  const {GLTFLoader}=await import("three/addons/loaders/GLTFLoader.js");
-  return _three={THREE,OrbitControls,GLTFLoader};
-}
-function close3D(){
-  if(!_v3)return;
-  const v=_v3; _v3=null;
-  cancelAnimationFrame(v.raf);
-  try{v.ro?.disconnect();}catch{}
-  try{v.cleanup?.();}catch{}
-  try{v.renderer?.dispose();v.renderer?.forceContextLoss?.();}catch{}
-  document.removeEventListener("keydown",v.key);
-  try{if(document.fullscreenElement)document.exitFullscreen();}catch{}
-  v.el.remove(); unlockScroll();
-}
-async function open3D({title,images=[],hasModel=false,loadModel,start=0}){
-  close3D();
-  const hasPano=images.length>0, anyPano=images.some(x=>x.pano);
-  const el=document.createElement("div"); el.className="v3"; el.setAttribute("role","dialog"); el.setAttribute("aria-modal","true");
-  el.innerHTML=`<div class="v3-top">
-      <button class="icon-btn" data-a="close" aria-label="إغلاق">${icon("close")}</button>
-      <h3>${esc(title||"عرض ثلاثي الأبعاد")}</h3>
-      <div class="v3-tools">
-        ${hasModel?`<button class="chip" data-m="model">نموذج 3D</button>`:""}
-        ${hasPano?`<button class="chip" data-m="pano">${anyPano?"جولة 360°":"عرض مجسّم"}</button>`:""}
-        <button class="chip active" data-a="rot">دوران تلقائي</button>
-        <button class="chip" data-a="full">ملء الشاشة</button>
-      </div></div>
-    <div class="v3-stage"><div class="v3-load">جاري التحميل...</div><div class="v3-hint"></div>
-      <button class="lb-btn lb-prev" data-a="prev" aria-label="السابق" style="display:none">${icon("chevR")}</button>
-      <button class="lb-btn lb-next" data-a="next" aria-label="التالي" style="display:none">${icon("chevL")}</button></div>`;
-  document.body.appendChild(el); lockScroll();
-  const stage=el.querySelector(".v3-stage"), loadEl=el.querySelector(".v3-load"), hintEl=el.querySelector(".v3-hint");
-  const st={mode:null,idx:Math.max(0,Math.min(start,images.length-1)),auto:true};
-  const v={el,raf:0,renderer:null,key:null,ro:null,cleanup:null}; _v3=v;
-  let scene=null,camera=null,ctl=null,dom=null,lon=0,lat=0,lim={lon:1e9,lat:85},tok=0,hintT=0;
-  const setLoad=t=>{loadEl.textContent=t||"";loadEl.style.display=t?"grid":"none";};
-  const hint=t=>{hintEl.textContent=t;hintEl.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>hintEl.style.opacity=0,6500);};
-  const paintBtns=()=>{
-    el.querySelectorAll("[data-m]").forEach(b=>b.classList.toggle("active",b.dataset.m===st.mode));
-    el.querySelector('[data-a="rot"]')?.classList.toggle("active",st.auto);
-  };
-  el.onclick=e=>{
-    const b=e.target.closest("[data-a],[data-m]"); if(!b)return;
-    if(b.dataset.m){startMode(b.dataset.m);return;}
-    const a=b.dataset.a;
-    if(a==="close")close3D();
-    else if(a==="rot"){st.auto=!st.auto;if(ctl)ctl.autoRotate=st.auto;paintBtns();}
-    else if(a==="full"){if(document.fullscreenElement)document.exitFullscreen?.();else el.requestFullscreen?.().catch(()=>toast("المتصفح لا يدعم ملء الشاشة","err"));}
-    else if(a==="prev")step(-1); else if(a==="next")step(1);
-  };
-  v.key=e=>{
-    if(e.key==="Escape")close3D();
-    else if(st.mode==="pano"){if(e.key==="ArrowRight")step(-1);if(e.key==="ArrowLeft")step(1);}
-  };
-  document.addEventListener("keydown",v.key);
-
-  let T; try{T=await loadThree();}catch(err){console.error(err);setLoad("تعذر تحميل مكتبة العرض ثلاثي الأبعاد — تأكد من الاتصال بالإنترنت");return;}
-  if(_v3!==v)return;
-  const {THREE}=T; let renderer;
-  try{renderer=new THREE.WebGLRenderer({antialias:true});}catch(err){setLoad("متصفحك أو جهازك لا يدعم WebGL المطلوب للعرض ثلاثي الأبعاد");return;}
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
-  renderer.outputColorSpace=THREE.SRGBColorSpace;
-  v.renderer=renderer; dom=renderer.domElement; stage.insertBefore(dom,stage.firstChild);
-  const size=()=>{const w=stage.clientWidth||innerWidth,h=stage.clientHeight||Math.max(200,innerHeight-60);renderer.setSize(w,h);if(camera){camera.aspect=w/h;camera.updateProjectionMatrix();}};
-  v.ro=new ResizeObserver(size); v.ro.observe(stage);
-
-  function disposeScene(){
-    if(ctl){ctl.dispose();ctl=null;}
-    dom.onpointerdown=dom.onpointermove=dom.onpointerup=dom.onpointercancel=dom.onwheel=null;
-    if(scene){
-      scene.traverse(o=>{
-        if(o.geometry)o.geometry.dispose();
-        const ms=o.material?(Array.isArray(o.material)?o.material:[o.material]):[];
-        ms.forEach(m=>{for(const k in m){const t=m[k];if(t&&t.isTexture)t.dispose();}m.dispose();});
-      });
-      scene.environment?.dispose?.();
-    }
-    scene=null;camera=null;
-  }
-  v.cleanup=()=>{tok++;disposeScene();};
-
-  function bindPanoControls(){
-    let down=null,p0=0,f0=0; const pts=new Map();
-    const dist=()=>{const [a,b]=[...pts.values()];return Math.hypot(a[0]-b[0],a[1]-b[1])||1;};
-    dom.onpointerdown=e=>{
-      dom.setPointerCapture(e.pointerId); pts.set(e.pointerId,[e.clientX,e.clientY]);
-      down={x:e.clientX,y:e.clientY,lon,lat}; st.auto=false; paintBtns();
-      if(pts.size===2){p0=dist();f0=camera.fov;}
-    };
-    dom.onpointermove=e=>{
-      if(!pts.has(e.pointerId))return; pts.set(e.pointerId,[e.clientX,e.clientY]);
-      if(pts.size===2){camera.fov=Math.max(25,Math.min(100,f0*p0/dist()));camera.updateProjectionMatrix();return;}
-      if(down){const k=camera.fov/(dom.clientHeight||600);lon=down.lon-(e.clientX-down.x)*k;lat=down.lat+(e.clientY-down.y)*k;}
-    };
-    dom.onpointerup=dom.onpointercancel=e=>{
-      pts.delete(e.pointerId); down=null;
-      if(pts.size===1){const [x,y]=[...pts.values()][0];down={x,y,lon,lat};}
-    };
-    dom.onwheel=e=>{e.preventDefault();camera.fov=Math.max(25,Math.min(100,camera.fov+e.deltaY*0.05));camera.updateProjectionMatrix();};
-  }
-  async function setupPano(){
-    const my=++tok; disposeScene(); setLoad("جاري تحميل الصورة...");
-    const im=images[st.idx]; let url=""; try{url=await im.get();}catch{}
-    if(my!==tok||_v3!==v)return; if(!url){setLoad("تعذر تحميل الصورة");return;}
-    const tex=await new Promise(res=>{const l=new THREE.TextureLoader();l.setCrossOrigin("anonymous");l.load(url,res,undefined,()=>res(null));});
-    if(my!==tok||_v3!==v){tex?.dispose();return;} if(!tex){setLoad("تعذر قراءة الصورة");return;}
-    tex.colorSpace=THREE.SRGBColorSpace; tex.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());
-    const ar=tex.image.width/tex.image.height, full=!!im.pano||ar>1.9;
-    scene=new THREE.Scene(); scene.background=new THREE.Color(0x05070a);
-    camera=new THREE.PerspectiveCamera(full?75:60,1,1,1100);
-    let geo;
-    if(full){geo=new THREE.SphereGeometry(500,64,40);lim={lon:1e9,lat:85};}
-    else{
-      const thD=64,th=THREE.MathUtils.degToRad(thD),ph=Math.min(Math.PI*1.7,th*ar*1.05);
-      geo=new THREE.SphereGeometry(500,64,32,-ph/2,ph,Math.PI/2-th/2,th);
-      lim={lon:THREE.MathUtils.radToDeg(ph)/2,lat:thD/2}; camera.fov=thD*0.95;
-    }
-    geo.scale(-1,1,1);
-    scene.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({map:tex})));
-    lon=0;lat=0; size(); camera.updateProjectionMatrix(); setLoad("");
-    hint(full?"اسحب للتدوير 360° • عجلة الماوس أو قرصتان للتكبير":"اسحب للنظر حول التصميم • عجلة الماوس أو قرصتان للتكبير");
-    bindPanoControls();
-  }
-  async function setupModel(){
-    const my=++tok; disposeScene(); setLoad("جاري تحميل النموذج ثلاثي الأبعاد...");
-    let buf=null; try{buf=await loadModel?.();}catch(err){console.error(err);}
-    if(my!==tok||_v3!==v)return; if(!buf){setLoad("لا يوجد نموذج مرفوع لهذا التصميم");return;}
-    let gltf; try{gltf=await new Promise((res,rej)=>new T.GLTFLoader().parse(buf,"",res,rej));}catch(err){console.error(err);setLoad("تعذر قراءة النموذج — يجب أن يكون ملف GLB صالحاً");return;}
-    if(my!==tok||_v3!==v)return;
-    scene=new THREE.Scene(); scene.background=new THREE.Color(0x0b0e14);
-    try{const {RoomEnvironment}=await import("three/addons/environments/RoomEnvironment.js");const pm=new THREE.PMREMGenerator(renderer);scene.environment=pm.fromScene(new RoomEnvironment(),0.04).texture;pm.dispose();}catch{}
-    scene.add(new THREE.HemisphereLight(0xffffff,0x444455,.9));
-    const dl=new THREE.DirectionalLight(0xffffff,1.6); dl.position.set(6,10,8); scene.add(dl);
-    const root=gltf.scene, box=new THREE.Box3().setFromObject(root), sz=box.getSize(new THREE.Vector3()), ctr=box.getCenter(new THREE.Vector3());
-    root.position.sub(ctr); scene.add(root);
-    const m=Math.max(sz.x,sz.y,sz.z)||1;
-    camera=new THREE.PerspectiveCamera(45,1,m/200,m*60); camera.position.set(m*1.1,m*0.7,m*1.5);
-    ctl=new T.OrbitControls(camera,dom); ctl.enableDamping=true; ctl.autoRotate=st.auto; ctl.autoRotateSpeed=1.4;
-    ctl.minDistance=m*.25; ctl.maxDistance=m*8; ctl.target.set(0,0,0); ctl.update();
-    size(); setLoad(""); hint("اسحب للتدوير • عجلة الماوس أو قرصتان للتكبير • سحب بإصبعين للتحريك");
-  }
-  function startMode(mode){
-    st.mode=mode; paintBtns();
-    stage.querySelectorAll(".lb-prev,.lb-next").forEach(b=>b.style.display=(mode==="pano"&&images.length>1)?"grid":"none");
-    return mode==="model"?setupModel():setupPano();
-  }
-  function step(d){st.idx=(st.idx+d+images.length)%images.length;setupPano();}
-
-  const tick=()=>{
-    v.raf=requestAnimationFrame(tick); if(!scene||!camera)return;
-    if(st.mode==="pano"){
-      if(st.auto){if(lim.lon>1e8)lon+=0.07;else lon=Math.sin(performance.now()/2200)*lim.lon*0.55;}
-      lat=Math.max(-lim.lat,Math.min(lim.lat,lat)); lon=Math.max(-lim.lon,Math.min(lim.lon,lon));
-      const ph=THREE.MathUtils.degToRad(90-lat),th=THREE.MathUtils.degToRad(lon);
-      camera.lookAt(500*Math.sin(ph)*Math.cos(th),500*Math.cos(ph),500*Math.sin(ph)*Math.sin(th));
-    }else if(ctl)ctl.update();
-    renderer.render(scene,camera);
-  };
-  v.raf=requestAnimationFrame(tick);
-  if(hasModel)startMode("model"); else if(hasPano)startMode("pano"); else setLoad("لا توجد صور أو نموذج لعرضها");
-}
-
+function close3D(){}
 /* ================= توليد أيقونات التواصل المباشر ================= */
 function socialIconsHTML(compact=false){
   const l=settings.links||{}, c=settings.contact||{};
@@ -1152,7 +962,7 @@ async function renderPortfolio(root,params){
   pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
-    <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية المنفذة عبر 3ds Max.</p>
+    <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية.</p>
     <div class="tools">
       <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
       <div class="tools-r">
@@ -1245,7 +1055,6 @@ async function renderDesign(root,params,path){
         ${(d.colors||[]).length?`<div class="spec-row"><b>${icon("palette")} الألوان</b><div class="swatches" style="margin:0">${d.colors.map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div></div>`:""}
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
-          <button class="btn sm" id="view3d">${icon("cube")} عرض ثلاثي الأبعاد 3D</button>
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
           ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
@@ -1267,10 +1076,6 @@ async function renderDesign(root,params,path){
   $("#dThumbs").onclick=e=>{const t=e.target.closest("img");if(!t)return;showMain(+t.dataset.i);};
   if(imgs.length)showMain(Math.max(0,imgs.findIndex(i=>i.id===d.coverImageId)));
   $("#mainImg").onclick=async()=>{const u=await bigUrls();const list=u.map((x,i)=>x||thumbs[i]).filter(Boolean);openLightbox(list.length?list:[$("#mainImg").src],Math.min(cur,Math.max(0,list.length-1)));};
-  $("#view3d").onclick=()=>{
-    const list=imgs.map((im,i)=>({get:()=>bigAt(i),pano:isPano(im)}));
-    open3D({title:d.title,images:list.length?list:[{get:async()=>$("#mainImg").src,pano:false}],hasModel:!!d.hasModel,loadModel:()=>getModelBuffer(id),start:cur});
-  };
   const url=()=>location.href;
   $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
   $("#shareBtn").onclick=async()=>{
@@ -1295,10 +1100,9 @@ async function renderDemoDesign(root,d){
     <div class="spec-row"><b>${icon("layers")} النوع</b>${esc(store.catName(d.categoryId)==="غير مصنف"?SEED_META[d._slug]:store.catName(d.categoryId))}</div>
     <div class="spec-row"><b>${icon("gear")} البرنامج</b>3D Max</div><div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area)}</div>
     <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials)}</div>
-    <div class="actions-row"><button class="btn sm" id="view3d">${icon("cube")} عرض ثلاثي الأبعاد 3D</button></div></div></div></div>`;
+    </div></div></div>`;
   $("#dThumbs").onclick=e=>{const t=e.target.closest("img");if(!t)return;$$("#dThumbs img").forEach(x=>x.classList.toggle("sel",x===t));$("#mainImg").src=imgs[+t.dataset.i];};
   $("#mainImg").onclick=()=>openLightbox(imgs,+($("#dThumbs .sel")?.dataset.i||0));
-  $("#view3d").onclick=()=>open3D({title:d.title,images:imgs.map(u=>({get:async()=>u,pano:false}))});
 }
 /* ================= باقات الألوان ================= */
 const mkP=(name,colors,tiles,furniture,curtains,carpet,tags)=>({name,colors,tiles,furniture,curtains,carpet,tags});
@@ -1668,11 +1472,6 @@ async function editor(m,d){
   <input type="file" id="fFiles" accept="image/*" multiple hidden>
   <div class="row-imgs" id="imgList"></div>
   <div class="progress" hidden id="prog"><i></i></div><small id="progTxt" style="color:var(--muted)"></small>
-  <h3 style="margin-top:22px">${icon("cube")} العرض ثلاثي الأبعاد (اختياري)</h3>
-  <p style="color:var(--muted);font-size:.8rem;margin:0 0 8px">• <b>جولة 360°</b>: ارفع صورة بانورامية بنسبة 2:1 (من V-Ray/Corona في 3ds Max) وستُكتشف تلقائياً.<br>• <b>نموذج مجسّم</b>: ارفع ملف <b>GLB</b> (حتى 6 م.ب) مُصدَّراً من 3ds Max أو Blender.<br>• بدونهما يُعرض الزائر الصورة بشكل مجسّم منحني.</p>
-  <div class="dropzone ${d.hasModel?"has":""}" id="mdz">${d.hasModel?"يوجد نموذج GLB مرفوع — اضغط لاستبداله":"اضغط لاختيار ملف GLB"}</div>
-  <input type="file" id="mFile" accept=".glb" hidden>
-  <div id="mInfo" style="margin:8px 0;display:flex;gap:8px;align-items:center;flex-wrap:wrap"></div>
   <div style="margin-top:16px;display:flex;gap:10px"><button class="btn" id="saveD">${icon("check")} حفظ</button><button class="btn ghost" id="cancelD">إلغاء</button></div>`;
   $("#backL").onclick=$("#cancelD").onclick=()=>secDesigns(m);
   const specs=[...(d.specs||[])];
@@ -1717,22 +1516,6 @@ async function editor(m,d){
   $("#imgList").ondragstart=e=>{dragKey=e.target.closest("figure")?.dataset.p||null;};
   $("#imgList").ondragover=e=>e.preventDefault();
   $("#imgList").ondrop=e=>{const target=e.target.closest("figure")?.dataset.p;if(!dragKey||!target||dragKey===target)return;const from=pending.findIndex(p=>p.key===dragKey),to=pending.findIndex(p=>p.key===target);const [x]=pending.splice(from,1);pending.splice(to,0,x);dragKey=null;drawImgs();};
-  let modelFile=null, modelRemove=false; const hadModel=!!d.hasModel;
-  const paintModel=()=>{
-    const info=$("#mInfo");
-    info.innerHTML=modelFile?`<span class="badge pub">سيُرفع: ${esc(modelFile.name)} (${(modelFile.size/1048576).toFixed(1)} م.ب)</span><button class="btn sm danger" id="mClr">إلغاء</button>`
-      :(hadModel&&!modelRemove?`<span class="badge pub">نموذج مرفوع</span><button class="btn sm danger" id="mDel">حذف النموذج</button>`:(modelRemove?`<span class="badge draft">سيُحذف النموذج عند الحفظ</span>`:""));
-    $("#mClr")&&($("#mClr").onclick=()=>{modelFile=null;paintModel();});
-    $("#mDel")&&($("#mDel").onclick=()=>{modelRemove=true;paintModel();});
-  };
-  paintModel();
-  $("#mdz").onclick=()=>$("#mFile").click();
-  $("#mFile").onchange=e=>{
-    const f=e.target.files[0]; if(!f)return;
-    if(!/\.glb$/i.test(f.name))return toast("الملف يجب أن يكون بصيغة GLB","err");
-    if(f.size>6*1048576)return toast("حجم النموذج أكبر من 6 م.ب — قلّل جودة الخامات عند التصدير","err");
-    modelFile=f; modelRemove=false; paintModel();
-  };
   $("#saveD").onclick=async()=>{
     const title=$("#fTitle").value.trim();
     if(!title)return toast("العنوان مطلوب","err");
@@ -1762,9 +1545,6 @@ async function editor(m,d){
       if(newCoverThumb)thumb=newCoverThumb;
       else{const u=await Base64FirestoreAdapter.getImageUrl(id,coverKey);if(u)thumb=(await thumbOf(u)).data;}
     }
-    if(modelFile){$("#prog").hidden=false;await saveModel(id,modelFile,(i,t)=>{$("#progTxt").textContent=`رفع النموذج ${i}/${t}...`;$("#prog i").style.width=Math.round(i/t*100)+"%";});data.hasModel=true;}
-    else if(modelRemove){await deleteModel(id);data.hasModel=false;}
-    else data.hasModel=hadModel;
     const coverChanged=(coverKey||null)!==(d.coverImageId||null);
     let cols=newCoverCols&&newCoverCols.length?newCoverCols:((thumb&&(coverChanged||!(d.colors&&d.colors.length)))?await extractColors(thumb):(d.colors||[]));
     data.colors=cols; data.colorTags=[...new Set([...(data.colorTags||[]),...colorNames(cols)])];
@@ -2230,7 +2010,7 @@ route("/about",renderAbout); route("/contact",renderContact); route("/404",rende
   try{const {db,doc,setDoc,increment}=await fb();
     if(!sessionStorage.getItem("visit_"+new Date().toDateString())){sessionStorage.setItem("visit_"+new Date().toDateString(),"1");await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{visits:increment(1)},{merge:true});}
   }catch{}
-  if("serviceWorker" in navigator){const reg=()=>navigator.serviceWorker.register("./sw.js").catch(()=>{});document.readyState==="complete"?reg():window.addEventListener("load",reg);}
+  if("serviceWorker" in navigator){const reg=()=>navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"}).then(r=>r.update()).catch(()=>{});document.readyState==="complete"?reg():window.addEventListener("load",reg);}
 })();
 </script>
 </body>
