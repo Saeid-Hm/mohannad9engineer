@@ -7,8 +7,9 @@
 <meta name="description" content="معرض تصاميم داخلية وخارجية منفذة عبر 3ds Max">
 <meta property="og:title" content="معرض التصاميم"><meta property="og:description" content="تصاميم داخلية وخارجية بمنتهى الإتقان">
 <meta property="og:type" content="website"><meta name="theme-color" content="#0B0E14">
+<link rel="manifest" href="./manifest.json">
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230B0E14%27/%3E%3Cpath d=%27M12 50 32 12l20 38M20 38h24%27 fill=%27none%27 stroke=%27%23E10600%27 stroke-width=%276%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./icons/icon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
@@ -267,6 +268,43 @@ input[type=range]{accent-color:var(--accent);flex:1}
 .v3-hint{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);max-width:92%;background:rgba(18,22,31,.85);border:1px solid var(--line);border-radius:99px;padding:6px 16px;font-size:.78rem;color:var(--muted);pointer-events:none;text-align:center;transition:opacity .5s}
 .v3-load{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);background:#05070a;z-index:2;text-align:center;padding:20px}
 .dropzone.has{border-color:var(--accent);color:var(--text)}
+.bottomnav{display:none}
+@media(max-width:820px){
+  .bottomnav{display:grid}
+  .bottomnav a{min-width:0;text-align:center;line-height:1.2;white-space:nowrap}
+  .bottomnav a span{display:block;font-size:.7rem}
+  #engIcons{display:none!important}
+  .header-in{gap:10px;height:58px}
+  .logo{font-size:22px}
+  .container{width:94%}
+  .hero{min-height:340px}.hero-in{padding:44px 0}
+  .section{padding:34px 0}
+  .tools{flex-direction:column;align-items:stretch!important}
+  .tools-r{margin-inline-start:0!important;width:100%}
+  .tools-r>div{flex:1;min-width:0}
+  .tools-r input,.tools-r select{width:100%!important}
+  #chips{flex-wrap:nowrap!important;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-inline:-3%;padding:2px 3%;width:106%}
+  #chips::-webkit-scrollbar{display:none}
+  #chips .chip{flex:0 0 auto;white-space:nowrap}
+  .like-count{inset-inline-start:46px;top:13px}
+  .actions-row .btn{flex:1 1 45%;justify-content:center}
+  .footer-in{flex-direction:column;text-align:center}
+  .admin-main{padding:14px}
+  .admin-table{display:block;overflow-x:auto;white-space:nowrap}
+  .toasts{width:92%}
+}
+@media(max-width:380px){.header-actions{gap:6px}.icon-btn{width:36px;height:36px}}
+.tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.tools-r{margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap}
+#botIcon{width:58px;height:58px;border-radius:18px;border-color:color-mix(in srgb,var(--accent) 55%,var(--line));box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 0 color-mix(in srgb,var(--accent) 40%,transparent)}
+#botIcon svg{width:32px;height:32px;color:var(--accent);animation:botWig 6s ease-in-out infinite}
+#botIcon::after{content:"";position:absolute;inset:-5px;border-radius:22px;border:2px solid var(--accent);opacity:0;pointer-events:none;animation:botRing 3.2s ease-out infinite}
+#botIcon .dot{position:absolute;top:-4px;inset-inline-end:-4px;width:13px;height:13px;border-radius:50%;background:var(--accent);border:2px solid var(--bg)}
+@keyframes botRing{0%{transform:scale(.92);opacity:.85}70%,100%{transform:scale(1.4);opacity:0}}
+@keyframes botWig{0%,86%,100%{transform:rotate(0)}89%{transform:rotate(-12deg)}92%{transform:rotate(10deg)}95%{transform:rotate(-6deg)}98%{transform:rotate(3deg)}}
+#botBubble{font-size:.88rem;font-weight:700;padding:8px 16px;border-color:var(--accent)}
+#botWin{animation:winIn .22s ease;transform-origin:bottom left}
+@keyframes winIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
 </style>
 </head>
 <body>
@@ -301,7 +339,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
 </aside>
 <main id="app" class="app"></main>
 <footer id="footer" class="footer"></footer>
-<nav id="bottomNav" class="bottomnav only-mobile" aria-label="تنقل سفلي"></nav>
+<nav id="bottomNav" class="bottomnav" aria-label="تنقل سفلي"></nav>
 <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="عارض الصور"></div>
 <div id="toasts" class="toasts" aria-live="polite"></div>
 <div id="botRoot"></div>
@@ -372,6 +410,7 @@ async function getAllDesigns(){
       : await F.getDocs(F.query(F.collection(F.db,"designs"),F.where("status","==","published")));
     _allDesignsCache=snap.docs.map(dd=>({id:dd.id,...dd.data()}));
     if(!adminSession)_allDesignsCache=_allDesignsCache.filter(d=>!isOldStock(d));
+    if(!_allDesignsCache.length&&!adminSession){_allDesignsCache=localDemos();}
     return _allDesignsCache;
   })();
   return _allDesignsPromise;
@@ -469,6 +508,52 @@ async function compressToFit(file,{maxDim=1600,quality=0.82,watermark=false}={})
 }
 const thumbOf=(fOrD,wm=false)=>typeof fOrD==="string"?compress(fOrD,{maxDim:480,quality:0.75,watermark:wm}):compressToFit(fOrD,{maxDim:480,quality:0.75,watermark:wm});
 
+/* ================= قراءة ألوان الصور تلقائياً (داخل المتصفح بلا أي مفتاح API) ================= */
+const _hex=(r,g,b)=>"#"+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("");
+function colorName(hex){
+  const n=parseInt(hex.slice(1),16),r=(n>>16)/255,g=((n>>8)&255)/255,b=(n&255)/255;
+  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;
+  const s=d===0?0:d/(1-Math.abs(2*l-1));
+  let h=0;
+  if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}
+  if(l>0.93)return "أبيض";
+  if(l<0.13)return "أسود";
+  if(s<0.12)return l>0.8?"أبيض":"رمادي";
+  if(h<15||h>=345)return l<0.32?"عنابي":(l>0.8?"وردي":"أحمر");
+  if(h<45)return l>0.65?"بيج":(l<0.5?"بني":(s>0.7?"برتقالي":"بيج"));
+  if(h<68)return s<0.45?(l>0.55?"بيج":"بني"):(l<0.55?"ذهبي":"أصفر");
+  if(h<165)return "أخضر";
+  if(h<200)return "فيروزي";
+  if(h<258)return "أزرق";
+  if(h<292)return "بنفسجي";
+  return l<0.32?"عنابي":"وردي";
+}
+const colorNames=cols=>[...new Set((cols||[]).map(colorName))];
+async function extractColors(src,n=5){
+  try{
+    const img=await drawImg(src);
+    const W=56,H=Math.max(8,Math.round(W*img.height/img.width));
+    const c=document.createElement("canvas"); c.width=W; c.height=H;
+    const ctx=c.getContext("2d",{willReadFrequently:true}); ctx.drawImage(img,0,0,W,H);
+    const px=ctx.getImageData(0,0,W,H).data, bins=new Map();
+    for(let i=0;i<px.length;i+=4){
+      if(px[i+3]<128)continue;
+      const r=px[i],g=px[i+1],b=px[i+2],k=((r>>4)<<8)|((g>>4)<<4)|(b>>4);
+      let o=bins.get(k); if(!o){o={n:0,r:0,g:0,b:0};bins.set(k,o);}
+      o.n++;o.r+=r;o.g+=g;o.b+=b;
+    }
+    const arr=[...bins.values()].map(o=>{
+      const r=o.r/o.n,g=o.g/o.n,b=o.b/o.n,mx=Math.max(r,g,b),mn=Math.min(r,g,b),sat=mx?(mx-mn)/mx:0;
+      return {r,g,b,w:o.n*(1+sat*1.2)};
+    }).sort((a,b)=>b.w-a.w);
+    const out=[];
+    for(const o of arr){
+      if(out.every(p=>Math.hypot(p.r-o.r,p.g-o.g,p.b-o.b)>58)){out.push(o);if(out.length>=n)break;}
+    }
+    return out.map(o=>_hex(o.r,o.g,o.b));
+  }catch{return [];}
+}
+
 const CHUNK=850*1024;
 const Base64FirestoreAdapter={
   async saveImage(designId,{data,width,height,size},order){
@@ -565,6 +650,7 @@ function paintLike(btn,id){
   btn.setAttribute("aria-label",liked?"إلغاء الإعجاب":"إعجاب");
 }
 async function toggleLike(id,btn,countEl){
+  if(isLocalDemo(id)){const l=myLikes.has(id);l?myLikes.delete(id):myLikes.add(id);paintLike(btn,id);btn.classList.add("pulse");setTimeout(()=>btn.classList.remove("pulse"),500);if(countEl)countEl.textContent=Math.max(0,(+countEl.textContent||0)+(l?-1:1));return;}
   const u=await ensureAnon();
   if(!u){toast("أضف نطاق الموقع في Firebase ← Authentication ← Settings ← Authorized domains","err");return;}
   const liked=myLikes.has(id);
@@ -953,6 +1039,22 @@ function renderShell(path){
 }
 function openDrawer(open){const d=$("#drawer"),o=$("#drawerOverlay");o.hidden=!open;requestAnimationFrame(()=>{d.classList.toggle("open",open);o.classList.toggle("show",open);});}
 
+const isLocalDemo=id=>String(id).startsWith("demo_");
+function localDemos(){
+  const out=[]; let n=0;
+  for(const slug of Object.keys(SEED_META)){
+    const cid=categories.find(c=>c.slug===slug)?.id||slug;
+    for(let i=0;i<4;i++){
+      const p=DEFAULT_PALETTES[slug][i]; n++;
+      out.push({id:`demo_${slug}_${i}`,title:`${SEED_META[slug]} — ${p.name}`,categoryId:cid,status:"published",demo:true,
+        description:`تصميم ${SEED_META[slug]} بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}. (عرض تجريبي — سيختفي عند نشر أول تصميم حقيقي)`,
+        specs:[],year:String(2024),area:`${100+i*40} م²`,materials:p.tiles,location:"",software:"3D Max",tags:[SEED_META[slug]],colorTags:p.tags||[],
+        colors:p.colors,thumbnail:sceneURI(slug,p.colors,i),likesCount:0,viewsCount:0,featured:i===0,order:n,createdAt:Date.now()-n*3600000,
+        _slug:slug,_i:i,_pal:p.colors});
+    }
+  }
+  return out;
+}
 function designCard(d,catName){
   return `<article class="card dcard">
     <a href="#/design/${d.id}" class="thumb" aria-label="${esc(d.title)}">
@@ -1051,10 +1153,10 @@ async function renderPortfolio(root,params){
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
     <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية المنفذة عبر 3ds Max.</p>
-    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+    <div class="tools">
       <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
-      <div style="margin-inline-start:auto;display:flex;gap:8px;flex-wrap:wrap">
-        <div style="position:relative"><input id="q" class="input" style="width:190px;padding-inline-end:38px" placeholder="بحث..." value="${esc(pState.q)}" aria-label="بحث"><span style="position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">${icon("search")}</span></div>
+      <div class="tools-r">
+        <div style="position:relative"><input id="q" class="input" style="width:190px;padding-inline-end:38px;padding-inline-start:14px" placeholder="بحث..." value="${esc(pState.q)}" aria-label="بحث"><span style="position:absolute;inset-inline-end:10px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none">${icon("search")}</span></div>
         <select id="sort" class="input" style="width:150px" aria-label="ترتيب">
           <option value="new" ${pState.sort==="new"?"selected":""}>الأحدث</option>
           <option value="likes" ${pState.sort==="likes"?"selected":""}>الأكثر إعجاباً</option>
@@ -1107,6 +1209,10 @@ function paintGrid(){
 async function renderDesign(root,params,path){
   const id=path.split("/")[2];
   const {db,doc,getDoc,collection,getDocs,updateDoc,increment}=await fb();
+  if(isLocalDemo(id)){
+    const dm=(await getAllDesigns()).find(x=>x.id===id); if(!dm)return render404(root);
+    return renderDemoDesign(root,dm);
+  }
   const snap=await getDoc(doc(db,"designs",id));
   if(!snap.exists()||(snap.data().status!=="published"&&!sessionStorage.getItem("ap_isadmin")))return render404(root);
   const d={id,...snap.data()};
@@ -1136,6 +1242,7 @@ async function renderDesign(root,params,path){
         <div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area||"—")}</div>
         <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials||"—")}</div>
         <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
+        ${(d.colors||[]).length?`<div class="spec-row"><b>${icon("palette")} الألوان</b><div class="swatches" style="margin:0">${d.colors.map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div></div>`:""}
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
           <button class="btn sm" id="view3d">${icon("cube")} عرض ثلاثي الأبعاد 3D</button>
@@ -1179,6 +1286,20 @@ async function renderDesign(root,params,path){
   const md=document.querySelector('meta[name="description"]'); if(md)md.setAttribute("content",(d.description||d.title).slice(0,150));
 }
 
+async function renderDemoDesign(root,d){
+  const imgs=[sceneURI(d._slug,d._pal,d._i),sceneURI(d._slug,d._pal,d._i+11)];
+  root.innerHTML=`<div class="container"><button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
+    <div class="detail"><div><div class="detail-main geo"><img id="mainImg" src="${imgs[0]}" alt="${esc(d.title)}"></div>
+    <div class="detail-thumbs" id="dThumbs">${imgs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}">`).join("")}</div></div>
+    <div class="specs geo"><h1>${esc(d.title)}</h1><p style="color:var(--muted);font-size:.9rem">${esc(d.description)}</p>
+    <div class="spec-row"><b>${icon("layers")} النوع</b>${esc(store.catName(d.categoryId)==="غير مصنف"?SEED_META[d._slug]:store.catName(d.categoryId))}</div>
+    <div class="spec-row"><b>${icon("gear")} البرنامج</b>3D Max</div><div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area)}</div>
+    <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials)}</div>
+    <div class="actions-row"><button class="btn sm" id="view3d">${icon("cube")} عرض ثلاثي الأبعاد 3D</button></div></div></div></div>`;
+  $("#dThumbs").onclick=e=>{const t=e.target.closest("img");if(!t)return;$$("#dThumbs img").forEach(x=>x.classList.toggle("sel",x===t));$("#mainImg").src=imgs[+t.dataset.i];};
+  $("#mainImg").onclick=()=>openLightbox(imgs,+($("#dThumbs .sel")?.dataset.i||0));
+  $("#view3d").onclick=()=>open3D({title:d.title,images:imgs.map(u=>({get:async()=>u,pano:false}))});
+}
 /* ================= باقات الألوان ================= */
 const mkP=(name,colors,tiles,furniture,curtains,carpet,tags)=>({name,colors,tiles,furniture,curtains,carpet,tags});
 const DEFAULT_PALETTES={
@@ -1197,17 +1318,17 @@ let botOpen=false, botState=null, bubbleTimer=null;
 const _palCache={};
 function initBot(){
   const root=$("#botRoot");
-  root.innerHTML=`<div id="botBubble"></div><button id="botIcon" aria-label="المساعد تصميم">${icon("house")}</button>`;
+  root.innerHTML=`<div id="botBubble"></div><button id="botIcon" aria-label="المساعد تصميم">${icon("house")}${localStorage.getItem("ap_bot_seen")?"":`<i class="dot"></i>`}</button>`;
   const ic=$("#botIcon");
   placeIcon(ic); makeDraggable(ic);
   ic.addEventListener("click",()=>{if(ic.dataset.dragged==="1"){ic.dataset.dragged="0";return;}botToggle(true);});
   window.addEventListener("resize",()=>placeIcon(ic));
-  scheduleBubble();
+  scheduleBubble(true); setTimeout(prefetchPalettes,800);
   store.onChange(()=>{if(botOpen&&botState?.step==="cats")renderCats();});
 }
 function placeIcon(ic){
   let p;try{p=JSON.parse(localStorage.getItem("ap_bot_pos"));}catch{}
-  const m=10,S=52;
+  const m=10,S=58;
   let x=p?.x??m, y=p?.y??(innerHeight-S-m-(innerWidth<=820?62:0));
   x=Math.min(Math.max(m,x),innerWidth-S-m); y=Math.min(Math.max(m,y),innerHeight-S-m);
   ic.style.left=x+"px"; ic.style.top=y+"px";
@@ -1215,33 +1336,16 @@ function placeIcon(ic){
 function makeDraggable(ic){
   let sx,sy,ox,oy,moved;
   ic.addEventListener("pointerdown",e=>{moved=false;sx=e.clientX;sy=e.clientY;ox=ic.offsetLeft;oy=ic.offsetTop;ic.setPointerCapture(e.pointerId);
-    const mv=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;if(!moved)return;const m=10,S=52;
+    const mv=ev=>{const dx=ev.clientX-sx,dy=ev.clientY-sy;if(Math.abs(dx)+Math.abs(dy)>6)moved=true;if(!moved)return;const m=10,S=58;
       ic.style.left=Math.min(Math.max(m,ox+dx),innerWidth-S-m)+"px";
       ic.style.top=Math.min(Math.max(m,oy+dy),innerHeight-S-m)+"px";};
     const up=()=>{ic.removeEventListener("pointermove",mv);ic.removeEventListener("pointerup",up);
       if(moved){ic.dataset.dragged="1";localStorage.setItem("ap_bot_pos",JSON.stringify({x:ic.offsetLeft,y:ic.offsetTop}));}};
     ic.addEventListener("pointermove",mv); ic.addEventListener("pointerup",up);});
 }
-function showBubble(txt){
-  const b=$("#botBubble"),ic=$("#botIcon"); if(!b||!ic||botOpen)return;
-  b.textContent=txt; b.style.left=Math.min(ic.offsetLeft+60,innerWidth-200)+"px"; b.style.top=ic.offsetTop+6+"px";
-  b.classList.add("show"); setTimeout(()=>b.classList.remove("show"),4000);
-}
-function scheduleBubble(){
-  clearTimeout(bubbleTimer);
-  bubbleTimer=setTimeout(()=>{
-    if(currentPath()==="/"&&!botOpen&&!document.hidden){
-      const b=$("#botBubble"),ic=$("#botIcon");
-      b.textContent=SHORTS[Math.floor(Math.random()*SHORTS.length)];
-      b.style.left=ic.offsetLeft+60+"px"; b.style.top=ic.offsetTop+6+"px";
-      b.classList.add("show"); setTimeout(()=>b.classList.remove("show"),3000);
-    }
-    scheduleBubble();
-  },20000+Math.random()*10000);
-}
 function botToggle(toOpen){
   botOpen=toOpen;
-  if(botOpen){ensureWin();bumpStat("botOpens");botState?botResume():botGreet();}
+  if(botOpen){localStorage.setItem("ap_bot_seen","1");$("#botIcon .dot")?.remove();ensureWin();bumpStat("botOpens");botState?botResume():botGreet();}
   else $("#botWin")?.remove();
 }
 function ensureWin(){
@@ -1252,17 +1356,17 @@ function ensureWin(){
   w.style.top=Math.max(10,ic.offsetTop-570)+"px";
   w.innerHTML=`<div class="bot-head"><span class="av">${icon("house")}</span><div style="flex:1"><h4>تصميم</h4><small>مساعد افتراضي</small></div><button class="icon-btn" id="botClose" aria-label="إغلاق">${icon("close")}</button></div><div class="bot-body" id="botBody"></div><div class="bot-chips" id="botChips"></div>`;
   $("#botRoot").appendChild(w);
-  $("#botClose").onclick=async()=>{await botSay("السلام عليكم.");botToggle(false);};
+  $("#botClose").onclick=async()=>{$("#botClose").onclick=null;await botSay("السلام عليكم.");await wait(650);botToggle(false);};
 }
 async function botSay(text,me=false){
   const body=$("#botBody"); if(!body)return;
   const m=document.createElement("div"); m.className="bot-msg"+(me?" me":""); body.appendChild(m); body.scrollTop=body.scrollHeight;
-  if(me||matchMedia("(prefers-reduced-motion: reduce)").matches){m.textContent=text;body.scrollTop=body.scrollHeight;return;}
-  for(const ch of text){m.textContent+=ch;body.scrollTop=body.scrollHeight;await wait(9);}
+  if(me||reducedMotion()){m.textContent=text;body.scrollTop=body.scrollHeight;return;}
+  for(let i=0;i<text.length;i+=4){m.textContent=text.slice(0,i+4);body.scrollTop=body.scrollHeight;await wait(14);}
 }
 async function botGreet(){
   botState={step:"cats"};
-  for(const g of GREET){await botSay(g);await wait(60);}
+  for(const g of GREET){await botSay(g);await wait(40);}
   renderCats();
 }
 function botResume(){
@@ -1283,24 +1387,38 @@ function renderCats(){
     setTimeout(()=>showBubble("ما هي ألوانك المفضلة؟ اضغط عليّ"),2500);
   };
 }
+const reducedMotion=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+function designPalettes(cid){
+  return getAllDesigns().then(all=>all
+    .filter(d=>d.status==="published"&&d.categoryId===cid&&Array.isArray(d.colors)&&d.colors.length>=3)
+    .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
+    .map(d=>({name:d.title,colors:d.colors.slice(0,6),tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:d.colorTags||colorNames(d.colors),designId:d.id,auto:true}))
+  ).catch(()=>[]);
+}
+async function prefetchPalettes(){
+  try{const {db,collection,getDocs}=await fb();const s=await getDocs(collection(db,"palettes"));
+    s.docs.forEach(x=>{const it=x.data()?.items;if(it&&it.length)_palCache[x.id]=it;});}catch{}
+}
 async function renderPalettes(){
   botState.step="colors";
   const cid=botState.cat.id;
-  let items=_palCache[cid];
-  if(!items){
-    const {db,doc,getDoc}=await fb();
-    try{const s=await getDoc(doc(db,"palettes",cid));items=s.data()?.items||[];}catch{}
-    if(!items.length)items=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
-    _palCache[cid]=items;
+  let base=_palCache[cid];
+  if(!base){
+    try{const {db,doc,getDoc}=await fb();const s=await getDoc(doc(db,"palettes",cid));base=s.data()?.items;}catch{}
+    if(!base||!base.length)base=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
+    _palCache[cid]=base;
   }
+  const autos=await designPalettes(cid);
+  const items=[...autos,...base];
   $("#botChips").innerHTML="";
   $("#palList")?.remove();
-  const body=$("#botBody");
+  const body=$("#botBody"); if(!body)return;
+  const line=(l,v)=>v?`<p><b>${l}:</b> ${esc(v)}</p>`:"";
   body.insertAdjacentHTML("beforeend",`<div id="palList" style="display:flex;flex-direction:column;gap:8px">${items.map((p,i)=>`
-    <div class="palette-card" data-i="${i}"><h5>${esc(p.name)}</h5>
-      <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${h}" title="${h}"></i>`).join("")}</div>
-      <p><b>الأرضيات:</b> ${esc(p.tiles||"")}</p><p><b>الأثاث:</b> ${esc(p.furniture||"")}</p>
-      <p><b>الستائر:</b> ${esc(p.curtains||"")}</p><p><b>السجاد:</b> ${esc(p.carpet||"")}</p>
+    <div class="palette-card" data-i="${i}"><h5>${p.auto?`<span class="badge pub" style="margin-inline-end:6px">من أعمالنا</span>`:""}${esc(p.name)}</h5>
+      <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div>
+      ${line("الأرضيات",p.tiles)}${line("الأثاث",p.furniture)}${line("الستائر",p.curtains)}${line("السجاد",p.carpet)}
+      ${p.auto&&(p.tags||[]).length?line("الألوان",(p.tags||[]).slice(0,4).join("، ")):""}
     </div>`).join("")}</div>`);
   body.scrollTop=body.scrollHeight;
   $("#palList").onclick=async e=>{
@@ -1313,15 +1431,34 @@ async function renderPalettes(){
 }
 function renderDone(){
   const c=$("#botChips"); if(!c)return;
-  const tags=(botState.palette?.tags||[])[0]||"";
+  const p=botState.palette||{}; const tag=(p.tags||[])[0]||"";
   const waNum=settings.contact?.whatsappNumber||"";
-  const waMsg=encodeURIComponent(`السلام عليكم، أعجبني تصميم (${botState.cat?.name||""}) بباقة ألوان (${botState.palette?.name||""}) وأرغب بالاستفسار.`);
-  c.innerHTML=`<button class="chip active" id="bView">شاهد التصاميم المطابقة</button>
+  const waMsg=encodeURIComponent(`السلام عليكم، أعجبني تصميم (${botState.cat?.name||""}) بباقة ألوان (${p.name||""}) وأرغب بالاستفسار.`);
+  c.innerHTML=`${p.designId?`<button class="chip active" id="bOpen">افتح هذا التصميم</button>`:""}
+    <button class="chip ${p.designId?"":"active"}" id="bView">شاهد التصاميم المطابقة</button>
     ${waNum?`<a class="chip" target="_blank" href="https://wa.me/${waNum}?text=${waMsg}">${icon("wa")} تواصل واتساب</a>`:""}
     <button class="chip" id="bRestart">ابدأ من جديد</button>`;
-  $("#bView").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}&color=${encodeURIComponent(tags)}`);};
+  $("#bOpen")&&($("#bOpen").onclick=()=>{botToggle(false);nav(`/design/${p.designId}`);});
+  $("#bView").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}${tag?`&color=${encodeURIComponent(tag)}`:""}`);};
   $("#bRestart").onclick=()=>{botState=null;$("#botBody").innerHTML="";$("#botChips").innerHTML="";botGreet();};
 }
+function showBubble(txt,ms=3200){
+  const b=$("#botBubble"),ic=$("#botIcon"); if(!b||!ic||botOpen)return;
+  b.textContent=txt;
+  const right=ic.offsetLeft>innerWidth/2;
+  if(right){b.style.left="auto";b.style.right=(innerWidth-ic.offsetLeft+8)+"px";}
+  else{b.style.right="auto";b.style.left=(ic.offsetLeft+ic.offsetWidth+8)+"px";}
+  b.style.top=(ic.offsetTop+ic.offsetHeight/2-17)+"px";
+  b.classList.add("show"); clearTimeout(b._t); b._t=setTimeout(()=>b.classList.remove("show"),ms);
+}
+function scheduleBubble(first){
+  clearTimeout(bubbleTimer);
+  bubbleTimer=setTimeout(()=>{
+    if(currentPath()==="/"&&!botOpen&&!document.hidden)showBubble(SHORTS[Math.floor(Math.random()*SHORTS.length)]);
+    scheduleBubble(false);
+  },first?2200:9000+Math.random()*6000);
+}
+
 async function bumpStat(field){
   try{const {db,doc,setDoc,increment}=await fb();
     await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{[field]:increment(1)},{merge:true});
@@ -1441,11 +1578,27 @@ async function secDesigns(m){
     <input type="file" id="bulkFiles" webkitdirectory directory multiple hidden>
     <div class="progress" hidden id="bulkProg"><i></i></div><small id="bulkTxt" style="color:var(--muted)"></small>
   </div>
+  <div class="specs" style="margin-bottom:16px;padding:14px">
+    <h3 style="margin-bottom:8px">${icon("palette")} قراءة ألوان الصور تلقائياً</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">يحلل ألوان غلاف كل تصميم ويضيفها لبيانات البوت ولفلترة المعرض. يعمل داخل المتصفح بدون أي مفتاح. التصاميم الجديدة تُحلَّل تلقائياً عند الحفظ.</p>
+    <button class="btn ghost" id="colorBtn">${icon("palette")} تحليل ألوان التصاميم الحالية</button> <small id="colorTxt" style="color:var(--muted)"></small>
+  </div>
   <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
   <table class="admin-table"><thead><tr><th></th><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب/مشاهدة</th><th></th></tr></thead>
   <tbody id="dRows">${list.map(dd=>`<tr draggable="true" data-id="${dd.id}"><td>${icon("drag")}</td><td>${esc(dd.title)}</td><td>${esc(store.catName(dd.categoryId))}</td><td><span class="badge ${dd.status==="published"?"pub":"draft"}">${dd.status==="published"?"منشور":"مسودة"}</span>${dd.featured?" ⭐":""}</td><td>${dd.likesCount||0} / ${dd.viewsCount||0}</td><td style="display:flex;gap:6px"><button class="mini-btn" data-edit="${dd.id}" aria-label="تعديل">${icon("edit")}</button><button class="mini-btn" data-del="${dd.id}" aria-label="حذف">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
   $("#addD").onclick=()=>editor(m,null);
   $("#bulkBtn").onclick=()=>$("#bulkFiles").click();
+  $("#colorBtn").onclick=async()=>{
+    const F=await fb(); const todo=list.filter(x=>x.thumbnail&&!(x.colors&&x.colors.length));
+    if(!todo.length)return toast("كل التصاميم محللة الألوان مسبقاً");
+    let i=0,ok=0;
+    for(const x of todo){
+      i++; $("#colorTxt").textContent=`${i}/${todo.length}`;
+      const cols=await extractColors(x.thumbnail);
+      if(cols.length>=2){await F.updateDoc(F.doc(F.db,"designs",x.id),{colors:cols,colorTags:[...new Set([...(x.colorTags||[]),...colorNames(cols)])]});ok++;}
+    }
+    invalidateDesignsCache(); toast(`تم تحليل ألوان ${ok} تصميم`); secDesigns(m);
+  };
   $("#bulkFiles").onchange=async e=>{
     const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));
     if(!files.length)return toast("لا توجد صور في المجلد المختار","err");
@@ -1463,19 +1616,19 @@ async function secDesigns(m){
     for(const g of gnames){
       const title=g.startsWith("__root__")?groups[g][0].name.replace(/\.[^.]+$/,""):g;
       const ref=await F.addDoc(F.collection(F.db,"designs"),{title,categoryId:catId,description:"أُضيف عبر رفع مجلد كامل من لوحة التحكم.",specs:[],year:String(new Date().getFullYear()),area:"",materials:"",location:"",software:"3D Max",tags:[title],colorTags:[],status:"published",featured:false,likesCount:0,viewsCount:0,imagesCount:0,order:Date.now(),createdAt:Date.now(),updatedAt:Date.now()});
-      let firstThumb="",firstId=null,idx=0;
+      let firstThumb="",firstId=null,idx=0,firstCols=[];
       for(const f of groups[g]){
         if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: كبير وتم تخطيه`,"err");continue;}
         const c=await compressToFit(f,{watermark:true});
         const t=await thumbOf(f,true);
         const imgId=await storage.saveImage(ref.id,c,idx);
         await F.updateDoc(F.doc(F.db,"designs",ref.id,"images",imgId),{thumb:t.data});
-        if(!firstThumb){firstThumb=t.data;firstId=imgId;}
+        if(!firstThumb){firstThumb=t.data;firstId=imgId;firstCols=await extractColors(t.data);}
         idx++; done++;
         $("#bulkProg i").style.width=Math.round(done/files.length*100)+"%";
         $("#bulkTxt").textContent=`معالجة ونشر ${done}/${files.length} ...`;
       }
-      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx});
+      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx,colors:firstCols,colorTags:colorNames(firstCols)});
     }
     invalidateDesignsCache(); toast("تم نشر المجلد بنجاح 🎉"); secDesigns(m);
   };
@@ -1546,7 +1699,8 @@ async function editor(m,d){
       if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: أكبر من ${appConfig.maxUploadMB} م.ب`,"err");continue;}
       const c=await compressToFit(f,{watermark:true});
       const t=await thumbOf(f,true);
-      pending.push({key:"p"+uid(),preview:URL.createObjectURL(f),compressed:c,thumb:t.data});
+      const cols=await extractColors(t.data);
+      pending.push({key:"p"+uid(),preview:URL.createObjectURL(f),compressed:c,thumb:t.data,colors:cols});
       toast(`${f.name}: تم توفير ${c.saved}% من الحجم`);
     }
     if(!coverKey&&pending.length)coverKey=pending[0].key;
@@ -1590,7 +1744,7 @@ async function editor(m,d){
     let id=d.id;
     if(!id){const ref=await F.addDoc(F.collection(F.db,"designs"),{...data,likesCount:0,viewsCount:0,imagesCount:0,createdAt:Date.now()});id=ref.id;}
     else await F.updateDoc(F.doc(F.db,"designs",id),data);
-    let newCoverThumb=null;
+    let newCoverThumb=null,newCoverCols=null;
     if(pending.length){
       $("#prog").hidden=false;
       for(let i=0;i<pending.length;i++){
@@ -1599,7 +1753,7 @@ async function editor(m,d){
         $("#prog i").style.width=Math.round((i/pending.length)*100)+"%";
         const imgId=await storage.saveImage(id,p.compressed,existing.length+i);
         await F.updateDoc(F.doc(F.db,"designs",id,"images",imgId),{thumb:p.thumb});
-        if(coverKey===p.key){coverKey=imgId;newCoverThumb=p.thumb;}
+        if(coverKey===p.key){coverKey=imgId;newCoverThumb=p.thumb;newCoverCols=p.colors;}
       }
       $("#prog i").style.width="100%";
     }
@@ -1611,6 +1765,9 @@ async function editor(m,d){
     if(modelFile){$("#prog").hidden=false;await saveModel(id,modelFile,(i,t)=>{$("#progTxt").textContent=`رفع النموذج ${i}/${t}...`;$("#prog i").style.width=Math.round(i/t*100)+"%";});data.hasModel=true;}
     else if(modelRemove){await deleteModel(id);data.hasModel=false;}
     else data.hasModel=hadModel;
+    const coverChanged=(coverKey||null)!==(d.coverImageId||null);
+    let cols=newCoverCols&&newCoverCols.length?newCoverCols:((thumb&&(coverChanged||!(d.colors&&d.colors.length)))?await extractColors(thumb):(d.colors||[]));
+    data.colors=cols; data.colorTags=[...new Set([...(data.colorTags||[]),...colorNames(cols)])];
     data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
     await F.updateDoc(F.doc(F.db,"designs",id),data);
     invalidateDesignsCache();
@@ -2038,7 +2195,7 @@ async function seedAll(progress=()=>{}){
         specs:[{name:"الإضاءة",value:i%2?"نهارية + مخفية":"مسائية + ثريات"},{name:"النمط",value:(p.tags||[])[1]||"عصري"},{name:"الأرضيات",value:p.tiles}],
         year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles,
         location:CITIES[i%CITIES.length], software:"3D Max",
-        tags:[typeName,p.name,slug], colorTags:p.tags||[],
+        tags:[typeName,p.name,slug], colorTags:p.tags||[], colors:p.colors,
         thumbnail:cover, coverImageId:"i1", imagesCount:2,
         likesCount:4+((i*7)%40), viewsCount:30+((i*53)%400),
         featured:i<2, status:"published", order:n, createdAt:Date.now()-n*3600000, updatedAt:Date.now()
@@ -2055,12 +2212,12 @@ async function seedAll(progress=()=>{}){
 route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
 route("/about",renderAbout); route("/contact",renderContact); route("/404",render404); route("/admin",renderAdmin);
 (async function boot(){
-  const minSplash=wait(1500);
+  const minSplash=wait(1000);
   try{
     await store.init();
     initShell();
-    await startRouter();
     initBot();
+    await startRouter();
   }catch(err){
     console.error(err);
     try{initShell();}catch{}
@@ -2073,6 +2230,7 @@ route("/about",renderAbout); route("/contact",renderContact); route("/404",rende
   try{const {db,doc,setDoc,increment}=await fb();
     if(!sessionStorage.getItem("visit_"+new Date().toDateString())){sessionStorage.setItem("visit_"+new Date().toDateString(),"1");await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{visits:increment(1)},{merge:true});}
   }catch{}
+  if("serviceWorker" in navigator){const reg=()=>navigator.serviceWorker.register("./sw.js").catch(()=>{});document.readyState==="complete"?reg():window.addEventListener("load",reg);}
 })();
 </script>
 </body>
