@@ -284,7 +284,7 @@ const bytes=b64=>Math.round((b64.length-(b64.indexOf(",")+1))*0.75);
 const fmtDate=ts=>{try{return new Date(ts?.seconds?ts.seconds*1000:ts).toLocaleDateString("ar-SA");}catch{return "";}};
 function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
 function toast(msg,type="ok"){const t=document.createElement("div");t.className="toast"+(type==="err"?" err":"");t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),400);},3200);}
-const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14a4.5 4.5 0 0 0 7 0"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
+const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14a4.5 4.5 0 0 0 7 0"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
 const icon=(n,cls="")=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||""}</svg>`;
 
 /* ================= Firebase كسول ================= */
@@ -304,9 +304,7 @@ async function fb(){
   return _fbApi;
 }
 
-/* ============================================================
-   ذاكرة التصاميم — متوافقة مع قواعد الأمان وبدون فهارس مركبة
-============================================================ */
+/* ================= ذاكرة التصاميم (متوافقة مع القواعد وبدون فهارس مركبة) ================= */
 let _allDesignsCache=null;
 let _allDesignsPromise=null;
 async function getAllDesigns(){
@@ -541,6 +539,7 @@ function openLightbox(list,start=0){
   lb.querySelector("#lbIn").onclick=()=>lbSetScale(lbScale*1.3);
   lb.querySelector("#lbOut").onclick=()=>lbSetScale(lbScale/1.3);
   lb.querySelector("img").onload=()=>lbApply();
+  lb.querySelector("img").onerror=()=>{const im=lb.querySelector("img");im.onerror=null;im.src=fallbackScene();};
   document.onkeydown=e=>{if(e.key==="Escape"){lb.hidden=true;document.onkeydown=null;}if(e.key==="ArrowRight")lbStep(-1);if(e.key==="ArrowLeft")lbStep(1);};
   const dist=()=>{const [a,b]=[...lbPointers.values()];return Math.hypot(a[0]-b[0],a[1]-b[1]);};
   lb.onpointerdown=e=>{lbPointers.set(e.pointerId,[e.clientX,e.clientY]);lb.setPointerCapture(e.pointerId);if(lbPointers.size===2){lbPinch0=dist();lbScale0=lbScale;}};
@@ -596,7 +595,7 @@ function socialsHTML(){
 function designCard(d,catName){
   return `<article class="card dcard">
     <a href="#/design/${d.id}" class="thumb" aria-label="${esc(d.title)}">
-      <img src="${d.thumbnail||""}" alt="${esc(d.title)}" loading="lazy">
+      <img src="${d.thumbnail||""}" alt="${esc(d.title)}" loading="lazy" onerror="__imgErr(this)">
       <button class="like-btn ${hasLiked(d.id)?"liked":""}" data-like="${d.id}" aria-label="إعجاب"></button>
       <span class="like-count" data-likecount="${d.id}">${d.likesCount||0}</span>
     </a>
@@ -644,7 +643,7 @@ async function renderAbout(root){
         <div class="stat-card">${icon("flag")}<b>${esc(s.stats?.projects||"0")}</b><span>مشروع منجز</span></div>
         <div class="stat-card">${icon("smile")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
       </div></div>
-    <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="صورة المهندس">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
+    <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="صورة المهندس" onerror="__imgErr(this)">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
   </div></section>`;
 }
 async function renderContact(root){
@@ -763,8 +762,8 @@ async function renderDesign(root,params,path){
     <button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
     <div class="detail">
       <div>
-        <div class="detail-main geo"><img id="mainImg" src="${main0}" alt="${esc(d.title)}"></div>
-        <div class="detail-thumbs" id="dThumbs">${thumbs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}" loading="lazy">`).join("")}</div>
+        <div class="detail-main geo"><img id="mainImg" src="${main0}" alt="${esc(d.title)}" onerror="__imgErr(this)"></div>
+        <div class="detail-thumbs" id="dThumbs">${thumbs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}" loading="lazy" onerror="__imgErr(this)">`).join("")}</div>
       </div>
       <div class="specs geo">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
@@ -823,10 +822,11 @@ kids:[mkP("وردي باستيل",["#F3DEDE","#E8C4C4","#FAF0F0","#D9A5A5","#FFF
 exterior:[mkP("حجر أبيض",["#F2F0EB","#D8D4CC","#B8B2A8","#8A857C","#5C5852"],"حجر أبيض طبيعي","أبواب خشب جوز مع درابزين أسود","ستائر خارجية بيج","أرضية بورسلان حجري",["أبيض","حجر"]),mkP("رمادي حديث",["#6B717B","#8D939C","#D5D8DD","#4A4F58","#22252B"],"غرانيت رمادي داكن","واجهات زجاج مع ألواح رمادية","ستائر خارجية رمادية","أرضية أسمنت مصقول",["رمادي","مودرن"]),mkP("بيج صحراوي",["#D9C7A7","#B49B72","#F2EBDD","#8C7550","#6E5A3E"],"ترافرتين بيج","أبواب خشب دافئ مع مشربيات","ستائر رملية خارجية","أرضية حجر بيج",["بيج","ترابي"]),mkP("أسود وزجاج",["#1A1A1A","#333333","#595959","#0D0D0D","#C9A227"],"غرانيت أسود مطفي","واجهات زجاجية بإطارات سوداء","ستائر خارجية سوداء","أرضية بورسلان أسود",["أسود","مودرن"]),mkP("طين تقليدي",["#C97B4A","#8A4B2A","#E8D3B8","#6E3B22","#F2E4CE"],"طين مصقول","أبواب خشب قديمة بنقوش","ستائر قطن ترابية","أرضية سدو خارجية",["ترابي","تراثي"]),mkP("أبيض متوسطي",["#FFFFFF","#EDEDED","#D0D0D0","#1F4E5F","#2E7D93"],"بورسلان أبيض لامع","نوافذ زرقاء مع أبراج بيضاء","ستائر شيفون بيضاء","أرضية سيراميك أزرق",["أبيض","أزرق"]),mkP("خشب دافئ",["#8B6F47","#C4A87C","#F0E7D8","#5E4B32","#3E3222"],"باركيه خارجي معالج","ألواح خشب دافئ مع زجاج","ستائر خارجية بيج","أرضية خشب تيكي",["خشبي","دافئ"]),mkP("كريمي كلاسيك",["#F2EFE9","#D9D2C5","#A89F8D","#7E8A97","#5A6472"],"رخام كرارا","أعمدة كلاسيكية بكرميد كريمي","ستائر حرير كريمي","أرضية رخام أبيض",["أبيض","كلاسيك"]),mkP("رمادي وحجر",["#8D939C","#B4B9C2","#D5D8DD","#5C5852","#4A4F58"],"حجر رمادي طبيعي","مزيج حجر رمادي مع خشب","ستائر خارجية رمادية","أرضية حجر رمادي",["رمادي","حجر"]),mkP("ذهبي فاخر",["#D4AF37","#B98A2F","#F6EEDC","#7A5A1E","#1A1A1A"],"بورسلان ذهبي مطفي","تفاصيل ذهبية مع زجاج أسود","ستائر حرير ذهبية","أرضية رخام بيج",["ذهبي","فاخر"])]
 };
 
-/* ================= البوت «تصميم» ================= */
+/* ================= البوت «تصميم» (سريع) ================= */
 const GREET=["السلام عليكم","اسمي «تصميم»","أهلاً بك في بيتك للتصميم","اختر نوع التصميم الذي تبحث عنه وسأساعدك في الاختيار","ماذا تريد أن تصمّم؟"];
 const SHORTS=["السلام عليكم","أنا هنا","معك معك","تفضل"];
 let botOpen=false, botState=null, bubbleTimer=null;
+const _palCache={};
 function initBot(){
   const root=$("#botRoot");
   root.innerHTML=`<div id="botBubble"></div><button id="botIcon" aria-label="المساعد تصميم">${icon("house")}</button>`;
@@ -885,11 +885,11 @@ async function botSay(text,me=false){
   const body=$("#botBody"); if(!body)return;
   const m=document.createElement("div"); m.className="bot-msg"+(me?" me":""); body.appendChild(m); body.scrollTop=body.scrollHeight;
   if(me||matchMedia("(prefers-reduced-motion: reduce)").matches){m.textContent=text;body.scrollTop=body.scrollHeight;return;}
-  for(const ch of text){m.textContent+=ch;body.scrollTop=body.scrollHeight;await wait(24);}
+  for(const ch of text){m.textContent+=ch;body.scrollTop=body.scrollHeight;await wait(9);}
 }
 async function botGreet(){
   botState={step:"cats"};
-  for(const g of GREET){await botSay(g);await wait(180);}
+  for(const g of GREET){await botSay(g);await wait(60);}
   renderCats();
 }
 function botResume(){
@@ -911,10 +911,14 @@ function renderCats(){
 }
 async function renderPalettes(){
   botState.step="colors";
-  const {db,doc,getDoc}=await fb();
-  let items=[];
-  try{const s=await getDoc(doc(db,"palettes",botState.cat.id));items=s.data()?.items||[];}catch{}
-  if(!items.length)items=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
+  const cid=botState.cat.id;
+  let items=_palCache[cid];
+  if(!items){
+    const {db,doc,getDoc}=await fb();
+    try{const s=await getDoc(doc(db,"palettes",cid));items=s.data()?.items||[];}catch{}
+    if(!items.length)items=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
+    _palCache[cid]=items;
+  }
   $("#botChips").innerHTML="";
   $("#palList")?.remove();
   const body=$("#botBody");
@@ -1002,10 +1006,55 @@ async function secDesigns(m){
   const all=await getAllDesigns();
   const list=[...all].sort((a,b)=>(a.order||0)-(b.order||0));
   m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2>التصاميم (${list.length})</h2><button class="btn sm" id="addD">${icon("plus")} إضافة تصميم</button></div>
+  <div class="specs" style="margin-bottom:16px;padding:14px">
+    <h3 style="margin-bottom:8px">${icon("folder")} نشر مجلد صور كامل دفعة واحدة</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">كل مجلد فرعي داخل المجلد المختار يصبح تصميماً مستقلاً بكل صوره، وكل صورة في الجذر تصبح تصميماً مستقلاً. يُضغط كل شيء تلقائياً ويُ نشر فوراً.</p>
+    <div class="form-grid">
+      <div class="field"><label>تصنيف التصاميم المرفوعة</label><select class="input" id="bulkCat">${store.categories.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join("")}</select></div>
+      <div class="field" style="display:flex;align-items:end"><button class="btn ghost" id="bulkBtn">${icon("folder")} اختيار مجلد ونشر كل صوره</button></div>
+    </div>
+    <input type="file" id="bulkFiles" webkitdirectory directory multiple hidden>
+    <div class="progress" hidden id="bulkProg"><i></i></div><small id="bulkTxt" style="color:var(--muted)"></small>
+  </div>
   <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
   <table class="admin-table"><thead><tr><th></th><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب/مشاهدة</th><th></th></tr></thead>
   <tbody id="dRows">${list.map(dd=>`<tr draggable="true" data-id="${dd.id}"><td>${icon("drag")}</td><td>${esc(dd.title)}</td><td>${esc(store.catName(dd.categoryId))}</td><td><span class="badge ${dd.status==="published"?"pub":"draft"}">${dd.status==="published"?"منشور":"مسودة"}</span>${dd.featured?" ⭐":""}</td><td>${dd.likesCount||0} / ${dd.viewsCount||0}</td><td style="display:flex;gap:6px"><button class="mini-btn" data-edit="${dd.id}" aria-label="تعديل">${icon("edit")}</button><button class="mini-btn" data-del="${dd.id}" aria-label="حذف">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
   $("#addD").onclick=()=>editor(m,null);
+  /* رفع مجلد كامل */
+  $("#bulkBtn").onclick=()=>$("#bulkFiles").click();
+  $("#bulkFiles").onchange=async e=>{
+    const files=[...e.target.files].filter(f=>f.type.startsWith("image/"));
+    if(!files.length)return toast("لا توجد صور في المجلد المختار","err");
+    const catId=$("#bulkCat").value;
+    const groups={};
+    for(const f of files){
+      const rel=(f.webkitRelativePath||f.name).split("/");
+      const g=rel.length>2?rel[1]:"__root__"+uid();
+      (groups[g]=groups[g]||[]).push(f);
+    }
+    const gnames=Object.keys(groups);
+    if(!confirm(`سيُنشأ ${gnames.length} تصميم من ${files.length} صورة. متابعة النشر؟`))return;
+    $("#bulkProg").hidden=false; let done=0;
+    const F=await fb();
+    for(const g of gnames){
+      const title=g.startsWith("__root__")?groups[g][0].name.replace(/\.[^.]+$/,""):g;
+      const ref=await F.addDoc(F.collection(F.db,"designs"),{title,categoryId:catId,description:"أُضيف عبر رفع مجلد كامل من لوحة التحكم.",specs:[],year:String(new Date().getFullYear()),area:"",materials:"",location:"",software:"3D Max",tags:[title],colorTags:[],status:"published",featured:false,likesCount:0,viewsCount:0,imagesCount:0,order:Date.now(),createdAt:Date.now(),updatedAt:Date.now()});
+      let firstThumb="",firstId=null,idx=0;
+      for(const f of groups[g]){
+        if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: كبير وتم تخطيه`,"err");continue;}
+        const c=await compressToFit(f,{watermark:true});
+        const t=await thumbOf(f,true);
+        const imgId=await storage.saveImage(ref.id,c,idx);
+        await F.updateDoc(F.doc(F.db,"designs",ref.id,"images",imgId),{thumb:t.data});
+        if(!firstThumb){firstThumb=t.data;firstId=imgId;}
+        idx++; done++;
+        $("#bulkProg i").style.width=Math.round(done/files.length*100)+"%";
+        $("#bulkTxt").textContent=`معالجة ونشر ${done}/${files.length} ...`;
+      }
+      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx});
+    }
+    invalidateDesignsCache(); toast("تم نشر المجلد بنجاح 🎉"); secDesigns(m);
+  };
   m.onclick=async e=>{
     const ed=e.target.closest("[data-edit]"), del=e.target.closest("[data-del]");
     if(ed)editor(m,list.find(x=>x.id===ed.dataset.edit));
@@ -1053,7 +1102,7 @@ async function editor(m,d){
   let pending=[], existing=d.id?await Base64FirestoreAdapter.listMeta(d.id):[], coverKey=d.coverImageId||null;
   const drawImgs=()=>{
     $("#imgList").innerHTML=
-      existing.map(im=>`<figure data-ex="${im.id}" class="${coverKey===im.id?"cover":""}"><img src="${im.thumb||""}" alt="صورة" draggable="true"><div class="img-tools"><button class="mini-btn" data-cov="${im.id}" title="غلاف">${icon("star")}</button><button class="mini-btn" data-rmex="${im.id}" title="حذف">${icon("trash")}</button></div></figure>`).join("")+
+      existing.map(im=>`<figure data-ex="${im.id}" class="${coverKey===im.id?"cover":""}"><img src="${im.thumb||""}" alt="صورة" draggable="true" onerror="__imgErr(this)"><div class="img-tools"><button class="mini-btn" data-cov="${im.id}" title="غلاف">${icon("star")}</button><button class="mini-btn" data-rmex="${im.id}" title="حذف">${icon("trash")}</button></div></figure>`).join("")+
       pending.map(p=>`<figure data-p="${p.key}" class="${coverKey===p.key?"cover":""}"><img src="${p.preview}" alt="معاينة" draggable="true"><div class="img-tools"><button class="mini-btn" data-cov="${p.key}" title="غلاف">${icon("star")}</button><button class="mini-btn" data-rmp="${p.key}" title="حذف">${icon("trash")}</button><button class="mini-btn" data-up="${p.key}" title="تقديم">${icon("chevR")}</button><button class="mini-btn" data-dn="${p.key}" title="تأخير">${icon("chevL")}</button></div></figure>`).join("");
   };
   drawImgs();
@@ -1151,12 +1200,12 @@ async function secPalettes(m){
         `<div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" id="addP">${icon("plus")} باقة جديدة</button><button class="btn sm ghost" id="defP">${icon("refresh")} باقات افتراضية</button><button class="btn" id="saveP">${icon("check")} حفظ الباقات</button></div>`;
     };
     draw();
-    $("#pWrap").oninput=e=>{const i=+e.target.dataset.i,f=e.target.dataset.f;if(!f)return;items[i][f]=f==="colors"?e.target.value.split(",").map(s=>s.trim()):f==="tags"?e.target.value.split(/[،,]/).map(s=>s.trim()):e.target.value;};
+    $("#pWrap").oninput=e=>{const i=+e.target.dataset.i,f=e.target.dataset.f;if(!f)return;items[i][f]=f==="colors"?e.target.value.split(",").map(s=>s.trim()):f==="tags"?e.target.value.split(/[،,]/).map(s=>s.trim()):e.target.value;delete _palCache[cid];};
     $("#pWrap").onclick=async e=>{
       if(e.target.closest("#addP")){items.push({name:"باقة جديدة",colors:["#D8C3A5","#8C6F4E","#EFE6D8","#B49B7C"],tiles:"",furniture:"",curtains:"",carpet:"",tags:[]});draw();}
       const del=e.target.closest("[data-del]");if(del){items.splice(+del.dataset.del,1);draw();}
       if(e.target.closest("#defP")){items=JSON.parse(JSON.stringify(DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living));draw();}
-      if(e.target.closest("#saveP")){await setDoc(doc(db,"palettes",cid),{items});toast("تم حفظ الباقات");}
+      if(e.target.closest("#saveP")){await setDoc(doc(db,"palettes",cid),{items});_palCache[cid]=items;toast("تم حفظ الباقات");}
     };
   };
   $("#pc").onchange=loadPal; await loadPal();
@@ -1242,12 +1291,25 @@ async function secStats(m){
   <div class="form-grid" style="margin-top:20px"><div><h3>الأكثر إعجاباً</h3><table class="admin-table">${topL.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.likesCount||0} ♥</td></tr>`).join("")}</table></div>
   <div><h3>الأكثر مشاهدة</h3><table class="admin-table">${topV.map(dd=>`<tr><td>${esc(dd.title)}</td><td>${dd.viewsCount||0} 👁</td></tr>`).join("")}</table></div></div>`;
 }
+async function clearAllDesigns(prog){
+  const F=await fb();
+  const ds=await F.getDocs(F.collection(F.db,"designs"));
+  let i=0;
+  for(const d of ds.docs){
+    const ims=await F.getDocs(F.collection(F.db,"designs",d.id,"images"));
+    for(const im of ims.docs) await F.deleteDoc(im.ref);
+    await F.deleteDoc(d.ref);
+    i++; prog?.(i,ds.size);
+  }
+  invalidateDesignsCache();
+}
 async function secBackup(m){
   m.innerHTML=`<h2>نسخ احتياطي وأدوات</h2>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px">
     <button class="btn" id="exp">${icon("dl")} تصدير JSON</button>
     <button class="btn ghost" id="imp">${icon("ul")} استيراد JSON</button><input type="file" id="impF" accept=".json" hidden>
     <button class="btn ghost" id="seed">${icon("refresh")} تحميل بيانات تجريبية</button>
+    <button class="btn danger" id="wipe">${icon("trash")} حذف البيانات التجريبية</button>
     <button class="btn ghost" id="mig">${icon("ul")} ترحيل الصور إلى Storage</button>
   </div><div class="progress" hidden id="mProg"><i></i></div><small id="mTxt" style="color:var(--muted)"></small>`;
   const {db,collection,getDocs,doc,setDoc}=await fb();
@@ -1269,7 +1331,8 @@ async function secBackup(m){
     invalidateDesignsCache();
     toast("تم الاستيراد بنجاح");
   };
-  $("#seed").onclick=async()=>{if(confirm("سيستبدل هذا الإجراء التصاميم الحالية ببيانات تجريبية جديدة (70 تصميماً بصور مشاهد). متابعة؟")){await seedAll(p=>{$("#mTxt").textContent=p;$("#mProg").hidden=false;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم زرع 70 تصميماً بنجاح");}};
+  $("#seed").onclick=async()=>{if(confirm("سيستبدل هذا الإجراء التصاميم الحالية بـ 70 تصميماً بصور واقعية. متابعة؟")){await seedAll(p=>{$("#mProg").hidden=false;$("#mTxt").textContent=p;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم زرع 70 تصميماً بصور واقعية 🎉");}};
+  $("#wipe").onclick=async()=>{if(!confirm("تحذير: سيُحذف كل التصاميم وصورها نهائياً. متابعة؟"))return;$("#mProg").hidden=false;await clearAllDesigns((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`حذف ${i}/${t} ...`;});toast("تم حذف كل البيانات التجريبية");secBackup(m);};
   $("#mig").onclick=async()=>{if(!confirm("ترحيل كل صور Base64 إلى Firebase Storage؟"))return;$("#mProg").hidden=false;await migrateToStorage((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`${i}/${t}`;});toast("اكتملت الهجرة");};
 }
 function makeSortable(tbody,onDone){
@@ -1280,80 +1343,28 @@ function makeSortable(tbody,onDone){
 }
 
 /* ============================================================
-    مولّد مشاهد SVG (معاينات تشبه رندرات 3ds Max)
+   صور واقعية (Unsplash) + مشهد احتياطي عند تعذر التحميل
 ============================================================ */
+const u=(id,w=1000)=>`https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=60`;
+const UNS={
+living:["photo-1600210492486-724fe5c67fb0","photo-1586023492125-27b2c045efd7","photo-1618221195710-dd6b41faaea6","photo-1616486338812-3dadae4b4ace","photo-1567767292278-a4f26aa2f082","photo-1593696140826-c58b021acf8b","photo-1600210491892-03d54c0aaf87","photo-1615873968403-89e068629265","photo-1616486029423-aaa4789e8c9a","photo-1598928506311-c55ded91a20c"],
+bedroom:["photo-1505693416388-ac5ce068fe85","photo-1540518614846-7eded433c457","photo-1616594039964-ae9021a400a0","photo-1595526114035-0d45ed16cfbf","photo-1522708323590-d24dbb6b0267","photo-1567016432779-094069958ea5","photo-1505691938895-1758d7feb511","photo-1631049307264-da0ec9d36412","photo-1617325247661-675ab4b64ae2","photo-1595526114035-0d45ed16cfbf?sat=-100"],
+bathroom:["photo-1552321554-5fefe8c9ef14","photo-1620626011761-996317b8d101","photo-1584622650111-993a426fbf0a","photo-1507652313519-d4e9174996dd","photo-1600566752355-35792bedcfea","photo-1600566753086-00f18fb6b3ea","photo-1620626011761-996317b8d101?sat=-60","photo-1552321554-5fefe8c9ef14?sat=-60","photo-1584622650111-993a426fbf0a?sat=-60","photo-1507652313519-d4e9174996dd?sat=-60"],
+salon:["photo-1600120399925-2d0bb2ed0d41","photo-1615873968403-89e068629265","photo-1616486029423-aaa4789e8c9a","photo-1567016432779-094069958ea5","photo-1600210491892-03d54c0aaf87","photo-1598928506311-c55ded91a20c","photo-1600120399925-2d0bb2ed0d41?sat=-70","photo-1615873968403-89e068629265?sat=-70","photo-1616486029423-aaa4789e8c9a?sat=-70","photo-1567016432779-094069958ea5?sat=-70"],
+kitchen:["photo-1556911220-bff31c812dba","photo-1556909212-d5b604d0c90d","photo-1600585154340-be6161a56a0c","photo-1600489000022-c2086d79f9d4","photo-1588854337236-6889d631faa8","photo-1600585154526-990dced4db0d","photo-1556911220-bff31c812dba?sat=-70","photo-1556909212-d5b604d0c90d?sat=-70","photo-1600585154340-be6161a56a0c?sat=-70","photo-1600489000022-c2086d79f9d4?sat=-70"],
+kids:["photo-1505691938895-1758d7feb511","photo-1616627561950-9f746e330187","photo-1595428774223-ef52624120d2","photo-1617806118233-18e1de247200","photo-1505693416388-ac5ce068fe85?sat=-40","photo-1540518614846-7eded433c457?sat=-40","photo-1616594039964-ae9021a400a0?sat=-40","photo-1595526114035-0d45ed16cfbf?sat=-40","photo-1522708323590-d24dbb6b0267?sat=-40","photo-1567016432779-094069958ea5?sat=-40"],
+exterior:["photo-1600596542815-ffad4c1539a9","photo-1600607687939-ce8a6c25118c","photo-1512917774080-9991f1c4c750","photo-1600585154526-990dced4db0d","photo-1600047509807-ba8f99d2cdde","photo-1600607687920-4e2a09cf159d","photo-1580587771525-78b9dba3b914","photo-1568605114967-8130f3a36994","photo-1570129477492-45c003edd2be","photo-1600566753190-17f0baa2a6c3"]
+};
 function shade(hex,f=0.78){try{const h=hex.replace("#","");const full=h.length===3?h.split("").map(x=>x+x).join(""):h;const n=parseInt(full,16);const r=Math.round(((n>>16)&255)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}catch{return hex;}}
-function scene(type,c,v=0){
-  const A=c[v%c.length],B=c[(v+1)%c.length],C=c[(v+2)%c.length],D=c[(v+3)%c.length],E=c[(v+4)%c.length];
-  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs>
-  <linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C}"/><stop offset="1" stop-color="${A}"/></linearGradient>
-  <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${E}"/><stop offset="1" stop-color="${shade(E)}"/></linearGradient>
-  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity=".06"/></linearGradient>
-  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20304c"/><stop offset=".6" stop-color="#7a4a3a"/><stop offset="1" stop-color="#d99a6a"/></linearGradient></defs>`;
-  if(type==="exterior"){
-    s+=`<rect width="800" height="440" fill="url(#sky)"/><circle cx="640" cy="120" r="42" fill="#ffd98a" opacity=".85"/>`;
-    s+=`<rect y="440" width="800" height="160" fill="url(#f)"/>`;
-    s+=`<rect x="150" y="200" width="270" height="170" rx="8" fill="${A}"/><rect x="290" y="130" width="260" height="130" rx="8" fill="${B}"/>`;
-    s+=`<rect x="180" y="230" width="90" height="110" rx="4" fill="url(#g)"/><rect x="300" y="230" width="90" height="110" rx="4" fill="#ffd98a" opacity=".75"/><rect x="330" y="155" width="100" height="80" rx="4" fill="url(#g)"/><rect x="450" y="155" width="70" height="80" rx="4" fill="#ffd98a" opacity=".7"/>`;
-    s+=`<rect x="410" y="300" width="60" height="70" rx="4" fill="${shade(E)}"/>`;
-    s+=`<path d="M600 440 q-6 -70 4 -110" stroke="${shade(E)}" stroke-width="12" fill="none"/>`;
-    s+=`<path d="M604 330 q-50 -30 -80 -10 M604 330 q50 -30 80 -10 M604 330 q-30 -50 -60 -40 M604 330 q30 -50 60 -40 M604 330 q0 -60 -10 -70" stroke="#2e6b4f" stroke-width="10" fill="none" stroke-linecap="round"/>`;
-    s+=`<path d="M120 440 q-4 -60 2 -95" stroke="${shade(E)}" stroke-width="10" fill="none"/><path d="M122 345 q-40 -25 -65 -8 M122 345 q40 -25 65 -8 M122 345 q-25 -40 -48 -32 M122 345 q25 -40 48 -32" stroke="#2e6b4f" stroke-width="8" fill="none" stroke-linecap="round"/>`;
-  }else{
-    s+=`<rect width="800" height="430" fill="url(#w)"/><rect y="430" width="800" height="170" fill="url(#f)"/><rect y="424" width="800" height="8" fill="${shade(E)}" opacity=".55"/>`;
-    s+=`<rect x="580" y="70" width="160" height="290" rx="6" fill="url(#g)"/><rect x="580" y="70" width="160" height="290" rx="6" fill="none" stroke="${shade(C)}" stroke-width="6"/><path d="M660 70 v290" stroke="${shade(C)}" stroke-width="4"/>`;
-    if(type==="living"){
-      s+=`<ellipse cx="380" cy="520" rx="270" ry="46" fill="${D}" opacity=".45"/>`;
-      s+=`<rect x="140" y="250" width="340" height="80" rx="22" fill="${shade(B)}"/><rect x="140" y="300" width="340" height="120" rx="26" fill="${B}"/>`;
-      s+=`<rect x="170" y="272" width="76" height="62" rx="14" fill="${D}"/><rect x="372" y="272" width="76" height="62" rx="14" fill="${A}"/>`;
-      s+=`<rect x="320" y="452" width="170" height="16" rx="8" fill="${shade(E)}"/><rect x="336" y="468" width="10" height="46" fill="${shade(E)}"/><rect x="464" y="468" width="10" height="46" fill="${shade(E)}"/>`;
-      s+=`<rect x="520" y="250" width="8" height="180" fill="${shade(E)}"/><path d="M496 250 h56 l-12 -40 h-32 z" fill="${D}"/>`;
-      s+=`<rect x="200" y="110" width="130" height="95" rx="6" fill="none" stroke="${shade(C)}" stroke-width="7"/><rect x="216" y="126" width="98" height="63" fill="${B}" opacity=".55"/>`;
-    }else if(type==="bedroom"){
-      s+=`<ellipse cx="360" cy="530" rx="250" ry="40" fill="${D}" opacity=".4"/>`;
-      s+=`<rect x="150" y="210" width="320" height="120" rx="16" fill="${B}"/>`;
-      s+=`<rect x="130" y="320" width="360" height="95" rx="20" fill="${C}"/><rect x="130" y="372" width="360" height="48" rx="14" fill="${D}"/>`;
-      s+=`<rect x="170" y="282" width="90" height="46" rx="12" fill="#ffffff" opacity=".85"/><rect x="275" y="282" width="90" height="46" rx="12" fill="#ffffff" opacity=".7"/>`;
-      s+=`<rect x="510" y="350" width="70" height="70" rx="8" fill="${shade(E)}"/><rect x="540" y="300" width="8" height="50" fill="${shade(E)}"/><path d="M522 300 h44 l-9 -30 h-26 z" fill="${A}"/>`;
-      s+=`<rect x="90" y="350" width="70" height="70" rx="8" fill="${shade(E)}"/><rect x="120" y="300" width="8" height="50" fill="${shade(E)}"/><path d="M102 300 h44 l-9 -30 h-26 z" fill="${A}"/>`;
-    }else if(type==="bathroom"){
-      s+=`<g stroke="#ffffff" stroke-opacity=".18" stroke-width="3">${[110,190,270,350].map(y=>`<path d="M60 ${y} H540"/>`).join("")}${[140,240,340,440].map(x=>`<path d="M${x} 70 V400"/>`).join("")}</g>`;
-      s+=`<rect x="120" y="330" width="320" height="110" rx="46" fill="#ffffff" opacity=".93"/><rect x="140" y="345" width="280" height="70" rx="34" fill="${shade(C)}" opacity=".4"/>`;
-      s+=`<path d="M430 330 v-60 q0 -18 22 -18" stroke="#c9c9c9" stroke-width="8" fill="none"/>`;
-      s+=`<circle cx="560" cy="180" r="62" fill="url(#g)" stroke="${shade(C)}" stroke-width="6"/>`;
-      s+=`<rect x="500" y="330" width="120" height="18" rx="8" fill="#ffffff" opacity=".9"/><rect x="548" y="348" width="24" height="80" fill="${shade(C)}"/>`;
-      s+=`<path d="M90 430 q4 -50 0 -70" stroke="#2e6b4f" stroke-width="8" fill="none"/><path d="M90 360 q-26 -18 -40 -6 M90 360 q26 -18 40 -6 M90 360 q-14 -30 -30 -24 M90 360 q14 -30 30 -24" stroke="#2e6b4f" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="72" y="428" width="40" height="34" rx="6" fill="${D}"/>`;
-    }else if(type==="salon"){
-      s+=`<rect x="110" y="470" width="580" height="92" rx="10" fill="${D}" opacity=".55"/><rect x="126" y="482" width="548" height="68" rx="8" fill="none" stroke="#D4AF37" stroke-width="4" opacity=".8"/>`;
-      s+=`<rect x="110" y="230" width="440" height="90" rx="18" fill="${shade(B)}"/><rect x="110" y="300" width="440" height="115" rx="22" fill="${B}"/>`;
-      s+=`<g fill="#D4AF37" opacity=".85">${[150,230,310,390,470].map(x=>`<rect x="${x}" y="272" width="52" height="46" rx="10"/>`).join("")}</g>`;
-      s+=`<rect x="580" y="360" width="130" height="66" rx="10" fill="${shade(E)}"/><circle cx="620" cy="346" r="12" fill="#D4AF37"/><path d="M646 340 q10 -18 0 -26 q-10 8 0 26" fill="#D4AF37"/>`;
-      s+=`<path d="M400 60 v40" stroke="#D4AF37" stroke-width="5"/><g fill="#D4AF37"><circle cx="370" cy="118" r="10"/><circle cx="400" cy="130" r="12"/><circle cx="430" cy="118" r="10"/></g><path d="M370 108 q30 -22 60 0" stroke="#D4AF37" stroke-width="4" fill="none"/>`;
-    }else if(type==="kitchen"){
-      s+=`<rect x="110" y="80" width="380" height="92" rx="8" fill="${A}"/><g stroke="${shade(A)}" stroke-width="4">${[205,300,395].map(x=>`<path d="M${x} 84 v84"/>`).join("")}</g>`;
-      s+=`<rect x="110" y="176" width="380" height="72" fill="${C}" opacity=".75"/><g stroke="#ffffff" stroke-opacity=".25" stroke-width="3">${[200,240,280,320].map(y=>`<path d="M112 ${y} H488"/>`).join("")}</g>`;
-      s+=`<rect x="100" y="248" width="400" height="20" rx="8" fill="${E}"/>`;
-      s+=`<rect x="110" y="268" width="380" height="130" rx="8" fill="${B}"/><g stroke="${shade(B)}" stroke-width="5">${[205,300,395].map(x=>`<path d="M${x} 272 v122"/>`).join("")}</g><g fill="#D4AF37">${[160,255,350,445].map(x=>`<rect x="${x}" y="300" width="26" height="6" rx="3"/>`).join("")}</g>`;
-      s+=`<path d="M520 80 h100 l-20 78 h-60 z" fill="${shade(E)}"/><rect x="560" y="158" width="20" height="10" fill="${shade(E)}"/>`;
-      s+=`<g fill="${shade(E)}"><circle cx="560" cy="252" r="10"/><circle cx="600" cy="252" r="10"/></g>`;
-      s+=`<rect x="540" y="330" width="180" height="90" rx="10" fill="${shade(B)}"/><rect x="530" y="318" width="200" height="16" rx="8" fill="${E}"/>`;
-    }else if(type==="kids"){
-      s+=`<ellipse cx="360" cy="530" rx="240" ry="38" fill="${D}" opacity=".45"/>`;
-      s+=`<rect x="130" y="300" width="90" height="90" rx="14" fill="${shade(B)}"/><rect x="130" y="360" width="240" height="70" rx="16" fill="${B}"/><rect x="150" y="336" width="70" height="36" rx="10" fill="#ffffff" opacity=".85"/><rect x="130" y="392" width="240" height="26" rx="10" fill="${D}"/>`;
-      s+=`<rect x="430" y="352" width="170" height="14" rx="6" fill="${E}"/><rect x="440" y="366" width="10" height="70" fill="${shade(E)}"/><rect x="580" y="366" width="10" height="70" fill="${shade(E)}"/>`;
-      s+=`<rect x="470" y="300" width="60" height="42" rx="8" fill="${A}"/>`;
-      s+=`<circle cx="620" cy="150" r="26" fill="${D}" opacity=".9"/><circle cx="668" cy="190" r="20" fill="${A}" opacity=".9"/><circle cx="586" cy="200" r="18" fill="${B}" opacity=".9"/><path d="M620 176 q4 40 -6 60 M668 210 q-6 30 -18 44 M586 218 q6 26 16 40" stroke="${shade(E)}" stroke-width="3" fill="none"/>`;
-      s+=`<g>${[0,1,2,3,4,5].map(i=>`<path d="M${120+i*60} 90 l30 34 l30 -34 z" fill="${i%2?D:A}" opacity=".85"/>`).join("")}</g><path d="M120 90 H480" stroke="${shade(E)}" stroke-width="4"/>`;
-    }
-  }
-  s+=`<rect width="800" height="600" fill="#000" opacity=".06"/></svg>`;
+function fallbackScene(){
+  const c=["#3C4048","#5C6270","#9AA3B2","#D5D9E0","#22252B"];
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c[2]}"/><stop offset="1" stop-color="${c[0]}"/></linearGradient></defs><rect width="800" height="430" fill="url(#w)"/><rect y="430" width="800" height="170" fill="${c[4]}"/><rect x="150" y="250" width="340" height="80" rx="22" fill="${c[1]}"/><rect x="150" y="300" width="340" height="120" rx="26" fill="${c[1]}"/><rect x="580" y="70" width="160" height="290" rx="6" fill="#ffffff" opacity=".18"/><text x="400" y="560" font-family="sans-serif" font-size="26" fill="#ffffff88" text-anchor="middle">صورة المعرض</text></svg>`;
   return "data:image/svg+xml;utf8,"+encodeURIComponent(s);
 }
+window.__imgErr=el=>{el.onerror=null;el.src=fallbackScene();};
 
-/* ================= Seed تجريبي: 7 تصنيفات × 10 تصاميم بصور مشاهد ================= */
-const SEED_META={
-  living:["غرفة جلوس","living"],bedroom:["غرفة نوم","bedroom"],bathroom:["حمام","bathroom"],salon:["صالون","salon"],kitchen:["مطبخ","kitchen"],kids:["غرفة أطفال","kids"],exterior:["واجهة فيلا","exterior"]
-};
+/* ================= Seed: 7 تصنيفات × 10 تصاميم بصور واقعية ================= */
+const SEED_META={living:"غرفة جلوس",bedroom:"غرفة نوم",bathroom:"حمام",salon:"صالون",kitchen:"مطبخ",kids:"غرفة أطفال",exterior:"واجهة فيلا"};
 const CITIES=["الرياض، السعودية","جدة، السعودية","دبي، الإمارات","الدوحة، قطر","الكويت، الكويت","مسقط، عُمان","المنامة، البحرين","أبوظبي، الإمارات","عمّان، الأردن","الخبر، السعودية"];
 async function seedAll(progress=()=>{}){
   const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs,deleteDoc}=F;
@@ -1375,31 +1386,31 @@ async function seedAll(progress=()=>{}){
     await setDoc(doc(db,"palettes",catIds[slug]),{items:DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living},{merge:true});
   }
   let n=0;
-  for(const slug of Object.keys(DEFAULT_PALETTES)){
-    const pals=DEFAULT_PALETTES[slug];
-    for(let i=0;i<pals.length;i++){
+  for(const slug of Object.keys(UNS)){
+    const ids=UNS[slug], pals=DEFAULT_PALETTES[slug];
+    for(let i=0;i<10;i++){
       const p=pals[i]; n++;
       progress(`زرع التصاميم ${n}/70 ...`);
-      const [typeName]=SEED_META[slug];
+      const typeName=SEED_META[slug];
       const title=`${typeName} — باقة ${p.name}`;
-      const img1=scene(slug,p.colors,i), img2=scene(slug,p.colors,i+3);
+      const cover=u(ids[i],1000), coverThumb=u(ids[i],480), alt=u(ids[(i+5)%10],1000), altThumb=u(ids[(i+5)%10],480);
       const dRef=await addDoc(collection(db,"designs"),{
         title, categoryId:catIds[slug],
         description:`تصميم ${typeName} منفذ بدقة عبر 3ds Max بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}، مع ${p.curtains} و${p.carpet}. إضاءة واقعية وخامات مدروسة.`,
         specs:[{name:"الإضاءة",value:i%2?"نهارية + مخفية":"مسائية + ثريات"},{name:"النمط",value:(p.tags||[])[1]||"عصري"},{name:"الأرضيات",value:p.tiles}],
-        year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles+"، "+p.furniture.split(" ").slice(0,3).join(" "),
+        year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles,
         location:CITIES[i%CITIES.length], software:"3D Max",
         tags:[typeName,p.name,slug], colorTags:p.tags||[],
-        thumbnail:img1, coverImageId:"i1", imagesCount:2,
+        thumbnail:coverThumb, coverImageId:"i1", imagesCount:2,
         likesCount:4+((i*7)%40), viewsCount:30+((i*53)%400),
         featured:i<2, status:"published", order:n, createdAt:Date.now()-n*3600000, updatedAt:Date.now()
       });
-      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{data:img1,thumb:img1,order:0,width:800,height:600,size:img1.length,chunked:false});
-      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{data:img2,thumb:img2,order:1,width:800,height:600,size:img2.length,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{imageUrl:cover,thumb:coverThumb,order:0,width:1000,height:667,size:0,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{imageUrl:alt,thumb:altThumb,order:1,width:1000,height:667,size:0,chunked:false});
     }
   }
   progress("الإعدادات النهائية...");
-  await setDoc(doc(db,"settings","site"),{heroImage:scene("exterior",["#F2F0EB","#D8D4CC","#B8B2A8","#8A857C","#5C5852"],3),colsDesktop:3,colsMobile:2},{merge:true});
+  await setDoc(doc(db,"settings","site"),{heroImage:u(UNS.exterior[0],1600),colsDesktop:3,colsMobile:2},{merge:true});
   progress("تم!");
 }
 
