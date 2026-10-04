@@ -580,7 +580,7 @@ function initShell(){
 function renderShell(path){
   _curPath=path;
   const s=settings;
-  $("#logoText").textContent=s.initials||"AR"; $("#logoText2").textContent=s.initials||"AR"; $("#splashLogo").textContent=s.initials||"AR";
+  $("#logoText").textContent=s.initials||"AR"; $("#logoText2").textContent=s.initials||"AR"; if($("#splashLogo"))$("#splashLogo").textContent=s.initials||"AR";
   $("#topnav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${n.label}</a>`).join("");
   $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
   $("#bottomNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}" aria-label="${n.label}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
