@@ -302,16 +302,23 @@ async function fb(){
   return _fbApi;
 }
 
-/* ================= ذاكرة مؤقتة لجميع التصاميم (بدون فهارس) ================= */
+/* ============================================================
+   ذاكرة التصاميم — متوافقة مع قواعد الأمان وبدون فهارس مركبة:
+   - زائر عادي: جلب «المنشور فقط» (فلتر واحد = فهرس تلقائي)
+   - مدير مسجل: جلب الكل (يشمل المسودات) لأن القواعد تسمح له
+============================================================ */
 let _allDesignsCache=null;
 let _allDesignsPromise=null;
 async function getAllDesigns(){
   if(_allDesignsCache) return _allDesignsCache;
   if(_allDesignsPromise) return _allDesignsPromise;
   _allDesignsPromise=(async()=>{
-    const {db,collection,getDocs}=await fb();
-    const snap=await getDocs(collection(db,"designs"));
-    _allDesignsCache=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const F=await fb();
+    const adminSession=!!sessionStorage.getItem("ap_isadmin");
+    const snap=adminSession
+      ? await F.getDocs(F.collection(F.db,"designs"))
+      : await F.getDocs(F.query(F.collection(F.db,"designs"),F.where("status","==","published")));
+    _allDesignsCache=snap.docs.map(dd=>({id:dd.id,...dd.data()}));
     return _allDesignsCache;
   })();
   return _allDesignsPromise;
@@ -332,7 +339,7 @@ const store={
     applyTheme();
     const {db,doc,onSnapshot,collection}=await fb();
     onSnapshot(doc(db,"settings","site"),snap=>{if(snap.exists()){settings={...FALLBACK_SETTINGS,...snap.data()};localStorage.setItem("ap_settings",JSON.stringify(settings));applyTheme();_sListeners.forEach(f=>f("settings"));}},()=>{});
-    onSnapshot(collection(db,"categories"),snap=>{categories=snap.docs.map(d=>({id:d.id,...d.data()}));localStorage.setItem("ap_categories",JSON.stringify(categories));_sListeners.forEach(f=>f("categories"));},()=>{});
+    onSnapshot(collection(db,"categories"),snap=>{categories=snap.docs.map(dd=>({id:dd.id,...dd.data()}));localStorage.setItem("ap_categories",JSON.stringify(categories));_sListeners.forEach(f=>f("categories"));},()=>{});
   }
 };
 function applyTheme(){
@@ -414,11 +421,11 @@ const Base64FirestoreAdapter={
   },
   async getImageUrl(designId,imgId){
     const ck=`img_${designId}_${imgId}`; if(window[ck])return window[ck];
-    const {db,doc,getDoc,collection,query,orderBy,getDocs}=await fb();
+    const {db,doc,getDoc,collection,getDocs}=await fb();
     const snap=await getDoc(doc(db,"designs",designId,"images",imgId));
     if(!snap.exists())return "";
     const d=snap.data(); let url=d.data||"";
-    if(d.chunked){const cs=await getDocs(query(collection(db,"designs",designId,"images",imgId,"chunks"),orderBy("i")));url=`data:${d.mime};base64,`+cs.docs.map(x=>x.data().data).join("");}
+    if(d.chunked){const cs=await getDocs(collection(db,"designs",designId,"images",imgId,"chunks"));url=`data:${d.mime};base64,`+cs.docs.map(x=>x.data().data).sort((a,b)=>a.i-b.i).map(x=>x.data).join("");}
     window[ck]=url; return url;
   },
   async deleteImage(designId,imgId){
@@ -429,7 +436,7 @@ const Base64FirestoreAdapter={
   async listMeta(designId){
     const {db,collection,getDocs}=await fb();
     const s=await getDocs(collection(db,"designs",designId,"images"));
-    return s.docs.map(d=>({id:d.id,...d.data()}));
+    return s.docs.map(dd=>({id:dd.id,...dd.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
   }
 };
 const FirebaseStorageAdapter={
@@ -477,7 +484,7 @@ async function loadMyLikes(){
   const u=await ensureAnon(); if(!u)return myLikes;
   const {db,collection,query,where,getDocs}=await fb();
   const s=await getDocs(query(collection(db,"likes"),where("uid","==",u)));
-  myLikes=new Set(s.docs.map(d=>d.data().designId));
+  myLikes=new Set(s.docs.map(dd=>dd.data().designId));
   return myLikes;
 }
 const hasLiked=id=>myLikes.has(id);
@@ -496,7 +503,7 @@ function paintLike(btn,id){
 }
 async function toggleLike(id,btn,countEl){
   const u=await ensureAnon();
-  if(!u){toast("فعّل تسجيل الدخول المجهول من Firebase Console","err");return;}
+  if(!u){toast("أضف نطاق الموقع في Firebase ← Authentication ← Settings ← Authorized domains","err");return;}
   const liked=myLikes.has(id);
   liked?myLikes.delete(id):myLikes.add(id);
   paintLike(btn,id); btn.classList.add("pulse"); setTimeout(()=>btn.classList.remove("pulse"),500);
@@ -599,7 +606,7 @@ const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="s
 const emptyState=(msg="لا توجد تصاميم بعد")=>`<div class="empty">${icon("image")}<p>${esc(msg)}</p></div>`;
 const bindCards=root=>bindLikeButtons(root);
 
-/* ================= الصفحات العامة (بدون فهارس: ترتيب وترشيح في الذاكرة) ================= */
+/* ================= الصفحات العامة ================= */
 async function renderHome(root){
   const s=settings;
   root.innerHTML=`
@@ -616,16 +623,12 @@ async function renderHome(root){
     <div id="homeGrid">${skeletonGrid(8)}</div>
   </section>`;
   const all=await getAllDesigns();
-  const published=all.filter(d=>d.status==="published");
-  let items=published.filter(d=>d.featured===true);
-  if(items.length<8){
-    const sorted=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
-    items=sorted.slice(0,8);
-  }else{
-    items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8);
-  }
+  const published=all.filter(dd=>dd.status==="published");
+  let items=published.filter(dd=>dd.featured===true);
+  if(items.length<8){ items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8); }
+  else{ items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8); }
   const grid=$("#homeGrid");
-  grid.innerHTML=items.length?`<div class="grid">${items.map(d=>designCard(d,store.catName(d.categoryId))).join("")}</div>`:emptyState();
+  grid.innerHTML=items.length?`<div class="grid">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
   bindCards(grid);
 }
 async function renderAbout(root){
@@ -674,7 +677,7 @@ async function renderContact(root){
 }
 function render404(root){root.innerHTML=`<div class="empty" style="padding:120px 20px">${icon("search")}<h1>404</h1><p>الصفحة التي تبحث عنها غير موجودة</p><a class="btn" href="#/">العودة للرئيسية</a></div>`;}
 
-/* ================= المعرض (بدون فهارس: استعلام واحد + ترشيح وترتيب في الذاكرة) ================= */
+/* ================= المعرض ================= */
 let pState=null;
 async function renderPortfolio(root,params){
   pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
@@ -707,17 +710,17 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
+async function pReset(){pState.items=[];pState.page=0;pState.done=false;invalidateDesignsCache();$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
   const all=await getAllDesigns();
-  let pool=all.filter(d=>d.status==="published");
-  if(pState.cat) pool=pool.filter(d=>d.categoryId===catIdBySlug(pState.cat));
-  if(pState.color) pool=pool.filter(d=>(d.colorTags||[]).includes(pState.color));
+  let pool=all.filter(dd=>dd.status==="published");
+  if(pState.cat) pool=pool.filter(dd=>dd.categoryId===catIdBySlug(pState.cat));
+  if(pState.color) pool=pool.filter(dd=>(dd.colorTags||[]).includes(pState.color));
   if(pState.q){
     const q=pState.q.toLowerCase();
-    pool=pool.filter(d=>(d.title||"").toLowerCase().includes(q)||(d.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(d.categoryId).toLowerCase().includes(q));
+    pool=pool.filter(dd=>(dd.title||"").toLowerCase().includes(q)||(dd.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(dd.categoryId).toLowerCase().includes(q));
   }
   const orderF=pState.sort==="likes"?"likesCount":"createdAt";
   pool.sort((a,b)=>(b[orderF]||0)-(a[orderF]||0));
@@ -730,14 +733,14 @@ async function fetchPage(){
 }
 function paintGrid(){
   const g=$("#pGrid");
-  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(d=>designCard(d,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
+  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
   bindCards(g); $("#more").hidden=pState.done;
 }
 
-/* ================= صفحة التفصيل (بدون فهارس: ترشيح مشابهة في الذاكرة) ================= */
+/* ================= صفحة التفصيل ================= */
 async function renderDesign(root,params,path){
   const id=path.split("/")[2];
-  const {db,doc,getDoc,collection,query,orderBy,getDocs,updateDoc,increment}=await fb();
+  const {db,doc,getDoc,collection,getDocs,updateDoc,increment}=await fb();
   const snap=await getDoc(doc(db,"designs",id));
   if(!snap.exists()||(snap.data().status!=="published"&&!sessionStorage.getItem("ap_isadmin")))return render404(root);
   const d={id,...snap.data()};
@@ -789,7 +792,6 @@ async function renderDesign(root,params,path){
     if(confirm("مشاركة عبر واتساب؟\n(موافق = واتساب / إلغاء = نسخ الرابط)"))window.open(`https://wa.me/?text=${encodeURIComponent(d.title+" "+url())}`);
     else{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}
   };
-  // تصاميم مشابهة من الذاكرة (بدون فهارس)
   const all=await getAllDesigns();
   const list=all.filter(x=>x.status==="published"&&x.categoryId===d.categoryId&&x.id!==id).slice(0,4);
   $("#sim").innerHTML=list.length?`<div class="grid">${list.map(x=>designCard(x,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
@@ -953,7 +955,7 @@ async function isAdmin(uidv){
   if(sessionStorage.getItem("ap_isadmin")===uidv)return true;
   const {db,doc,getDoc}=await fb();
   const s=await getDoc(doc(db,"admins",uidv));
-  if(s.exists()){sessionStorage.setItem("ap_isadmin",uidv);return true;}
+  if(s.exists()){sessionStorage.setItem("ap_isadmin",uidv);invalidateDesignsCache();return true;}
   return false;
 }
 function loginView(root,err){
@@ -971,13 +973,13 @@ function loginView(root,err){
     e.preventDefault();
     const F=await fb();
     await F.setPersistence(F.auth,$("#rm").checked?F.browserLocalPersistence:F.browserSessionPersistence);
-    try{await F.signInWithEmailAndPassword(F.auth,$("#em").value,$("#pw").value);}catch{toast("بيانات الدخول غير صحيحة","err");}
+    try{await F.signInWithEmailAndPassword(F.auth,$("#em").value,$("#pw").value);}catch{toast("بيانات الدخول غير صحيحة أو النطاق غير مصرح به","err");}
   };
 }
 function adminShell(root){
   root.innerHTML=`<div class="container admin"><aside class="admin-side" id="aSide">${SECTIONS.map(([k,ic,label])=>`<button data-k="${k}" class="${k===aSec?"active":""}">${icon(ic)} ${label}</button>`).join("")}<button id="logout">${icon("logout")} خروج</button></aside><main class="admin-main" id="aMain"></main></div>`;
   $("#aSide").onclick=e=>{const b=e.target.closest("[data-k]");if(!b)return;aSec=b.dataset.k;$$("#aSide [data-k]").forEach(x=>x.classList.toggle("active",x===b));paintSection();};
-  $("#logout").onclick=async()=>{const F=await fb();sessionStorage.removeItem("ap_isadmin");await F.signOut(F.auth);};
+  $("#logout").onclick=async()=>{const F=await fb();sessionStorage.removeItem("ap_isadmin");invalidateDesignsCache();await F.signOut(F.auth);};
   paintSection();
 }
 async function paintSection(){
@@ -991,7 +993,7 @@ async function secDesigns(m){
   m.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><h2>التصاميم (${list.length})</h2><button class="btn sm" id="addD">${icon("plus")} إضافة تصميم</button></div>
   <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
   <table class="admin-table"><thead><tr><th></th><th>العنوان</th><th>التصنيف</th><th>الحالة</th><th>إعجاب/مشاهدة</th><th></th></tr></thead>
-  <tbody id="dRows">${list.map(d=>`<tr draggable="true" data-id="${d.id}"><td>${icon("drag")}</td><td>${esc(d.title)}</td><td>${esc(store.catName(d.categoryId))}</td><td><span class="badge ${d.status==="published"?"pub":"draft"}">${d.status==="published"?"منشور":"مسودة"}</span>${d.featured?" ⭐":""}</td><td>${d.likesCount||0} / ${d.viewsCount||0}</td><td style="display:flex;gap:6px"><button class="mini-btn" data-edit="${d.id}" aria-label="تعديل">${icon("edit")}</button><button class="mini-btn" data-del="${d.id}" aria-label="حذف">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
+  <tbody id="dRows">${list.map(dd=>`<tr draggable="true" data-id="${dd.id}"><td>${icon("drag")}</td><td>${esc(dd.title)}</td><td>${esc(store.catName(dd.categoryId))}</td><td><span class="badge ${dd.status==="published"?"pub":"draft"}">${dd.status==="published"?"منشور":"مسودة"}</span>${dd.featured?" ⭐":""}</td><td>${dd.likesCount||0} / ${dd.viewsCount||0}</td><td style="display:flex;gap:6px"><button class="mini-btn" data-edit="${dd.id}" aria-label="تعديل">${icon("edit")}</button><button class="mini-btn" data-del="${dd.id}" aria-label="حذف">${icon("trash")}</button></td></tr>`).join("")}</tbody></table>`;
   $("#addD").onclick=()=>editor(m,null);
   m.onclick=async e=>{
     const ed=e.target.closest("[data-edit]"), del=e.target.closest("[data-del]");
@@ -1296,15 +1298,21 @@ async function seedAll(progress=()=>{}){
   progress("تم!");
 }
 
-/* ================= الإقلاع ================= */
+/* ================= الإقلاع (محمي: لن تتجمد شاشة الدخول أبداً) ================= */
 route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
 route("/about",renderAbout); route("/contact",renderContact); route("/404",render404); route("/admin",renderAdmin);
 (async function boot(){
   const minSplash=wait(1500);
-  await store.init();
-  initShell();
-  await startRouter();
-  initBot();
+  try{
+    await store.init();
+    initShell();
+    await startRouter();
+    initBot();
+  }catch(err){
+    console.error(err);
+    try{initShell();}catch{}
+    $("#app").innerHTML=`<div class="empty"><h2>تعذر تحميل البيانات</h2><p>تحقق من: 1) قواعد Firestore منشورة 2) إضافة نطاق الموقع في Authentication ← Settings ← Authorized domains</p><p style="font-size:.75rem;color:var(--muted);direction:ltr">${esc(String(err&&err.message||err)).slice(0,300)}</p></div>`;
+  }
   await minSplash;
   $("#splash").classList.add("hide");
   ensureAnon().then(u=>u&&loadMyLikes()).catch(()=>{});
