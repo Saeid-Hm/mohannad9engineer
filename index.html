@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--cols-d:4;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
+:root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--cols-d:3;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
@@ -204,6 +204,7 @@ textarea.input{min-height:110px;resize:vertical}
 .pw-wrap button{position:absolute;inset-inline-end:6px;top:6px;bottom:6px;width:34px;border:none;background:none;color:var(--muted);cursor:pointer}
 .stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
 .stat-card{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:16px;text-align:center}
+.stat-card svg{width:22px;height:22px;color:var(--accent);margin:0 auto 6px;display:block}
 .stat-card b{font-size:1.6rem;color:var(--accent);display:block}
 .stat-card span{font-size:.75rem;color:var(--muted)}
 .msg-item{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:10px}
@@ -283,7 +284,7 @@ const bytes=b64=>Math.round((b64.length-(b64.indexOf(",")+1))*0.75);
 const fmtDate=ts=>{try{return new Date(ts?.seconds?ts.seconds*1000:ts).toLocaleDateString("ar-SA");}catch{return "";}};
 function download(name,text){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type:"application/json"}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),3000);}
 function toast(msg,type="ok"){const t=document.createElement("div");t.className="toast"+(type==="err"?" err":"");t.textContent=msg;$("#toasts").appendChild(t);setTimeout(()=>{t.style.opacity=0;setTimeout(()=>t.remove(),400);},3200);}
-const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
+const IP={home:'<path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 5-5.5 8-5.5s6.5 1.5 8 5.5"/>',phone:'<path d="M5 3h4l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>',mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/>',search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',heart:'<path d="M12 20s-7.5-4.6-9.3-9A5.3 5.3 0 0 1 12 6.6 5.3 5.3 0 0 1 21.3 11c-1.8 4.4-9.3 9-9.3 9z"/>',star:'<path d="m12 3 2.7 5.8 6.3.8-4.6 4.3 1.2 6.1L12 17l-5.6 3 1.2-6.1L3 9.6l6.3-.8z"/>',share:'<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.3 10.8 7.4-3.6M8.3 13.2l7.4 3.6"/>',eye:'<path d="M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/>',eyeoff:'<path d="M4 4l16 16M9.9 5.8A9.8 9.8 0 0 1 12 5.5c6.5 0 10 6.5 10 6.5a17 17 0 0 1-3 3.8M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 6.5 10 6.5a10 10 0 0 0 4-.8"/>',menu:'<path d="M4 7h16M4 12h16M4 17h16"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',chevR:'<path d="m9 5 7 7-7 7"/>',chevL:'<path d="m15 5-7 7 7 7"/>',plus:'<path d="M12 5v14M5 12h14"/>',edit:'<path d="M4 20h4L20 8l-4-4L4 16v4z"/>',trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6M14 11v6"/>',drag:'<circle cx="9" cy="6" r="1.4"/><circle cx="15" cy="6" r="1.4"/><circle cx="9" cy="12" r="1.4"/><circle cx="15" cy="12" r="1.4"/><circle cx="9" cy="18" r="1.4"/><circle cx="15" cy="18" r="1.4"/>',image:'<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m4 19 6-6 4 4 3-3 3 3"/>',gear:'<circle cx="12" cy="12" r="3.2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/>',msg:'<path d="M21 12a8 8 0 0 1-8 8H4l1.6-3.2A8 8 0 1 1 21 12z"/>',chart:'<path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/>',dl:'<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>',ul:'<path d="M12 15V3m0 0 4 4m-4-4-4 4M4 21h16"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-.9 2-2s-.6-2 .5-2.8c.8-.6 2-.2 3-.2 2 0 3.5-1.6 3.5-4C21 7 17 3 12 3z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7.5" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',layers:'<path d="m12 3 9 5-9 5-9-5 9-5zM3 13l9 5 9-5"/>',check:'<path d="m5 13 4 4L19 7"/>',send:'<path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>',flag:'<path d="M5 21V4m0 1h13l-2.5 3.5L18 12H5"/>',smile:'<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14a4.5 4.5 0 0 0 7 0"/>',wa:'<path fill="currentColor" stroke="none" d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5 13.5c-.3.8-1.6 1.5-2.3 1.6-.6.1-1.4.2-4.4-1.1-3.7-1.6-6-5.5-6.2-5.8-.2-.3-1.4-1.9-1.4-3.6s.9-2.5 1.2-2.9c.3-.3.7-.4.9-.4h.7c.2 0 .5 0 .7.6l1 2.4c.1.2.1.4 0 .6l-.4.6-.5.5c-.2.2-.3.4-.1.7.2.3.9 1.5 2 2.4 1.4 1.2 2.5 1.6 2.9 1.8.3.1.6.1.8-.1l1-1.2c.2-.3.4-.2.7-.1l2.3 1.1c.3.2.6.3.7.4 0 .2 0 .9-.3 1.6z"/>',ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/>',x:'<path d="M4 4l7.5 9.5L4.5 20h2.3l5.8-5.2L17 20h4l-7.8-10L20.5 4h-2.3l-5.3 4.8L9 4H4z" fill="currentColor" stroke="none"/>',fb:'<path fill="currentColor" stroke="none" d="M14 8h3V4h-3a5 5 0 0 0-5 5v3H6v4h3v8h4v-8h3l1-4h-4V9a1 1 0 0 1 1-1z"/>',zoomin:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M11 8v6M8 11h6"/>',zoomout:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>',logout:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>',refresh:'<path d="M21 12a9 9 0 1 1-2.6-6.4M21 3v6h-6"/>',house:'<path d="M4 11 12 4l8 7M6 10v9h12v-9M10 19v-5h4v5" stroke="var(--accent)" stroke-width="1.6"/>'};
 const icon=(n,cls="")=>`<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${IP[n]||""}</svg>`;
 
 /* ================= Firebase كسول ================= */
@@ -304,9 +305,7 @@ async function fb(){
 }
 
 /* ============================================================
-   ذاكرة التصاميم — متوافقة مع قواعد الأمان وبدون فهارس مركبة:
-   - زائر عادي: جلب «المنشور فقط» (فلتر واحد = فهرس تلقائي)
-   - مدير مسجل: جلب الكل (يشمل المسودات) لأن القواعد تسمح له
+   ذاكرة التصاميم — متوافقة مع قواعد الأمان وبدون فهارس مركبة
 ============================================================ */
 let _allDesignsCache=null;
 let _allDesignsPromise=null;
@@ -326,8 +325,8 @@ async function getAllDesigns(){
 }
 function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=null; }
 
-/* ================= الإعدادات والتصنيفات (Cache + بث) ================= */
-const FALLBACK_SETTINGS={siteName:"بيت التصميم",initials:"AR",heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية منفذة عبر 3ds Max.",heroImage:"",accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:4,colsMobile:2,bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية منفذة بدقة عبر 3ds Max.",stats:{years:"5+",projects:"50+",satisfaction:"100%"},links:{whatsapp:"",instagram:"",twitter:"",facebook:""},contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},watermark:{enabled:false,text:""},adminPath:"/admin-panel"};
+/* ================= الإعدادات والتصنيفات ================= */
+const FALLBACK_SETTINGS={siteName:"بيت التصميم",initials:"AR",heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية منفذة عبر 3ds Max.",heroImage:"",accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:3,colsMobile:2,bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية منفذة بدقة عبر 3ds Max.",stats:{years:"5+",projects:"50+",satisfaction:"100%"},links:{whatsapp:"",instagram:"",twitter:"",facebook:""},contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},watermark:{enabled:false,text:""},adminPath:"/admin-panel"};
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
 const store={
   get settings(){return settings;},
@@ -346,7 +345,7 @@ const store={
 function applyTheme(){
   const r=document.documentElement.style;
   r.setProperty("--accent",settings.accent||"#E10600");
-  r.setProperty("--cols-d",settings.colsDesktop||4);
+  r.setProperty("--cols-d",settings.colsDesktop||3);
   r.setProperty("--cols-m",settings.colsMobile||2);
   r.fontSize=(settings.fontScale||100)+"%";
   const font=settings.font||"Cairo";
@@ -405,7 +404,7 @@ async function compressToFit(file,{maxDim=1600,quality=0.82,watermark=false}={})
 }
 const thumbOf=(fOrD,wm=false)=>typeof fOrD==="string"?compress(fOrD,{maxDim:480,quality:0.75,watermark:wm}):compressToFit(fOrD,{maxDim:480,quality:0.75,watermark:wm});
 
-/* ================= طبقة التخزين (Base64 / Storage) ================= */
+/* ================= طبقة التخزين ================= */
 const CHUNK=850*1024;
 const Base64FirestoreAdapter={
   async saveImage(designId,{data,width,height,size},order){
@@ -580,13 +579,14 @@ function initShell(){
 function renderShell(path){
   _curPath=path;
   const s=settings;
-  $("#logoText").textContent=s.initials||"AR"; $("#logoText2").textContent=s.initials||"AR"; if($("#splashLogo"))$("#splashLogo").textContent=s.initials||"AR";
+  $("#logoText").textContent=s.initials||"AR"; $("#logoText2").textContent=s.initials||"AR";
+  if($("#splashLogo"))$("#splashLogo").textContent=s.initials||"AR";
   $("#topnav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${n.label}</a>`).join("");
   $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
   $("#bottomNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}" aria-label="${n.label}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
   const soc=socialsHTML();
   $("#drawerSocial").innerHTML=soc;
-  $("#footer").innerHTML=`<div class="container footer-in"><small>© ${new Date().getFullYear()} ${esc(s.siteName)} — جميع الحقوق محفوظة</small><div class="socials">${soc}</div></div>`;
+  $("#footer").innerHTML=`<div class="container footer-in"><small>© ${new Date().getFullYear()} ${esc(s.siteName)}. جميع الحقوق محفوظة.</small><div class="socials">${soc}</div></div>`;
 }
 function openDrawer(open){const d=$("#drawer"),o=$("#drawerOverlay");o.hidden=!open;requestAnimationFrame(()=>{d.classList.toggle("open",open);o.classList.toggle("show",open);});}
 function socialsHTML(){
@@ -621,13 +621,13 @@ async function renderHome(root){
   </section>
   <section class="section container">
     <div class="section-head"><h2 class="section-title">أحدث المشاريع</h2><a class="link-accent" href="#/portfolio">عرض الكل ${icon("chevL")}</a></div>
-    <div id="homeGrid">${skeletonGrid(8)}</div>
+    <div id="homeGrid">${skeletonGrid(9)}</div>
   </section>`;
   const all=await getAllDesigns();
   const published=all.filter(dd=>dd.status==="published");
   let items=published.filter(dd=>dd.featured===true);
-  if(items.length<8){ items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8); }
-  else{ items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,8); }
+  if(items.length<9){ items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
+  else{ items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
   const grid=$("#homeGrid");
   grid.innerHTML=items.length?`<div class="grid">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
   bindCards(grid);
@@ -640,18 +640,24 @@ async function renderAbout(root){
       <p style="color:var(--muted)">${esc(s.bio)}</p>
       <a class="btn" href="#/contact">تواصل معي ${icon("send")}</a>
       <div class="stats-row">
-        <div class="stat-card"><b>${esc(s.stats?.years||"0")}</b><span>سنوات خبرة</span></div>
-        <div class="stat-card"><b>${esc(s.stats?.projects||"0")}</b><span>مشروع منجز</span></div>
-        <div class="stat-card"><b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
+        <div class="stat-card">${icon("clock")}<b>${esc(s.stats?.years||"0")}</b><span>سنوات خبرة</span></div>
+        <div class="stat-card">${icon("flag")}<b>${esc(s.stats?.projects||"0")}</b><span>مشروع منجز</span></div>
+        <div class="stat-card">${icon("smile")}<b>${esc(s.stats?.satisfaction||"0")}</b><span>رضا العملاء</span></div>
       </div></div>
     <div class="about-img">${s.heroImage?`<img src="${s.heroImage}" alt="صورة المهندس">`:`<div class="skel" style="width:100%;height:100%"></div>`}</div>
   </div></section>`;
 }
 async function renderContact(root){
   const s=settings,c=s.contact||{};
-  root.innerHTML=`<section class="section container">
-    <h1 style="font-weight:900">لنبني شيئاً مذهلاً</h1>
-    <p style="color:var(--muted);margin-bottom:26px">لديك مشروع في ذهنك؟ يسعدني سماع رأيك.</p>
+  root.innerHTML=`<section class="hero geo" style="min-height:320px">
+    ${s.heroImage?`<div class="hero-bg" style="background-image:url('${s.heroImage}')"></div>`:`<div class="hero-bg" style="background:linear-gradient(135deg,#12161F,#0B0E14)"></div>`}
+    <div class="container hero-in">
+      <h1>لنبني شيئاً مذهلاً</h1>
+      <p>لديك مشروع في ذهنك؟ يسعدني سماع رأيك.</p>
+      <button class="btn" id="ctaBtn">تواصل معي ${icon("send")}</button>
+    </div>
+  </section>
+  <section class="section container">
     <div class="contact-grid">
       <form id="cForm" class="specs geo">
         <div class="form-grid">
@@ -668,7 +674,9 @@ async function renderContact(root){
         <div class="c-item"><span class="ic">${icon("phone")}</span><div><small>الهاتف</small><span dir="ltr">${esc(c.phone||"")}</span></div></div>
         <div class="c-item"><span class="ic">${icon("pin")}</span><div><small>الموقع</small>${esc(c.address||"")}</div></div>
       </div>
-    </div></section>`;
+    </div>
+  </section>`;
+  $("#ctaBtn").onclick=()=>$("#cForm").scrollIntoView({behavior:"smooth",block:"center"});
   $("#cForm").onsubmit=async e=>{
     e.preventDefault();
     const {db,collection,addDoc}=await fb();
@@ -773,7 +781,8 @@ async function renderDesign(root,params,path){
         <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
         <div class="actions-row">
-          <button class="btn sm" id="shareBtn">${icon("share")} مشاركة</button>
+          <button class="btn sm" id="view3d">${icon("eye")} عرض النموذج ثلاثي الأبعاد</button>
+          <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
           ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
         </div>
@@ -786,6 +795,7 @@ async function renderDesign(root,params,path){
   const bigUrls=async()=>{if(bigCache.length)return bigCache;bigCache=await Promise.all(imgs.map(i=>i.imageUrl||storage.getImageUrl(id,i.id)));return bigCache;};
   $("#dThumbs").onclick=async e=>{const t=e.target.closest("img");if(!t)return;$("#dThumbs").querySelectorAll("img").forEach(x=>x.classList.remove("sel"));t.classList.add("sel");const u=await bigUrls();$("#mainImg").src=u[+t.dataset.i]||t.src;};
   $("#mainImg").onclick=async()=>{const u=await bigUrls();openLightbox(u.length?u:[$("#mainImg").src],0);};
+  $("#view3d").onclick=async()=>{const u=await bigUrls();openLightbox(u.length?u:[$("#mainImg").src],0);};
   const url=()=>location.href;
   $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
   $("#shareBtn").onclick=async()=>{
@@ -1259,7 +1269,7 @@ async function secBackup(m){
     invalidateDesignsCache();
     toast("تم الاستيراد بنجاح");
   };
-  $("#seed").onclick=async()=>{if(confirm("زرع بيانات تجريبية؟")){await seedAll(p=>$("#mTxt").textContent=p);invalidateDesignsCache();toast("تم زرع البيانات");}};
+  $("#seed").onclick=async()=>{if(confirm("سيستبدل هذا الإجراء التصاميم الحالية ببيانات تجريبية جديدة (70 تصميماً بصور مشاهد). متابعة؟")){await seedAll(p=>{$("#mTxt").textContent=p;$("#mProg").hidden=false;});$("#mProg i").style.width="100%";invalidateDesignsCache();toast("تم زرع 70 تصميماً بنجاح");}};
   $("#mig").onclick=async()=>{if(!confirm("ترحيل كل صور Base64 إلى Firebase Storage؟"))return;$("#mProg").hidden=false;await migrateToStorage((i,t)=>{$("#mProg i").style.width=(i/t*100)+"%";$("#mTxt").textContent=`${i}/${t}`;});toast("اكتملت الهجرة");};
 }
 function makeSortable(tbody,onDone){
@@ -1269,14 +1279,94 @@ function makeSortable(tbody,onDone){
   tbody.addEventListener("dragend",async e=>{e.target.closest("tr").style.opacity=1;tbody.querySelectorAll("tr").forEach(x=>x.classList.remove("dragover"));const ids=[...tbody.children].map(x=>x.dataset.id);await onDone(ids);});
 }
 
-/* ================= Seed تجريبي ================= */
-const ph=(label,c1,c2)=>"data:image/svg+xml;utf8,"+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset="1" stop-color="${c2}"/></linearGradient></defs><rect width="800" height="600" fill="url(#g)"/><text x="400" y="310" font-family="sans-serif" font-size="42" fill="#ffffffcc" text-anchor="middle">${label}</text></svg>`);
-const SEED_CATS=[["غرف جلوس","living"],["غرف نوم","bedroom"],["حمامات","bathroom"],["صالونات","salon"],["مطابخ","kitchen"],["غرف أطفال","kids"],["تصاميم خارجية","exterior"]];
-const SEED_DESIGNS=[["فيلا عصرية","exterior","#3C4048","#8D939C",["رمادي","مودرن"],true],["غرفة جلوس بيج","living","#D8C3A5","#8C6F4E",["بيج","خشبي"],true],["مجلس عنابي","salon","#5A1F24","#D9B48B",["عنابي","كلاسيك"],true],["غرفة نوم كحلية","bedroom","#1F2A44","#C9CFDD",["أزرق","فاخر"],false],["مطبخ رخامي","kitchen","#F5F3EF","#B8B2A8",["أبيض","فاخر"],true],["حمام أسود ملكي","bathroom","#1A1A1A","#C9A227",["أسود","فاخر"],false],["غرفة أطفال وردية","kids","#F3DEDE","#D9A5A5",["وردي","ناعمة"],false],["واجهة حجر أبيض","exterior","#F2F0EB","#B8B2A8",["أبيض","حجر"],true]];
+/* ============================================================
+    مولّد مشاهد SVG (معاينات تشبه رندرات 3ds Max)
+============================================================ */
+function shade(hex,f=0.78){try{const h=hex.replace("#","");const full=h.length===3?h.split("").map(x=>x+x).join(""):h;const n=parseInt(full,16);const r=Math.round(((n>>16)&255)*f),g=Math.round(((n>>8)&255)*f),b=Math.round((n&255)*f);return "#"+((1<<24)+(r<<16)+(g<<8)+b).toString(16).slice(1);}catch{return hex;}}
+function scene(type,c,v=0){
+  const A=c[v%c.length],B=c[(v+1)%c.length],C=c[(v+2)%c.length],D=c[(v+3)%c.length],E=c[(v+4)%c.length];
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600"><defs>
+  <linearGradient id="w" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C}"/><stop offset="1" stop-color="${A}"/></linearGradient>
+  <linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${E}"/><stop offset="1" stop-color="${shade(E)}"/></linearGradient>
+  <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffffff" stop-opacity=".5"/><stop offset="1" stop-color="#ffffff" stop-opacity=".06"/></linearGradient>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#20304c"/><stop offset=".6" stop-color="#7a4a3a"/><stop offset="1" stop-color="#d99a6a"/></linearGradient></defs>`;
+  if(type==="exterior"){
+    s+=`<rect width="800" height="440" fill="url(#sky)"/><circle cx="640" cy="120" r="42" fill="#ffd98a" opacity=".85"/>`;
+    s+=`<rect y="440" width="800" height="160" fill="url(#f)"/>`;
+    s+=`<rect x="150" y="200" width="270" height="170" rx="8" fill="${A}"/><rect x="290" y="130" width="260" height="130" rx="8" fill="${B}"/>`;
+    s+=`<rect x="180" y="230" width="90" height="110" rx="4" fill="url(#g)"/><rect x="300" y="230" width="90" height="110" rx="4" fill="#ffd98a" opacity=".75"/><rect x="330" y="155" width="100" height="80" rx="4" fill="url(#g)"/><rect x="450" y="155" width="70" height="80" rx="4" fill="#ffd98a" opacity=".7"/>`;
+    s+=`<rect x="410" y="300" width="60" height="70" rx="4" fill="${shade(E)}"/>`;
+    s+=`<path d="M600 440 q-6 -70 4 -110" stroke="${shade(E)}" stroke-width="12" fill="none"/>`;
+    s+=`<path d="M604 330 q-50 -30 -80 -10 M604 330 q50 -30 80 -10 M604 330 q-30 -50 -60 -40 M604 330 q30 -50 60 -40 M604 330 q0 -60 -10 -70" stroke="#2e6b4f" stroke-width="10" fill="none" stroke-linecap="round"/>`;
+    s+=`<path d="M120 440 q-4 -60 2 -95" stroke="${shade(E)}" stroke-width="10" fill="none"/><path d="M122 345 q-40 -25 -65 -8 M122 345 q40 -25 65 -8 M122 345 q-25 -40 -48 -32 M122 345 q25 -40 48 -32" stroke="#2e6b4f" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+  }else{
+    s+=`<rect width="800" height="430" fill="url(#w)"/><rect y="430" width="800" height="170" fill="url(#f)"/><rect y="424" width="800" height="8" fill="${shade(E)}" opacity=".55"/>`;
+    s+=`<rect x="580" y="70" width="160" height="290" rx="6" fill="url(#g)"/><rect x="580" y="70" width="160" height="290" rx="6" fill="none" stroke="${shade(C)}" stroke-width="6"/><path d="M660 70 v290" stroke="${shade(C)}" stroke-width="4"/>`;
+    if(type==="living"){
+      s+=`<ellipse cx="380" cy="520" rx="270" ry="46" fill="${D}" opacity=".45"/>`;
+      s+=`<rect x="140" y="250" width="340" height="80" rx="22" fill="${shade(B)}"/><rect x="140" y="300" width="340" height="120" rx="26" fill="${B}"/>`;
+      s+=`<rect x="170" y="272" width="76" height="62" rx="14" fill="${D}"/><rect x="372" y="272" width="76" height="62" rx="14" fill="${A}"/>`;
+      s+=`<rect x="320" y="452" width="170" height="16" rx="8" fill="${shade(E)}"/><rect x="336" y="468" width="10" height="46" fill="${shade(E)}"/><rect x="464" y="468" width="10" height="46" fill="${shade(E)}"/>`;
+      s+=`<rect x="520" y="250" width="8" height="180" fill="${shade(E)}"/><path d="M496 250 h56 l-12 -40 h-32 z" fill="${D}"/>`;
+      s+=`<rect x="200" y="110" width="130" height="95" rx="6" fill="none" stroke="${shade(C)}" stroke-width="7"/><rect x="216" y="126" width="98" height="63" fill="${B}" opacity=".55"/>`;
+    }else if(type==="bedroom"){
+      s+=`<ellipse cx="360" cy="530" rx="250" ry="40" fill="${D}" opacity=".4"/>`;
+      s+=`<rect x="150" y="210" width="320" height="120" rx="16" fill="${B}"/>`;
+      s+=`<rect x="130" y="320" width="360" height="95" rx="20" fill="${C}"/><rect x="130" y="372" width="360" height="48" rx="14" fill="${D}"/>`;
+      s+=`<rect x="170" y="282" width="90" height="46" rx="12" fill="#ffffff" opacity=".85"/><rect x="275" y="282" width="90" height="46" rx="12" fill="#ffffff" opacity=".7"/>`;
+      s+=`<rect x="510" y="350" width="70" height="70" rx="8" fill="${shade(E)}"/><rect x="540" y="300" width="8" height="50" fill="${shade(E)}"/><path d="M522 300 h44 l-9 -30 h-26 z" fill="${A}"/>`;
+      s+=`<rect x="90" y="350" width="70" height="70" rx="8" fill="${shade(E)}"/><rect x="120" y="300" width="8" height="50" fill="${shade(E)}"/><path d="M102 300 h44 l-9 -30 h-26 z" fill="${A}"/>`;
+    }else if(type==="bathroom"){
+      s+=`<g stroke="#ffffff" stroke-opacity=".18" stroke-width="3">${[110,190,270,350].map(y=>`<path d="M60 ${y} H540"/>`).join("")}${[140,240,340,440].map(x=>`<path d="M${x} 70 V400"/>`).join("")}</g>`;
+      s+=`<rect x="120" y="330" width="320" height="110" rx="46" fill="#ffffff" opacity=".93"/><rect x="140" y="345" width="280" height="70" rx="34" fill="${shade(C)}" opacity=".4"/>`;
+      s+=`<path d="M430 330 v-60 q0 -18 22 -18" stroke="#c9c9c9" stroke-width="8" fill="none"/>`;
+      s+=`<circle cx="560" cy="180" r="62" fill="url(#g)" stroke="${shade(C)}" stroke-width="6"/>`;
+      s+=`<rect x="500" y="330" width="120" height="18" rx="8" fill="#ffffff" opacity=".9"/><rect x="548" y="348" width="24" height="80" fill="${shade(C)}"/>`;
+      s+=`<path d="M90 430 q4 -50 0 -70" stroke="#2e6b4f" stroke-width="8" fill="none"/><path d="M90 360 q-26 -18 -40 -6 M90 360 q26 -18 40 -6 M90 360 q-14 -30 -30 -24 M90 360 q14 -30 30 -24" stroke="#2e6b4f" stroke-width="6" fill="none" stroke-linecap="round"/><rect x="72" y="428" width="40" height="34" rx="6" fill="${D}"/>`;
+    }else if(type==="salon"){
+      s+=`<rect x="110" y="470" width="580" height="92" rx="10" fill="${D}" opacity=".55"/><rect x="126" y="482" width="548" height="68" rx="8" fill="none" stroke="#D4AF37" stroke-width="4" opacity=".8"/>`;
+      s+=`<rect x="110" y="230" width="440" height="90" rx="18" fill="${shade(B)}"/><rect x="110" y="300" width="440" height="115" rx="22" fill="${B}"/>`;
+      s+=`<g fill="#D4AF37" opacity=".85">${[150,230,310,390,470].map(x=>`<rect x="${x}" y="272" width="52" height="46" rx="10"/>`).join("")}</g>`;
+      s+=`<rect x="580" y="360" width="130" height="66" rx="10" fill="${shade(E)}"/><circle cx="620" cy="346" r="12" fill="#D4AF37"/><path d="M646 340 q10 -18 0 -26 q-10 8 0 26" fill="#D4AF37"/>`;
+      s+=`<path d="M400 60 v40" stroke="#D4AF37" stroke-width="5"/><g fill="#D4AF37"><circle cx="370" cy="118" r="10"/><circle cx="400" cy="130" r="12"/><circle cx="430" cy="118" r="10"/></g><path d="M370 108 q30 -22 60 0" stroke="#D4AF37" stroke-width="4" fill="none"/>`;
+    }else if(type==="kitchen"){
+      s+=`<rect x="110" y="80" width="380" height="92" rx="8" fill="${A}"/><g stroke="${shade(A)}" stroke-width="4">${[205,300,395].map(x=>`<path d="M${x} 84 v84"/>`).join("")}</g>`;
+      s+=`<rect x="110" y="176" width="380" height="72" fill="${C}" opacity=".75"/><g stroke="#ffffff" stroke-opacity=".25" stroke-width="3">${[200,240,280,320].map(y=>`<path d="M112 ${y} H488"/>`).join("")}</g>`;
+      s+=`<rect x="100" y="248" width="400" height="20" rx="8" fill="${E}"/>`;
+      s+=`<rect x="110" y="268" width="380" height="130" rx="8" fill="${B}"/><g stroke="${shade(B)}" stroke-width="5">${[205,300,395].map(x=>`<path d="M${x} 272 v122"/>`).join("")}</g><g fill="#D4AF37">${[160,255,350,445].map(x=>`<rect x="${x}" y="300" width="26" height="6" rx="3"/>`).join("")}</g>`;
+      s+=`<path d="M520 80 h100 l-20 78 h-60 z" fill="${shade(E)}"/><rect x="560" y="158" width="20" height="10" fill="${shade(E)}"/>`;
+      s+=`<g fill="${shade(E)}"><circle cx="560" cy="252" r="10"/><circle cx="600" cy="252" r="10"/></g>`;
+      s+=`<rect x="540" y="330" width="180" height="90" rx="10" fill="${shade(B)}"/><rect x="530" y="318" width="200" height="16" rx="8" fill="${E}"/>`;
+    }else if(type==="kids"){
+      s+=`<ellipse cx="360" cy="530" rx="240" ry="38" fill="${D}" opacity=".45"/>`;
+      s+=`<rect x="130" y="300" width="90" height="90" rx="14" fill="${shade(B)}"/><rect x="130" y="360" width="240" height="70" rx="16" fill="${B}"/><rect x="150" y="336" width="70" height="36" rx="10" fill="#ffffff" opacity=".85"/><rect x="130" y="392" width="240" height="26" rx="10" fill="${D}"/>`;
+      s+=`<rect x="430" y="352" width="170" height="14" rx="6" fill="${E}"/><rect x="440" y="366" width="10" height="70" fill="${shade(E)}"/><rect x="580" y="366" width="10" height="70" fill="${shade(E)}"/>`;
+      s+=`<rect x="470" y="300" width="60" height="42" rx="8" fill="${A}"/>`;
+      s+=`<circle cx="620" cy="150" r="26" fill="${D}" opacity=".9"/><circle cx="668" cy="190" r="20" fill="${A}" opacity=".9"/><circle cx="586" cy="200" r="18" fill="${B}" opacity=".9"/><path d="M620 176 q4 40 -6 60 M668 210 q-6 30 -18 44 M586 218 q6 26 16 40" stroke="${shade(E)}" stroke-width="3" fill="none"/>`;
+      s+=`<g>${[0,1,2,3,4,5].map(i=>`<path d="M${120+i*60} 90 l30 34 l30 -34 z" fill="${i%2?D:A}" opacity=".85"/>`).join("")}</g><path d="M120 90 H480" stroke="${shade(E)}" stroke-width="4"/>`;
+    }
+  }
+  s+=`<rect width="800" height="600" fill="#000" opacity=".06"/></svg>`;
+  return "data:image/svg+xml;utf8,"+encodeURIComponent(s);
+}
+
+/* ================= Seed تجريبي: 7 تصنيفات × 10 تصاميم بصور مشاهد ================= */
+const SEED_META={
+  living:["غرفة جلوس","living"],bedroom:["غرفة نوم","bedroom"],bathroom:["حمام","bathroom"],salon:["صالون","salon"],kitchen:["مطبخ","kitchen"],kids:["غرفة أطفال","kids"],exterior:["واجهة فيلا","exterior"]
+};
+const CITIES=["الرياض، السعودية","جدة، السعودية","دبي، الإمارات","الدوحة، قطر","الكويت، الكويت","مسقط، عُمان","المنامة، البحرين","أبوظبي، الإمارات","عمّان، الأردن","الخبر، السعودية"];
 async function seedAll(progress=()=>{}){
-  const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs}=F;
-  progress("زرع التصنيفات...");
+  const F=await fb(); const {db,collection,addDoc,setDoc,doc,getDocs,deleteDoc}=F;
+  progress("تنظيف التصاميم القديمة...");
+  const old=await getDocs(collection(db,"designs"));
+  for(const od of old.docs){
+    const ims=await getDocs(collection(db,"designs",od.id,"images"));
+    for(const im of ims.docs) await deleteDoc(im.ref);
+    await deleteDoc(od.ref);
+  }
+  progress("التصنيفات والباقات...");
   const catIds={};
+  const SEED_CATS=[["غرف جلوس","living"],["غرف نوم","bedroom"],["حمامات","bathroom"],["صالونات","salon"],["مطابخ","kitchen"],["غرف أطفال","kids"],["تصاميم خارجية","exterior"]];
   for(let i=0;i<SEED_CATS.length;i++){
     const [name,slug]=SEED_CATS[i];
     const ex=await getDocs(collection(db,"categories"));
@@ -1284,22 +1374,36 @@ async function seedAll(progress=()=>{}){
     catIds[slug]=found?found.id:(await addDoc(collection(db,"categories"),{name,slug,order:i,createdAt:Date.now()})).id;
     await setDoc(doc(db,"palettes",catIds[slug]),{items:DEFAULT_PALETTES[slug]||DEFAULT_PALETTES.living},{merge:true});
   }
-  progress("زرع التصاميم...");
-  for(let i=0;i<SEED_DESIGNS.length;i++){
-    const [title,slug,c1,c2,colorTags,featured]=SEED_DESIGNS[i];
-    const img1=ph(title,c1,c2),img2=ph(title+" 2",c2,c1),img3=ph(title+" 3",c1,"#0B0E14");
-    const dRef=await addDoc(collection(db,"designs"),{title,categoryId:catIds[slug],description:`تصميم ${title} منفذ بدقة عبر 3ds Max بخامات واقعية وإضاءة مدروسة.`,
-      specs:[{name:"الإضاءة",value:"طبيعية + مخفية"},{name:"النمط",value:"عصري"}],year:"2025",area:`${120+i*30} م²`,materials:"رخام، خشب جوز، كتان",location:"الرياض، السعودية",software:"3D Max",
-      tags:[title,slug],colorTags,thumbnail:img1,coverImageId:"i1",imagesCount:3,likesCount:3+i*2,viewsCount:20+i*11,featured,status:"published",order:i,createdAt:Date.now()-i*86400000,updatedAt:Date.now()});
-    for(const [data,order] of [[img1,0],[img2,1],[img3,2]])
-      await setDoc(doc(db,"designs",dRef.id,"images",order===0?"i1":"i"+(order+1)),{data,thumb:data,order,width:800,height:600,size:data.length,chunked:false});
+  let n=0;
+  for(const slug of Object.keys(DEFAULT_PALETTES)){
+    const pals=DEFAULT_PALETTES[slug];
+    for(let i=0;i<pals.length;i++){
+      const p=pals[i]; n++;
+      progress(`زرع التصاميم ${n}/70 ...`);
+      const [typeName]=SEED_META[slug];
+      const title=`${typeName} — باقة ${p.name}`;
+      const img1=scene(slug,p.colors,i), img2=scene(slug,p.colors,i+3);
+      const dRef=await addDoc(collection(db,"designs"),{
+        title, categoryId:catIds[slug],
+        description:`تصميم ${typeName} منفذ بدقة عبر 3ds Max بأسلوب «${p.name}»: ${p.furniture}، أرضيات ${p.tiles}، مع ${p.curtains} و${p.carpet}. إضاءة واقعية وخامات مدروسة.`,
+        specs:[{name:"الإضاءة",value:i%2?"نهارية + مخفية":"مسائية + ثريات"},{name:"النمط",value:(p.tags||[])[1]||"عصري"},{name:"الأرضيات",value:p.tiles}],
+        year:String(2023+(i%3)), area:`${90+((i*37)%260)} م²`, materials:p.tiles+"، "+p.furniture.split(" ").slice(0,3).join(" "),
+        location:CITIES[i%CITIES.length], software:"3D Max",
+        tags:[typeName,p.name,slug], colorTags:p.tags||[],
+        thumbnail:img1, coverImageId:"i1", imagesCount:2,
+        likesCount:4+((i*7)%40), viewsCount:30+((i*53)%400),
+        featured:i<2, status:"published", order:n, createdAt:Date.now()-n*3600000, updatedAt:Date.now()
+      });
+      await setDoc(doc(db,"designs",dRef.id,"images","i1"),{data:img1,thumb:img1,order:0,width:800,height:600,size:img1.length,chunked:false});
+      await setDoc(doc(db,"designs",dRef.id,"images","i2"),{data:img2,thumb:img2,order:1,width:800,height:600,size:img2.length,chunked:false});
+    }
   }
-  progress("زرع الإعدادات...");
-  await setDoc(doc(db,"settings","site"),{heroImage:ph("بيت التصميم","#12161F","#E10600")},{merge:true});
+  progress("الإعدادات النهائية...");
+  await setDoc(doc(db,"settings","site"),{heroImage:scene("exterior",["#F2F0EB","#D8D4CC","#B8B2A8","#8A857C","#5C5852"],3),colsDesktop:3,colsMobile:2},{merge:true});
   progress("تم!");
 }
 
-/* ================= الإقلاع (محمي: لن تتجمد شاشة الدخول أبداً) ================= */
+/* ================= الإقلاع ================= */
 route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
 route("/about",renderAbout); route("/contact",renderContact); route("/404",render404); route("/admin",renderAdmin);
 (async function boot(){
