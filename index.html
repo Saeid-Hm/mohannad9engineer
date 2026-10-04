@@ -13,7 +13,8 @@
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--cols-d:4;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important} [hidden]{display:none!important}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font),system-ui,sans-serif;font-size:1rem;line-height:1.7;overflow-x:hidden}
 img{max-width:100%;display:block}
@@ -22,8 +23,8 @@ button{font-family:inherit;color:inherit}
 h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
 .container{width:min(1200px,92%);margin-inline:auto}
-.only-mobile{display:none}
-@media(max-width:820px){.only-mobile{display:inline-flex}.no-mobile{display:none}}
+.only-mobile{display:none!important}
+@media(max-width:820px){.only-mobile{display:inline-flex!important}.no-mobile{display:none!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .geo{position:relative;overflow:hidden}
 .geo::before,.geo::after{content:"";position:absolute;width:230px;height:230px;pointer-events:none;opacity:.55;
@@ -34,7 +35,7 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 .geo::before{inset-inline-end:-70px;top:-70px}
 .geo::after{inset-inline-start:-70px;bottom:-70px;transform:rotate(180deg)}
 #splash{position:fixed;inset:0;background:var(--bg);z-index:200;display:grid;place-items:center;transition:opacity .5s,visibility .5s}
-#splash.hide{opacity:0;visibility:hidden}
+#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
 .splash-logo{font-size:56px;font-weight:900;color:var(--accent);letter-spacing:2px;animation:pop .8s ease}
 .splash-lines{position:absolute;width:220px;opacity:.7}
 .splash-lines path{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:300;stroke-dashoffset:300;animation:draw 1.4s ease forwards}
@@ -1315,6 +1316,7 @@ route("/about",renderAbout); route("/contact",renderContact); route("/404",rende
   }
   await minSplash;
   $("#splash").classList.add("hide");
+  setTimeout(()=>$("#splash")?.remove(),700);
   ensureAnon().then(u=>u&&loadMyLikes()).catch(()=>{});
   try{const {db,doc,setDoc,increment}=await fb();
     if(!sessionStorage.getItem("visit_"+new Date().toDateString())){sessionStorage.setItem("visit_"+new Date().toDateString(),"1");await setDoc(doc(db,"stats",new Date().toISOString().slice(0,10)),{visits:increment(1)},{merge:true});}
