@@ -347,6 +347,18 @@ input[type=range]{accent-color:var(--accent);flex:1}
 .grid.list-mode{grid-template-columns:1fr}.grid.list-mode .dcard{display:grid;grid-template-columns:minmax(180px,280px) 1fr;align-items:center}.grid.list-mode .thumb{aspect-ratio:16/10}.grid.list-mode .meta{padding:14px 18px}.dcard .thumb{background:#0d1118}.dcard .thumb img{transition:transform .45s ease,filter .3s ease}.dcard:hover .thumb img{transform:scale(1.025);filter:saturate(1.04)}
 @media(max-width:700px){.grid.list-mode .dcard{grid-template-columns:120px 1fr}.grid.list-mode .thumb{aspect-ratio:1}.grid.list-mode .meta{padding:10px}.catalog-loading{min-height:160px}}
 .material-confidence{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.material-confidence span{border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:.72rem;color:var(--muted)}
+
+/* إصلاحات نهائية للتنقل والعرض */
+.dcard .thumb{position:relative;cursor:pointer;overflow:hidden}
+.dcard .thumb img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .35s ease}
+.dcard .thumb:hover img{transform:scale(1.025)}
+.dcard .thumb .open-hint{position:absolute;inset:auto 12px 12px auto;display:flex;align-items:center;gap:5px;padding:7px 10px;border-radius:999px;background:rgba(10,13,19,.78);backdrop-filter:blur(8px);color:#fff;font-size:.72rem;opacity:0;transform:translateY(6px);transition:.2s;pointer-events:none}
+.dcard .thumb:hover .open-hint,.dcard .thumb:focus-visible .open-hint{opacity:1;transform:none}
+.loading-state{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;border:1px dashed var(--line);border-radius:20px;color:var(--text)}
+.loading-state small{color:var(--muted)}
+.spinner{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:apspin .8s linear infinite}
+@keyframes apspin{to{transform:rotate(360deg)}}
+@media(max-width:820px){.dcard .thumb .open-hint{opacity:1;transform:none;font-size:.66rem;padding:6px 8px}.loading-state{min-height:180px}}
 </style>
 </head>
 <body>
@@ -519,7 +531,12 @@ async function startRouter(){
     let key=path; if(path.startsWith("/design/"))key="/design/:id";
     const fn=handlers[key]||(path===adminPath?handlers["/admin"]:handlers["/404"]);
     renderShell(path);
-    await fn?.(root,params,path);
+    try{
+      await fn?.(root,params,path);
+    }catch(err){
+      console.error("Route render error",path,err);
+      root.innerHTML=`<div class="empty"><h2>تعذر فتح هذه الصفحة</h2><p>حدث خطأ أثناء تحميل المحتوى. يمكنك العودة للمعرض والمحاولة مرة أخرى.</p><button class="btn" onclick="history.back()">العودة</button><small style="display:block;margin-top:10px;color:var(--muted);direction:ltr">${esc(String(err?.message||err)).slice(0,220)}</small></div>`;
+    }
     window.scrollTo({top:0});
   };
   window.addEventListener("hashchange",go);
@@ -946,18 +963,28 @@ function localDemos(){
   return out;
 }
 function designCard(d,catName){
-  return `<article class="card dcard">
-    <a href="#/design/${d.id}" class="thumb" aria-label="${esc(d.title)}">
-      <img src="${d.thumbnail||""}" alt="${esc(d.title)}" loading="lazy" onerror="__imgErr(this)">
-      <button class="like-btn ${hasLiked(d.id)?"liked":""}" data-like="${d.id}" aria-label="إعجاب"></button>
-      <span class="like-count" data-likecount="${d.id}">${d.likesCount||0}</span>
-    </a>
-    <div class="meta"><h3>${esc(d.title)}</h3><span>${esc(catName)}${d.viewsCount?` · ${Number(d.viewsCount).toLocaleString("ar-SA")} مشاهدة`:""}</span></div>
+  const id=esc(d.id), title=esc(d.title), thumb=d.thumbnail||"";
+  return `<article class="card dcard" data-design-card="${id}">
+    <div class="thumb" data-open-design="${id}" role="link" tabindex="0" aria-label="فتح ${title}">
+      <img src="${esc(thumb)}" alt="${title}" loading="lazy" decoding="async" onerror="__imgErr(this)">
+      <span class="open-hint">فتح التصميم ${icon("chevL")}</span>
+      <button type="button" class="like-btn ${hasLiked(d.id)?"liked":""}" data-like="${id}" aria-label="إعجاب"></button>
+      <span class="like-count" data-likecount="${id}">${d.likesCount||0}</span>
+    </div>
+    <div class="meta"><h3>${title}</h3><span>${esc(catName)}${d.viewsCount?` · ${Number(d.viewsCount).toLocaleString("ar-SA")} مشاهدة`:""}</span></div>
   </article>`;
 }
 const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="skel" style="aspect-ratio:4/3"></div><div class="skel" style="height:16px;margin-top:8px;width:70%"></div></div>`).join("")}</div>`;
+const loadingState=(msg="جاري تجهيز النتائج…")=>`<div class="loading-state"><span class="spinner"></span><b>${esc(msg)}</b><small>نبحث في التصاميم التي تحتوي على صور فعلية فقط</small></div>`;
 const emptyState=(msg="لا توجد تصاميم بعد")=>`<div class="empty">${icon("image")}<p>${esc(msg)}</p></div>`;
-const bindCards=root=>bindLikeButtons(root);
+function bindCards(root){
+  bindLikeButtons(root);
+  root?.querySelectorAll("[data-open-design]").forEach(el=>{
+    const open=()=>{const id=el.dataset.openDesign;if(id)nav(`/design/${encodeURIComponent(id)}`);};
+    el.addEventListener("click",e=>{if(e.target.closest("[data-like]"))return;open();});
+    el.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open();}});
+  });
+}
 
 async function renderHome(root){
   const s=settings;
@@ -1123,7 +1150,7 @@ function paintGrid(){
 }
 
 async function renderDesign(root,params,path){
-  const id=path.split("/")[2];
+  const id=decodeURIComponent(path.split("/").slice(2).join("/")||"");
   const {db,doc,getDoc,collection,getDocs,updateDoc,increment}=await fb();
   if(isLocalDemo(id)){
     const dm=(await getAllDesigns()).find(x=>x.id===id); if(!dm)return render404(root);
@@ -1135,8 +1162,9 @@ async function renderDesign(root,params,path){
   if(!sessionStorage.getItem("viewed_"+id)){sessionStorage.setItem("viewed_"+id,"1");updateDoc(doc(db,"designs",id),{viewsCount:increment(1)}).catch(()=>{});}
   const imgsSnap=await getDocs(collection(db,"designs",id,"images"));
   const imgs=imgsSnap.docs.map(x=>({id:x.id,...x.data()})).sort((a,b)=>(a.order||0)-(b.order||0));
-  const thumbs=imgs.map(i=>i.thumb||d.thumbnail||"");
-  const main0=imgs.find(i=>i.id===d.coverImageId)?.thumb||d.thumbnail||"";
+  const thumbs=imgs.map(i=>i.thumb||i.imageUrl||d.thumbnail||"");
+  const cover=imgs.find(i=>i.id===d.coverImageId)||imgs[0];
+  const main0=cover?.thumb||cover?.imageUrl||d.thumbnail||"";
   const specs=(d.specs||[]).filter(s=>s.name);
   root.innerHTML=`<div class="container">
     <button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
@@ -1163,6 +1191,7 @@ async function renderDesign(root,params,path){
         <div class="actions-row">
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
+          <button class="btn sm ghost" id="downloadBtn">${icon("dl")} حفظ الصورة</button>
           ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
         </div>
       </div>
@@ -1184,6 +1213,14 @@ async function renderDesign(root,params,path){
   $("#mainImg").onclick=async()=>{const u=await bigUrls();const list=u.map((x,i)=>x||thumbs[i]).filter(Boolean);openLightbox(list.length?list:[$("#mainImg").src],Math.min(cur,Math.max(0,list.length-1)));};
   const url=()=>location.href;
   $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
+  $("#downloadBtn").onclick=async()=>{
+    try{
+      const u=await bigAt(cur)||$("#mainImg")?.src||d.thumbnail;
+      if(!u)throw new Error("no image");
+      const a=document.createElement("a"); a.href=u; a.download=(d.title||"design").replace(/[^\w\u0600-\u06FF -]+/g,"_")+".jpg"; a.target="_blank"; document.body.appendChild(a); a.click(); a.remove();
+      toast("تم تجهيز الصورة للحفظ");
+    }catch{toast("تعذر حفظ الصورة، يمكنك فتحها بالحجم الكامل ثم حفظها","err");}
+  };
   $("#shareBtn").onclick=async()=>{
     if(navigator.share){try{await navigator.share({title:d.title,url:url()});}catch{}return;}
     if(confirm("مشاركة عبر واتساب؟\n(موافق = واتساب / إلغاء = نسخ الرابط)"))window.open(`https://wa.me/?text=${encodeURIComponent(d.title+" "+url())}`);
