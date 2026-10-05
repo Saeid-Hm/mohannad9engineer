@@ -341,6 +341,12 @@ input[type=range]{accent-color:var(--accent);flex:1}
   .dcard .thumb{aspect-ratio:4/3}
   .dcard.list-card{grid-template-columns:96px 1fr}
 }
+
+.catalog-loading{min-height:220px;display:grid;place-items:center;text-align:center;color:var(--muted);border:1px solid var(--line);border-radius:var(--r);background:linear-gradient(145deg,rgba(255,255,255,.025),rgba(255,255,255,.01));}
+.catalog-loading p{margin:0}.loader-dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--accent);animation:spin .8s linear infinite;display:block;margin:auto auto 8px}@keyframes spin{to{transform:rotate(360deg)}}
+.grid.list-mode{grid-template-columns:1fr}.grid.list-mode .dcard{display:grid;grid-template-columns:minmax(180px,280px) 1fr;align-items:center}.grid.list-mode .thumb{aspect-ratio:16/10}.grid.list-mode .meta{padding:14px 18px}.dcard .thumb{background:#0d1118}.dcard .thumb img{transition:transform .45s ease,filter .3s ease}.dcard:hover .thumb img{transform:scale(1.025);filter:saturate(1.04)}
+@media(max-width:700px){.grid.list-mode .dcard{grid-template-columns:120px 1fr}.grid.list-mode .thumb{aspect-ratio:1}.grid.list-mode .meta{padding:10px}.catalog-loading{min-height:160px}}
+.material-confidence{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.material-confidence span{border:1px solid var(--line);padding:4px 8px;border-radius:999px;font-size:.72rem;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -551,102 +557,81 @@ const thumbOf=(fOrD,wm=false)=>typeof fOrD==="string"?compress(fOrD,{maxDim:480,
 /* ================= قراءة ألوان الصور تلقائياً (داخل المتصفح بلا أي مفتاح API) ================= */
 const _hex=(r,g,b)=>"#"+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,"0")).join("");
 function colorName(hex){
-  const n=parseInt(String(hex).replace("#",""),16),r=(n>>16)/255,g=((n>>8)&255)/255,b=(n&255)/255;
-  const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2;
-  const s=mx===0?0:d/mx;
-  let h=0;
-  if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}
-  // الألوان شديدة السطوع/الانخفاض تُصنّف أولاً حتى لا تختلط مع درجات الأثاث المحايدة.
-  if(l>0.94&&s<0.10)return "أبيض";
-  if(l<0.10&&s<0.25)return "أسود";
-  if(s<0.14)return l>0.72?"أبيض":(l<0.30?"أسود":"رمادي");
-  if(h<12||h>=348)return l<0.28?"عنابي":"أحمر";
-  if(h<42)return l>0.72?"بيج":(s>0.62&&l>0.45?"برتقالي":"بني");
-  if(h<72)return s>0.28?(l<0.55?"ذهبي":"أصفر"):(l>0.58?"بيج":"بني");
-  if(h<165)return "أخضر";
-  if(h<205)return "فيروزي";
-  if(h<258)return "أزرق";
-  if(h<315)return "بنفسجي";
-  return l>0.58?"وردي":"عنابي";
+  const m=hex.match(/^#([0-9a-f]{6})$/i);if(!m)return "";const n=parseInt(m[1],16),r=n>>16,g=(n>>8)&255,b=n&255,{h,s,l}=rgbToHsl(r,g,b);
+  if(l>.95&&s<.10)return "أبيض"; if(l<.08&&s<.25)return "أسود"; if(s<.12)return l>.70?"أوف وايت":"رمادي";
+  if(h<10||h>=350)return l<.32?"عنابي":"أحمر";
+  if(h<25)return l>.68?"برتقالي فاتح":"برتقالي";
+  if(h<50)return l>.68?"أصفر ذهبي":(s>.52?"برتقالي":"بني" );
+  if(h<75)return s>.34?"أصفر":"بيج";
+  if(h<165)return l<.30?"أخضر داكن":"أخضر";
+  if(h<195)return "فيروزي"; if(h<255)return l<.30?"أزرق داكن":"أزرق";
+  if(h<290)return "بنفسجي"; if(h<330)return "وردي"; return "عنابي";
 }
-const colorNames=cols=>[...new Set((cols||[]).map(colorName))];
+const colorNames=cols=>[...new Set((cols||[]).map(colorName).filter(Boolean))];
 
-/*
- * استخراج الألوان بدون API:
- * النسخة السابقة كانت ترتب الألوان حسب عدد البكسلات فقط، لذلك كان لون الجدران
- * والرخام والبيج يطغى على الأحمر/الأصفر/البنفسجي حتى لو كانت هذه الألوان واضحة.
- * الآن نعطي الألوان المشبعة وزناً أعلى، ونقسم درجات الطيف إلى قطاعات مستقلة،
- * ثم نختار ألواناً متباعدة بصرياً مع الاحتفاظ ببعض الألوان المحايدة.
- */
-async function extractColors(src,n=6){
+/* تحليل بصري محلي بالكامل: لا API ولا خدمة خارجية.
+   نعطي اللون المشبع/المميز وزناً أعلى من الخلفيات المحايدة، ونقيس أيضاً
+   التباين المحلي حتى لا تضيع قطعة حمراء/صفراء/بنفسجية صغيرة وسط البيج. */
+async function analyzeImage(src,n=7){
   try{
-    const img=await drawImg(src);
-    const W=96,H=Math.max(12,Math.round(W*img.height/img.width));
-    const c=document.createElement("canvas"); c.width=W; c.height=H;
-    const ctx=c.getContext("2d",{willReadFrequently:true});
-    ctx.drawImage(img,0,0,W,H);
-    const px=ctx.getImageData(0,0,W,H).data;
-    const total=Math.max(1,px.length/4);
-    const chroma=new Map(), neutral=[];
-    for(let i=0;i<px.length;i+=4){
-      if(px[i+3]<180)continue;
-      const r=px[i]/255,g=px[i+1]/255,b=px[i+2]/255;
-      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2;
-      const sat=mx===0?0:d/mx;
-      if(sat<0.16){
-        neutral.push({r:px[i],g:px[i+1],b:px[i+2],l});
-        continue;
+    const img=await drawImg(src); const W=128,H=Math.max(18,Math.round(W*img.height/img.width));
+    const c=document.createElement("canvas");c.width=W;c.height=H;const ctx=c.getContext("2d",{willReadFrequently:true});ctx.drawImage(img,0,0,W,H);
+    const data=ctx.getImageData(0,0,W,H).data, bins=new Map(), neutral=new Map(), total=W*H;
+    const idx=(x,y)=>(y*W+x)*4;
+    for(let y=1;y<H-1;y++)for(let x=1;x<W-1;x++){
+      const i=idx(x,y),a=data[i+3];if(a<180)continue;
+      const r=data[i],g=data[i+1],b=data[i+2],q=rgbToHsl(r,g,b), lum=.2126*r+.7152*g+.0722*b;
+      const ni=idx(x+1,y),pi=idx(x-1,y),ui=idx(x,y-1),di=idx(x,y+1);
+      const local=(Math.abs(lum-(.2126*data[ni]+.7152*data[ni+1]+.0722*data[ni+2]))+
+        Math.abs(lum-(.2126*data[pi]+.7152*data[pi+1]+.0722*data[pi+2]))+
+        Math.abs(lum-(.2126*data[ui]+.7152*data[ui+1]+.0722*data[ui+2]))+
+        Math.abs(lum-(.2126*data[di]+.7152*data[di+1]+.0722*data[di+2])))/4;
+      const sat=q.s, salience=(.35+2.9*Math.pow(sat,1.55))*(.70+.30*(1-Math.abs(q.l-.52)/.52))*(1+Math.min(.9,local/70));
+      if(sat>=.11){
+        const sector=Math.floor(q.h/8),key=sector;let o=bins.get(key);if(!o)o={h:0,w:0,r:0,g:0,b:0,count:0,sat:0,l:0};
+        o.w+=salience;o.r+=r*salience;o.g+=g*salience;o.b+=b*salience;o.h+=q.h*salience;o.sat+=sat;o.l+=q.l;o.count++;bins.set(key,o);
+      }else{
+        const k=Math.max(0,Math.min(11,Math.floor(q.l*12)));let o=neutral.get(k);if(!o)o={r:0,g:0,b:0,count:0};o.r+=r;o.g+=g;o.b+=b;o.count++;neutral.set(k,o);
       }
-      let h=0;
-      if(d){h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}
-      const sector=Math.floor(h/10); // 36 قطاعات، كافية للفصل بين الأحمر/الأصفر/البنفسجي
-      let o=chroma.get(sector);
-      if(!o)o={count:0,score:0,r:0,g:0,b:0};
-      // اللون المشبع يحصل على وزن أكبر من الخلفية البيج/السمنية منخفضة التشبع.
-      const w=(0.35+2.8*sat+1.8*sat*sat)*(0.72+0.28*Math.min(1,l/0.55));
-      o.count++;o.score+=w;o.r+=px[i]*w;o.g+=px[i+1]*w;o.b+=px[i+2]*w;
-      chroma.set(sector,o);
     }
-    const minChromatic=Math.max(3,total*0.004); // تجاهل الضجيج/البكسلات القليلة جداً
-    const chromatic=[...chroma.entries()]
-      .filter(([,o])=>o.count>=minChromatic)
-      .map(([sector,o])=>({
-        type:"color",sector,score:o.score,count:o.count,
-        r:o.r/o.score,g:o.g/o.score,b:o.b/o.score
-      }))
-      .sort((a,b)=>b.score-a.score);
-
+    const chrom=[...bins.values()].map(o=>({r:o.r/o.w,g:o.g/o.w,b:o.b/o.w,h:o.h/o.w,w:o.w,count:o.count,sat:o.sat/o.count})).filter(o=>o.count>=Math.max(3,total*.0008)).sort((a,b)=>b.w-a.w);
     const out=[];
-    // أولاً: الألوان الصريحة، مع فصل لا يسمح لدرجتين متقاربتين بأن تأخذا كل الخانات.
-    for(const o of chromatic){
-      const far=out.filter(x=>x.type==="color").every(x=>{
-        const diff=Math.abs(x.sector-o.sector),dist=Math.min(diff,36-diff);
-        return dist>=3;
-      });
-      if(far){out.push(o);if(out.length>=n)break;}
+    for(const o of chrom){
+      if(out.every(x=>hueDistance(x.h,o.h)>=18 || Math.hypot(x.r-o.r,x.g-o.g,x.b-o.b)>75)){
+        out.push(o);if(out.length>=n)break;
+      }
     }
+    if(out.length<n){
+      const ns=[...neutral.values()].sort((a,b)=>b.count-a.count);
+      for(const o of ns){if(o.count<Math.max(8,total*.008))continue;const r=o.r/o.count,g=o.g/o.count,b=o.b/o.count;
+        if(out.every(x=>Math.hypot(x.r-r,x.g-g,x.b-b)>42)){out.push({r,g,b,h:0,w:0,sat:0});if(out.length>=n)break;}
+      }
+    }
+    const colors=out.map(o=>_hex(o.r,o.g,o.b));
 
-    // ثانياً: لون محايد واحد/اثنان فقط إذا كانا بارزين فعلاً.
-    if(out.length<n&&neutral.length){
-      const bins=new Map();
-      for(const p of neutral){
-        const k=Math.max(0,Math.min(15,Math.floor(p.l*16)));
-        let o=bins.get(k);if(!o)o={count:0,r:0,g:0,b:0};
-        o.count++;o.r+=p.r;o.g+=p.g;o.b+=p.b;bins.set(k,o);
-      }
-      const ns=[...bins.values()].sort((a,b)=>b.count-a.count);
-      for(const o of ns){
-        if(o.count<Math.max(3,total*0.01))continue;
-        const h=_hex(o.r/o.count,o.g/o.count,o.b/o.count);
-        if(out.every(x=>Math.hypot((x.r||0)-o.r/o.count,(x.g||0)-o.g/o.count,(x.b||0)-o.b/o.count)>45)){
-          out.push({type:"neutral",r:o.r/o.count,g:o.g/o.count,b:o.b/o.count});
-          if(out.length>=n)break;
-        }
-      }
+    // مؤشرات خامات بصرية: ليست ادعاءً لمعرفة المادة يقيناً، بل ترشيح محلي اعتماداً على اللون/الملمس/السطوع.
+    let warm=0,cool=0,dark=0,bright=0,edge=0,gray=0,satSum=0,count=0;
+    for(let y=1;y<H-1;y+=2)for(let x=1;x<W-1;x+=2){const i=idx(x,y);const q=rgbToHsl(data[i],data[i+1],data[i+2]);const lum=.2126*data[i]+.7152*data[i+1]+.0722*data[i+2];
+      if(q.h<65||q.h>=350)warm+=q.s; if(q.h>=165&&q.h<285)cool+=q.s;if(lum<75)dark++;if(lum>210)bright++;if(q.s<.14)gray++;satSum+=q.s;count++;
+      const j=idx(x+1,y);edge+=Math.abs(lum-(.2126*data[j]+.7152*data[j+1]+.0722*data[j+2]));
     }
-    return out.map(o=>_hex(o.r,o.g,o.b));
-  }catch(err){console.warn("extractColors",err);return [];}
+    warm/=Math.max(1,count);cool/=Math.max(1,count);dark/=Math.max(1,count);bright/=Math.max(1,count);gray/=Math.max(1,count);edge/=Math.max(1,count);satSum/=Math.max(1,count);
+    const mats=[];
+    const add=(name,score)=>{if(score>=.34)mats.push({name,score});};
+    add("خشب",Math.min(1,warm*1.8 + (edge/45)*.16 + (1-bright)*.12));
+    add("رخام",Math.min(1,gray*.9 + (edge/38)*.22 + bright*.22));
+    add("حجر / ترافرتين",Math.min(1,warm*1.25 + gray*.35 + (edge/50)*.2));
+    add("معدن",Math.min(1,gray*.75 + (edge/30)*.24 + bright*.18 + dark*.10));
+    add("زجاج",Math.min(1,cool*.9 + bright*.28 + (edge/55)*.12));
+    add("قماش / كتان",Math.min(1,(1-edge/65)*.42 + (1-gray)*.18 + satSum*.22));
+    add("جلد",Math.min(1,warm*1.45 + dark*.32 + (1-bright)*.12));
+    add("سيراميك / بورسلان",Math.min(1,bright*.42 + (1-edge/65)*.25 + gray*.25));
+    mats.sort((a,b)=>b.score-a.score);
+    const materials=mats.slice(0,4).map(x=>x.name);
+    return {colors,colorTags:colorNames(colors),materials,materialScores:mats.slice(0,4)};
+  }catch(err){console.warn("analyzeImage",err);return {colors:[],colorTags:[],materials:[],materialScores:[]};}
 }
+async function extractColors(src,n=7){return (await analyzeImage(src,n)).colors;}
 
 const CHUNK=850*1024;
 const Base64FirestoreAdapter={
@@ -1072,7 +1057,7 @@ async function renderPortfolio(root,params){
   pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",featured:params.get("featured")==="1",view:localStorage.getItem("ap_portfolio_view")||"grid",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
-    <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية.</p>
+    <p style="color:var(--muted);margin-bottom:10px">استعرض الأعمال المنشورة فقط؛ لا تظهر بطاقة كصورة إلا إذا كانت لها صورة فعلية محفوظة.</p><div id="resultHint" class="catalog-hint" style="color:var(--muted);font-size:.78rem;margin-bottom:16px"></div>
     <div class="tools">
       <div id="chips" style="display:flex;gap:8px;flex-wrap:wrap"></div>
       <div class="tools-r">
@@ -1085,15 +1070,15 @@ async function renderPortfolio(root,params){
       </div>
     </div>
     ${pState.color?`<div class="badge pub" style="margin-bottom:12px">فلترة بالألوان: ${esc(pState.color)} <button id="clrColor" class="mini-btn" style="display:inline-grid">${icon("close")}</button></div>`:""}
-    <div id="pGrid">${skeletonGrid(appConfig.pageSize)}</div>
+    <div id="pGrid"><div class="catalog-loading"><span class="loader-dot"></span><p>جارٍ فحص التصاميم المنشورة والصور الفعلية…</p></div></div>
     <div style="text-align:center;margin-top:22px"><button id="more" class="btn ghost" hidden>تحميل المزيد</button></div>
   </section>`;
   renderChips();
   $("#q").oninput=debounce(e=>{pState.q=e.target.value.trim();pReset();},350);
   $("#sort").onchange=e=>{pState.sort=e.target.value;pReset();};
-  $("#featuredToggle").onclick=()=>{pState.featured=!pState.featured;pReset();};
-  $("#gridView").onclick=()=>{pState.view="grid";localStorage.setItem("ap_portfolio_view","grid");$("#gridView").classList.add("active");$("#listView").classList.remove("active");paintGrid();};
-  $("#listView").onclick=()=>{pState.view="list";localStorage.setItem("ap_portfolio_view","list");$("#listView").classList.add("active");$("#gridView").classList.remove("active");paintGrid();};
+  if($("#featuredToggle"))$("#featuredToggle").onclick=()=>{pState.featured=!pState.featured;pReset();};
+  if($("#gridView"))$("#gridView").onclick=()=>{pState.view="grid";localStorage.setItem("ap_portfolio_view","grid");$("#gridView").classList.add("active");$("#listView")?.classList.remove("active");paintGrid();};
+  if($("#listView"))$("#listView").onclick=()=>{pState.view="list";localStorage.setItem("ap_portfolio_view","list");$("#listView").classList.add("active");$("#gridView")?.classList.remove("active");paintGrid();};
   if($("#clrColor"))$("#clrColor").onclick=()=>location.hash="#/portfolio";
   if(params.get("focus"))setTimeout(()=>$("#q")?.focus(),300);
   const moreBtn=$("#more"); moreBtn.onclick=()=>fetchPage();
@@ -1106,7 +1091,7 @@ function renderChips(){
 async function pReset(){
   pState.items=[];pState.page=0;pState.done=false;
   const host=$("#pGrid");
-  if(host)host.innerHTML=`<div class="empty" style="padding:38px 20px"><p style="margin:0;color:var(--muted)">${pState.cat?"جارٍ التحقق من التصاميم والصور المنشورة…":"جارٍ تحميل التصاميم…"}</p></div>`;
+  if(host)host.innerHTML=`<div class="catalog-loading"><span class="loader-dot"></span><p>${pState.cat?"جارٍ التحقق من صور هذا التصنيف فقط…":"جارٍ فحص التصاميم المنشورة…"}</p></div>`;
   await fetchPage();
 }
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
@@ -1133,8 +1118,8 @@ async function fetchPage(){
 }
 function paintGrid(){
   const g=$("#pGrid");
-  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId)).replace('<article class="card dcard">',`<article class="card dcard ${pState.view==="list"?"list-card":""}">`)).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
-  bindCards(g); $("#more").hidden=pState.done;
+  g.innerHTML=pState.items.length?`<div class="grid ${pState.view==="list"?"list-mode":""}">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState(pState.cat?"لا توجد صور منشورة في هذا التصنيف حالياً":"لا توجد تصاميم منشورة تحتوي على صور حالياً");
+  bindCards(g); $("#more").hidden=pState.done; const hint=$("#resultHint"); if(hint)hint.textContent=pState.items.length?`تم العثور على ${pState.items.length} نتيجة${pState.cat?` في تصنيف «${store.catName(catIdBySlug(pState.cat))}»`:""}.`:"";
 }
 
 async function renderDesign(root,params,path){
@@ -1171,7 +1156,7 @@ async function renderDesign(root,params,path){
         <div class="spec-row"><b>${icon("pin")} الموقع</b>${esc(d.location||"—")}</div>
         <div class="spec-row"><b>${icon("gear")} البرنامج</b>${esc(d.software||"3D Max")}</div>
         <div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area||"—")}</div>
-        <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials||"—")}</div>
+        <div class="spec-row"><b>${icon("image")} الخامات</b><div><span>${esc(d.materials||"—")}</span>${(d.materialTags||[]).length?`<small style="display:block;color:var(--muted);margin-top:4px">تحليل بصري: ${esc(d.materialTags.join("، "))}</small>`:""}</div></div>
         <div class="spec-row"><b>${icon("chart")} سنة التنفيذ</b>${esc(d.year||"—")}</div>
         ${(d.colors||[]).length?`<div class="spec-row"><b>${icon("palette")} الألوان</b><div style="display:flex;flex-direction:column;gap:7px"><div class="swatches" style="margin:0">${d.colors.map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div><small style="color:var(--muted)">${esc(colorNames(d.colors).join("، "))}</small></div></div>`:""}
         ${specs.map(s=>`<div class="spec-row"><b>${icon("check")} ${esc(s.name)}</b>${esc(s.value)}</div>`).join("")}
@@ -1518,7 +1503,7 @@ async function secDesigns(m){
   </div>
   <div class="specs" style="margin-bottom:16px;padding:14px">
     <h3 style="margin-bottom:8px">${icon("palette")} قراءة ألوان الصور تلقائياً</h3>
-    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">يحلل ألوان غلاف كل تصميم ويضيفها لبيانات البوت ولفلترة المعرض. يعمل داخل المتصفح بدون أي مفتاح. التصاميم الجديدة تُحلَّل تلقائياً عند الحفظ.</p>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">تحليل بصري محلي للصورة: ألوان بارزة + ألوان مساعدة + خامات مرجحة. لا يستخدم API أو مفتاحاً خارجياً، ويعيد بناء البيانات القديمة من صورة الغلاف الفعلية.</p>
     <button class="btn ghost" id="colorBtn">${icon("palette")} تحليل ألوان التصاميم الحالية</button> <small id="colorTxt" style="color:var(--muted)"></small>
   </div>
   <p style="color:var(--muted);font-size:.75rem">اسحب الصفوف لإعادة الترتيب</p>
@@ -1534,10 +1519,10 @@ async function secDesigns(m){
     let i=0,ok=0;
     for(const x of todo){
       i++; $("#colorTxt").textContent=`تحليل ${i}/${todo.length}`;
-      const cols=await extractColors(x.thumbnail,6);
+      const analysis=await analyzeImage(x.thumbnail,7);
+      const cols=analysis.colors;
       if(cols.length>=2){
-        const names=colorNames(cols);
-        await F.updateDoc(F.doc(F.db,"designs",x.id),{colors:cols,colorTags:names});
+        await F.updateDoc(F.doc(F.db,"designs",x.id),{colors:cols,colorTags:analysis.colorTags,materials:analysis.materials.join("، "),materialTags:analysis.materials,materialScores:analysis.materialScores});
         ok++;
       }
     }
@@ -1561,7 +1546,7 @@ async function secDesigns(m){
     for(const g of gnames){
       const title=g.startsWith("__root__")?groups[g][0].name.replace(/\.[^.]+$/,""):g;
       const ref=await F.addDoc(F.collection(F.db,"designs"),{title,categoryId:catId,description:"أُضيف عبر رفع مجلد كامل من لوحة التحكم.",specs:[],year:String(new Date().getFullYear()),area:"",materials:"",location:"",software:"3D Max",tags:[title],colorTags:[],status:"published",featured:false,likesCount:0,viewsCount:0,imagesCount:0,order:Date.now(),createdAt:Date.now(),updatedAt:Date.now()});
-      let firstThumb="",firstId=null,idx=0,firstCols=[];
+      let firstThumb="",firstId=null,idx=0,firstCols=[],firstMaterials=[];
       for(const f of groups[g]){
         if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: كبير وتم تخطيه`,"err");continue;}
         const c=await compressToFit(f,{watermark:true});
@@ -1573,7 +1558,7 @@ async function secDesigns(m){
         $("#bulkProg i").style.width=Math.round(done/files.length*100)+"%";
         $("#bulkTxt").textContent=`معالجة ونشر ${done}/${files.length} ...`;
       }
-      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx,colors:firstCols,colorTags:colorNames(firstCols)});
+      await F.updateDoc(F.doc(F.db,"designs",ref.id),{thumbnail:firstThumb,coverImageId:firstId,imagesCount:idx,colors:firstCols,colorTags:colorNames(firstCols),materials:firstMaterials.join("، "),materialTags:firstMaterials});
     }
     invalidateDesignsCache(); toast("تم نشر المجلد بنجاح 🎉"); secDesigns(m);
   };
@@ -1599,7 +1584,7 @@ async function editor(m,d){
     <div class="field"><label>الموقع</label><input class="input" id="fLoc" value="${esc(d.location||"")}"></div>
     <div class="field"><label>البرنامج</label><input class="input" id="fSoft" value="${esc(d.software||"")}"></div>
   </div>
-  <div class="field"><label>الخامات</label><input class="input" id="fMat" value="${esc(d.materials||"")}"></div>
+  <div class="field"><label>الخامات <small style="color:var(--muted)">تُقرأ تلقائياً من صورة الغلاف إذا تركتها فارغة</small></label><input class="input" id="fMat" value="${esc(d.materials||"")}"></div>
   <div class="field"><label>الوصف</label><textarea class="input" id="fDesc" maxlength="5000">${esc(d.description||"")}</textarea></div>
   <div class="form-grid">
     <div class="field"><label>وسوم البحث (مفصولة بفواصل)</label><input class="input" id="fTags" value="${esc((d.tags||[]).join("، "))}"></div>
@@ -1639,8 +1624,8 @@ async function editor(m,d){
       if(f.size>appConfig.maxUploadMB*1048576){toast(`${f.name}: أكبر من ${appConfig.maxUploadMB} م.ب`,"err");continue;}
       const c=await compressToFit(f,{watermark:true});
       const t=await thumbOf(f,true);
-      const cols=await extractColors(t.data);
-      pending.push({key:"p"+uid(),preview:URL.createObjectURL(f),compressed:c,thumb:t.data,colors:cols});
+      const analysis=await analyzeImage(t.data,7);
+      pending.push({key:"p"+uid(),preview:URL.createObjectURL(f),compressed:c,thumb:t.data,colors:analysis.colors,analysis});
       toast(`${f.name}: تم توفير ${c.saved}% من الحجم`);
     }
     if(!coverKey&&pending.length)coverKey=pending[0].key;
@@ -1688,10 +1673,14 @@ async function editor(m,d){
     }
     const coverChanged=(coverKey||null)!==(d.coverImageId||null);
     // عند وجود صورة غلاف نعيد تحليلها دائماً، لأن بيانات الألوان القديمة قد تكون غير دقيقة.
-    let cols=thumb?await extractColors(thumb,6):(d.colors||[]);
+    const analysis=thumb?await analyzeImage(thumb,7):{colors:d.colors||[],colorTags:d.colorTags||[],materials:[],materialScores:[]};
+    const cols=analysis.colors;
     data.colors=cols;
-    // الألوان المكتوبة يدوياً تبقى متاحة، لكن نضيف إليها أسماء الألوان المكتشفة فعلياً من الصورة.
-    data.colorTags=[...new Set([...(data.colorTags||[]),...colorNames(cols)])];
+    data.colorTags=[...new Set([...(data.colorTags||[]),...analysis.colorTags])];
+    const manualMaterials=$("#fMat").value.trim();
+    data.materials=manualMaterials||analysis.materials.join("، ");
+    data.materialTags=analysis.materials||[];
+    data.materialScores=analysis.materialScores||[];
     data.thumbnail=thumb; data.coverImageId=coverKey||null; data.imagesCount=existing.length+pending.length;
     await F.updateDoc(F.doc(F.db,"designs",id),data);
     invalidateDesignsCache();
