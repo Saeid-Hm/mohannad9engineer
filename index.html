@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link id="fontLink" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--cols-d:3;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
+:root{--bg:#0B0E14;--card:#12161F;--line:#1E2430;--accent:#E10600;--text:#F5F5F5;--muted:#9AA3B2;--r:12px;--on:#fff;--ar:4/3;--cols-d:3;--cols-m:2;--font:'Cairo';--shadow:0 10px 30px rgba(0,0,0,.35)}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}
 html{scroll-behavior:smooth}
@@ -27,15 +27,20 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 @media(max-width:820px){.only-mobile{display:inline-flex!important}.no-mobile{display:none!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .geo{position:relative;overflow:hidden}
-/* الزخرفة الهندسية معطلة حتى لا تُرسم فوق صور المشاريع. */
-.geo::before,.geo::after{display:none!important;content:none!important}
+.geo::before,.geo::after{content:"";position:absolute;width:230px;height:230px;pointer-events:none;opacity:.55;
+ background:
+  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 0 0/100% 100% no-repeat,
+  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 46px 46px/100% 100% no-repeat,
+  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 92px 92px/100% 100% no-repeat;}
+.geo::before{inset-inline-end:-70px;top:-70px}
+.geo::after{inset-inline-start:-70px;bottom:-70px;transform:rotate(180deg)}
 #splash{position:fixed;inset:0;background:var(--bg);z-index:200;display:grid;place-items:center;transition:opacity .5s,visibility .5s}
 #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
 .splash-logo{font-size:56px;font-weight:900;color:var(--accent);letter-spacing:2px;animation:pop .8s ease}
 .splash-lines{position:absolute;width:220px;opacity:.7}
 .splash-lines path{stroke:var(--accent);stroke-width:2;fill:none;stroke-dasharray:300;stroke-dashoffset:300;animation:draw 1.4s ease forwards}
 @keyframes draw{to{stroke-dashoffset:0}}@keyframes pop{from{transform:scale(.6);opacity:0}}
-.header{position:sticky;top:0;z-index:60;background:rgba(11,14,20,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.header{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
 .header-in{display:flex;align-items:center;gap:18px;height:64px}
 .logo{font-weight:900;font-size:26px;color:var(--accent);cursor:pointer;user-select:none;letter-spacing:1px}
 .topnav{display:flex;gap:6px;margin-inline-start:auto}
@@ -81,11 +86,11 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 .drawer-social{margin-top:auto;display:flex;flex-direction:column;gap:10px;padding-top:16px;border-top:1px solid var(--line)}
 .drawer-social .social-icons{justify-content:center;gap:10px}
 .drawer-social .social-icons a{width:42px;height:42px}
-.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:70;background:rgba(18,22,31,.95);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+.bottomnav{position:fixed;bottom:0;left:0;right:0;z-index:70;background:color-mix(in srgb,var(--card) 95%,transparent);backdrop-filter:blur(12px);border-top:1px solid var(--line);display:grid;grid-template-columns:repeat(4,1fr);padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
 .bottomnav a{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0;border-radius:10px;color:var(--muted);font-size:.68rem;transition:.25s}
 .bottomnav a svg{width:21px;height:21px}
 .bottomnav a.active{color:var(--accent)}
-.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:12px 26px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.25s;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--accent);color:var(--on);border:none;border-radius:999px;padding:12px 26px;font-weight:700;font-size:.95rem;cursor:pointer;transition:.25s;box-shadow:0 6px 18px color-mix(in srgb,var(--accent) 35%,transparent)}
 .btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
 .btn.sm{padding:8px 18px;font-size:.85rem}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--text);box-shadow:none}
@@ -94,7 +99,7 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 .btn svg{width:17px;height:17px}
 .chip{border:1px solid var(--line);background:var(--card);color:var(--muted);border-radius:999px;padding:7px 18px;font-size:.85rem;cursor:pointer;transition:.25s;font-weight:500}
 .chip:hover{color:var(--text)}
-.chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.chip.active{background:var(--accent);border-color:var(--accent);color:var(--on)}
 .link-accent{color:var(--accent);font-size:.85rem;font-weight:700;display:inline-flex;align-items:center;gap:6px;cursor:pointer;background:none;border:none}
 .app{min-height:70vh;padding-bottom:70px}
 @media(max-width:820px){.app{padding-bottom:120px}}
@@ -106,31 +111,32 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 .card:hover{transform:translateY(-4px);border-color:color-mix(in srgb,var(--accent) 45%,var(--line))}
 .grid{display:grid;grid-template-columns:repeat(var(--cols-m),1fr);gap:14px}
 @media(min-width:821px){.grid{grid-template-columns:repeat(var(--cols-d),1fr);gap:18px}}
-.dcard .thumb{position:relative;aspect-ratio:4/3;overflow:hidden;background:#0e1219}
+.dcard .thumb{position:relative;aspect-ratio:4/3;overflow:hidden;background:var(--line)}
 .dcard .thumb img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
 .dcard:hover .thumb img{transform:scale(1.06)}
 .dcard .meta{padding:10px 12px 14px}
 .dcard .meta h3{font-size:.92rem;font-weight:700;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dcard .meta span{font-size:.75rem;color:var(--muted)}
-.like-btn{position:absolute;top:10px;inset-inline-start:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;background:rgba(11,14,20,.6);backdrop-filter:blur(6px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.25s}
+.like-btn{position:absolute;top:10px;inset-inline-start:10px;z-index:2;width:34px;height:34px;border-radius:50%;border:none;background:rgba(0,0,0,.45);backdrop-filter:blur(6px);color:#fff;display:grid;place-items:center;cursor:pointer;transition:.25s}
 .like-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2}
 .like-btn.liked{color:var(--accent)}
 .like-btn.liked svg{fill:currentColor}
 .like-btn.pulse{animation:pulse .45s ease}
 @keyframes pulse{40%{transform:scale(1.35)}}
-.like-count{position:absolute;top:14px;inset-inline-start:50px;z-index:2;font-size:.72rem;color:#fff;background:rgba(11,14,20,.55);padding:2px 8px;border-radius:99px;backdrop-filter:blur(6px)}
+.like-count{position:absolute;top:14px;inset-inline-start:50px;z-index:2;font-size:.72rem;color:#fff;background:rgba(0,0,0,.45);padding:2px 8px;border-radius:99px;backdrop-filter:blur(6px)}
 .hero{position:relative;min-height:430px;display:flex;align-items:center;border-block:1px solid var(--line);overflow:hidden}
 .hero-bg{position:absolute;inset:0;background-size:cover;background-position:center}
-.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,rgba(11,14,20,.55),rgba(11,14,20,.96) 65%)}
+.hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(to left,color-mix(in srgb,var(--bg) 55%,transparent),color-mix(in srgb,var(--bg) 96%,transparent) 65%)}
 .hero-in{position:relative;z-index:2;padding:70px 0}
 .hero h1{font-size:clamp(1.9rem,5vw,3.2rem);font-weight:900;margin-bottom:14px}
 .hero h1 .accent{color:var(--accent)}
 .hero p{color:var(--muted);max-width:460px;margin-bottom:26px}
-.back-link{display:inline-flex;gap:8px;align-items:center;color:var(--muted);font-size:.85rem;margin:18px 0;cursor:pointer;background:none;border:none}
+.back-link{display:inline-flex;white-space:nowrap;width:auto;gap:8px;align-items:center;color:var(--muted);font-size:.85rem;margin:18px 0;cursor:pointer;background:none;border:none}
 .back-link:hover{color:var(--accent)}
+.back-link svg{width:18px;height:18px;flex:0 0 auto}
 .detail{display:grid;grid-template-columns:1.4fr 1fr;gap:26px}
 @media(max-width:900px){.detail{grid-template-columns:1fr}}
-.detail-main{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;background:#0e1219}
+.detail-main{border-radius:var(--r);overflow:hidden;border:1px solid var(--line);aspect-ratio:4/3;background:var(--line)}
 .detail-main img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
 .detail-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
 .detail-thumbs img{aspect-ratio:4/3;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:.25s}
@@ -148,7 +154,7 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 textarea.input{min-height:110px;resize:vertical}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
 @media(max-width:700px){.form-grid{grid-template-columns:1fr}}
-.skel{background:linear-gradient(90deg,#141926 25%,#1c2333 50%,#141926 75%);background-size:200% 100%;animation:sh 1.2s infinite;border-radius:var(--r)}
+.skel{background:linear-gradient(90deg,var(--card) 25%,var(--line) 50%,var(--card) 75%);background-size:200% 100%;animation:sh 1.2s infinite;border-radius:var(--r)}
 @keyframes sh{to{background-position:-200% 0}}
 .empty{text-align:center;padding:70px 20px;color:var(--muted)}
 .empty svg{width:64px;height:64px;color:var(--line);margin-bottom:14px}
@@ -299,48 +305,65 @@ input[type=range]{accent-color:var(--accent);flex:1}
 #botBubble{font-size:.88rem;font-weight:700;padding:8px 16px;border-color:var(--accent)}
 #botWin{animation:winIn .22s ease;transform-origin:bottom left}
 @keyframes winIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
-/* تحسينات العرض الحديثة والجوال */
-.home-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:-6px;margin-bottom:18px}
-.view-toggle{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);background:var(--card);border-radius:12px}
-.view-toggle .mini-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.dcard.list-card{display:grid;grid-template-columns:150px 1fr;align-items:stretch}
-.dcard.list-card .thumb{aspect-ratio:auto;min-height:112px}
-.dcard.list-card .meta{display:flex;flex-direction:column;justify-content:center;padding:14px 16px}
-.dcard.list-card .meta h3{white-space:normal}
-.mobile-nav-off .bottomnav{display:none!important}
-@media(max-width:820px){
-  body{font-size:.95rem}
-  .hero h1{font-size:clamp(1.75rem,8vw,2.35rem);line-height:1.3}
-  .hero-in{padding:40px 0 54px}
-  .dcard .thumb{aspect-ratio:1/1}
-  .dcard .meta h3{font-size:.84rem}
-  .dcard .meta span{font-size:.68rem}
-  .grid{gap:10px}
-  .home-tools{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none}
-  .home-tools::-webkit-scrollbar{display:none}
-  .home-tools .chip{flex:0 0 auto}
-  .dcard.list-card{grid-template-columns:118px 1fr}
-  .dcard.list-card .thumb{min-height:96px}
-  .dcard.list-card .meta{padding:10px}
-  .detail{gap:14px}
-  .specs{padding:15px}
-  .admin{padding:12px 0}
+/* ===== قوالب التصميم والتخطيطات ===== */
+body{transition:background-color .35s,color .35s;background-attachment:fixed}
+.app>*{animation:pageIn .4s ease}
+@keyframes pageIn{from{opacity:0;transform:translateY(10px)}}
+.no-geo .geo::before,.no-geo .geo::after{display:none}
+.detail .geo::before,.detail .geo::after,.detail-main::before,.detail-main::after,.specs::before,.specs::after,.dcard::before,.dcard::after{display:none!important}
+.card{position:relative}
+.dcard .thumb{display:block;aspect-ratio:var(--ar,4/3)}
+.dcard .thumb img{display:block}
+.cs-overlay .dcard .meta{position:absolute;inset-inline:0;bottom:0;padding:38px 14px 12px;background:linear-gradient(to top,rgba(0,0,0,.84),transparent);pointer-events:none}
+.cs-overlay .dcard .meta h3{color:#fff}.cs-overlay .dcard .meta span{color:rgba(255,255,255,.75)}
+.cs-minimal .card{background:transparent;border:none;box-shadow:none}
+.cs-minimal .dcard .thumb{border-radius:var(--r)}
+.cs-minimal .dcard .meta{padding:10px 2px}
+.cs-frame .dcard{background:transparent;box-shadow:none;padding:8px}
+.cs-frame .dcard .thumb{border:1px solid var(--line)}
+.cs-frame .dcard .meta{padding:10px 4px 4px;margin-top:8px;border-top:1px dashed var(--line)}
+.grid.masonry{display:block;column-count:var(--cols-m);column-gap:14px}
+@media(min-width:821px){.grid.masonry{column-count:var(--cols-d);column-gap:18px}}
+.grid.masonry>*{break-inside:avoid;margin-bottom:14px;display:block}
+.grid.masonry .dcard:nth-child(3n+1) .thumb{aspect-ratio:3/4}
+.grid.masonry .dcard:nth-child(3n+2) .thumb{aspect-ratio:4/3}
+.grid.masonry .dcard:nth-child(3n) .thumb{aspect-ratio:1/1}
+@media(min-width:821px){.grid.featured>:first-child{grid-column:span 2;grid-row:span 2;display:flex;flex-direction:column}.grid.featured>:first-child .thumb{flex:1;aspect-ratio:auto;min-height:0}}
+.hs-center .hero{justify-content:center;text-align:center}
+.hs-center .hero p{margin-inline:auto}
+.hs-center .hero-bg::after{background:color-mix(in srgb,var(--bg) 78%,transparent)}
+.hs-full .hero{min-height:74vh;align-items:flex-end}
+.hs-full .hero-bg::after{background:linear-gradient(to top,var(--bg) 4%,color-mix(in srgb,var(--bg) 30%,transparent) 75%)}
+.hs-minimal .hero{min-height:360px}
+.hs-minimal .hero-bg{opacity:.14}
+.hs-minimal .hero h1{font-size:clamp(2.2rem,7vw,4.4rem)}
+.sp-titleblock .specs{border-radius:calc(var(--r)/2);border-width:2px}
+.sp-titleblock .specs .spec-row{border:1px solid var(--line);margin-top:-1px;padding:8px 12px}
+.sp-titleblock .specs .spec-row b{border-inline-end:1px solid var(--line);padding-inline-end:10px;margin-inline-end:4px}
+.dl-stack .detail{grid-template-columns:1fr}
+.dl-stack .detail-main{aspect-ratio:16/9}
+.dl-stack .detail-thumbs{grid-template-columns:repeat(5,1fr)}
+.theme-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:8px 0 18px}
+.theme-card{display:flex;flex-direction:column;gap:6px;text-align:start;padding:8px;border-radius:12px;border:2px solid var(--line);background:var(--bg);cursor:pointer;transition:.2s}
+.theme-card:hover{border-color:var(--muted)}
+.theme-card.sel{border-color:var(--accent)}
+.theme-card b{font-size:.85rem}.theme-card small{color:var(--muted);font-size:.7rem;line-height:1.4}
+.theme-card .tp{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:8px;height:64px;border:1px solid;border-radius:8px}
+.theme-card .tp i{border:1px solid;border-radius:4px}
+.theme-card .tp em{position:absolute;bottom:6px;inset-inline-start:8px;width:34%;height:5px;border-radius:9px}
+.fbadge{position:absolute;top:-5px;inset-inline-end:-5px;min-width:17px;height:17px;padding:0 4px;border-radius:99px;background:var(--accent);color:var(--on);font-size:.65rem;font-weight:700;display:grid;place-items:center}
+.to-top{position:fixed;right:14px;bottom:24px;z-index:65;width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--text);display:grid;place-items:center;cursor:pointer;box-shadow:var(--shadow);transition:.25s}
+.to-top:hover{border-color:var(--accent);color:var(--accent)}
+.to-top svg{width:20px;height:20px}
+@media(max-width:820px){.to-top{bottom:84px;right:12px;width:40px;height:40px}}
+@media print{
+  .header,.footer,.bottomnav,#botRoot,.to-top,.actions-row,.back-link,#drawer,#drawerOverlay,.toasts,.like-btn,.detail-thumbs,section.section{display:none!important}
+  body{background:#fff!important;color:#000!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .specs,.detail-main{border:1px solid #bbb!important;box-shadow:none!important;background:#fff!important}
+  .specs *{color:#000!important}.detail{grid-template-columns:1fr 1fr!important}.geo::before,.geo::after{display:none!important}
 }
-@media(max-width:520px){
-  .container{width:calc(100% - 24px)}
-  .hero .btn{width:100%;justify-content:center}
-  .tools-r{display:grid!important;grid-template-columns:1fr 1fr}
-  .tools-r>div{width:100%}
-  .tools-r input,.tools-r select{width:100%!important}
-  #pGrid .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .dcard.list-card{grid-template-columns:104px 1fr}
-  .dcard.list-card .thumb{min-height:90px}
-}
-@media(max-width:380px){
-  #pGrid .grid{grid-template-columns:1fr}
-  .dcard .thumb{aspect-ratio:4/3}
-  .dcard.list-card{grid-template-columns:96px 1fr}
-}
+.link-accent{white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+.link-accent svg{width:16px;height:16px}
 </style>
 </head>
 <body>
@@ -358,6 +381,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
         <div class="info"><b id="engName">المهندس</b><small id="engTitle">مهندس معماري</small></div>
       </div>
       <div id="engIcons" class="social-icons" hidden></div>
+      <a class="icon-btn" id="favBtn" href="#/favorites" aria-label="المفضلة" style="position:relative"></a>
       <button class="icon-btn" id="searchBtn" aria-label="بحث"></button>
       <button class="icon-btn only-mobile" id="menuBtn" aria-label="القائمة"></button>
     </div>
@@ -378,6 +402,7 @@ input[type=range]{accent-color:var(--accent);flex:1}
 <nav id="bottomNav" class="bottomnav" aria-label="تنقل سفلي"></nav>
 <div id="lightbox" class="lightbox" hidden role="dialog" aria-modal="true" aria-label="عارض الصور"></div>
 <div id="toasts" class="toasts" aria-live="polite"></div>
+<button id="toTop" class="to-top" aria-label="للأعلى" hidden></button>
 <div id="botRoot"></div>
 
 <script type="module">
@@ -453,19 +478,31 @@ async function getAllDesigns(){
 function invalidateDesignsCache(){ _allDesignsCache=null; _allDesignsPromise=null; }
 
 /* ================= الإعدادات مع حقول المهندس ================= */
+const THEMES={
+ royal:{name:"ملكي أحمر",desc:"داكن فاخر بخطوط حمراء مائلة",dark:true,bg:"#0B0E14",card:"#12161F",line:"#1E2430",text:"#F5F5F5",muted:"#9AA3B2",accent:"#E10600",grid:"rgba(255,255,255,.05)",ui:{cardStyle:"classic",gallery:"grid",hero:"split",pattern:"diag",radius:12,ratio:"4/3",spec:"card",detail:"side",corners:true}},
+ gold:{name:"ذهبي فاخر",desc:"أسود دافئ بلمسات ذهبية وعناوين فوق الصور",dark:true,bg:"#0D0B08",card:"#17130C",line:"#2B2415",text:"#F6EFDD",muted:"#B3A68A",accent:"#D4AF37",grid:"rgba(255,255,255,.05)",ui:{cardStyle:"overlay",gallery:"grid",hero:"center",pattern:"diag",radius:6,ratio:"4/3",spec:"card",detail:"stack",corners:true}},
+ blueprint:{name:"مخطط هندسي",desc:"أزرق Blueprint بشبكة رسم وجدول مواصفات",dark:true,bg:"#0A2342",card:"#0F2F57",line:"#1E4A80",text:"#EAF4FF",muted:"#8FB4DA",accent:"#4FC3F7",grid:"rgba(143,180,218,.15)",ui:{cardStyle:"frame",gallery:"grid",hero:"split",pattern:"grid",radius:2,ratio:"4/3",spec:"titleblock",detail:"side",corners:false}},
+ white:{name:"أبيض معماري",desc:"فاتح نظيف بأسلوب المكاتب الهندسية",dark:false,bg:"#F6F5F2",card:"#FFFFFF",line:"#E3E0D8",text:"#1B1D22",muted:"#6B7280",accent:"#C1121F",grid:"rgba(27,29,34,.06)",ui:{cardStyle:"minimal",gallery:"masonry",hero:"full",pattern:"grid",radius:4,ratio:"4/3",spec:"titleblock",detail:"stack",corners:false}},
+ concrete:{name:"خرساني صناعي",desc:"رمادي خرساني مع برتقالي أمان وعمل رئيسي كبير",dark:true,bg:"#1A1C1E",card:"#25282B",line:"#363A3E",text:"#EEF0F2",muted:"#9BA1A8",accent:"#FF8A00",grid:"rgba(255,255,255,.05)",ui:{cardStyle:"classic",gallery:"featured",hero:"split",pattern:"grid",radius:0,ratio:"4/3",spec:"titleblock",detail:"side",corners:true}},
+ sand:{name:"رملي دافئ",desc:"فاتح دافئ مناسب للتصاميم الداخلية",dark:false,bg:"#F3EBDD",card:"#FBF6EC",line:"#E0D2B8",text:"#2A2118",muted:"#7A6A55",accent:"#A0522D",grid:"rgba(122,106,85,.2)",ui:{cardStyle:"overlay",gallery:"masonry",hero:"center",pattern:"dots",radius:18,ratio:"1/1",spec:"card",detail:"side",corners:false}},
+ emerald:{name:"زمردي هادئ",desc:"أخضر داكن هادئ مع معرض بعمل رئيسي كبير",dark:true,bg:"#0B1512",card:"#11201B",line:"#1E332B",text:"#EAF5F0",muted:"#8DAA9E",accent:"#2ECC9A",grid:"rgba(255,255,255,.05)",ui:{cardStyle:"classic",gallery:"featured",hero:"full",pattern:"diag",radius:14,ratio:"4/3",spec:"card",detail:"side",corners:true}}
+};
+const themeUI=s=>({...(THEMES[s.theme]||THEMES.royal).ui,...(s.ui||{})});
+function gridCls(){const u=themeUI(settings);return "grid"+(u.gallery==="masonry"?" masonry":(u.gallery==="featured"&&(settings.colsDesktop||3)>=3?" featured":""));}
+function updateFavBadge(){const el=$("#favN");if(!el)return;el.hidden=!myLikes.size;el.textContent=myLikes.size;}
 const FALLBACK_SETTINGS={
   siteName:"بيت التصميم",initials:"AR",
   engineerName:"م. مهند المعماري",engineerTitle:"مهندس معماري ومصمم داخلي",engineerInitial:"M",
   heroTitle1:"نصمم مساحات",heroAccent:"أفضل",heroTitle2:"",heroDesc:"مجموعة من أحدث أعمالي من تصاميم داخلية وخارجية.",heroImage:"",
-  accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:3,colsMobile:2,
+  theme:"royal",ui:{},accent:"#E10600",font:"Cairo",fontScale:100,likeIcon:"heart",colsDesktop:3,colsMobile:2,
   bio:"مهندس معماري ومصمم داخلي بخبرة واسعة في تصميم مساحات عصرية وعملية.",
   stats:{years:"5+",projects:"50+",satisfaction:"100%"},
   links:{whatsapp:"",instagram:"",twitter:"",facebook:""},
   contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},
-  watermark:{enabled:false,text:""},mobileDensity:"normal",mobileNav:true,adminPath:"/admin-panel"
+  watermark:{enabled:false,text:""},adminPath:"/admin-panel"
 };
 const stripMax=t=>typeof t==="string"?t.replace(/\s*(المنفذة|منفذة|منفذ)\s+(بدقة\s+)?عبر\s*3ds\s*max\.?/gi,"").replace(/\s+\./g,".").trim():t;
-const cleanSettings=s=>{s.heroDesc=stripMax(s.heroDesc);s.bio=stripMax(s.bio);if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
+const cleanSettings=s=>{s.ui=s.ui||{};s.heroDesc=stripMax(s.heroDesc);s.bio=stripMax(s.bio);if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
 let settings={...FALLBACK_SETTINGS}, categories=[], _sListeners=[];
 const store={
   get settings(){return settings;},
@@ -482,15 +519,25 @@ const store={
   }
 };
 function applyTheme(){
-  const r=document.documentElement.style;
-  r.setProperty("--accent",settings.accent||"#E10600");
+  const r=document.documentElement.style, th=THEMES[settings.theme]||THEMES.royal, u=themeUI(settings);
+  ["bg","card","line","text","muted"].forEach(k=>r.setProperty("--"+k,th[k]));
+  const ac=settings.accent||th.accent;
+  r.setProperty("--accent",ac); r.setProperty("--on",lum(ac)>0.58?"#16130a":"#ffffff");
+  r.colorScheme=th.dark?"dark":"light";
+  r.setProperty("--r",(u.radius??12)+"px"); r.setProperty("--ar",u.ratio||"4/3");
+  const b=document.body;
+  [...b.classList].filter(c=>/^(cs|hs|sp|dl)-/.test(c)||c==="no-geo").forEach(c=>b.classList.remove(c));
+  b.classList.add("cs-"+u.cardStyle,"hs-"+u.hero,"sp-"+u.spec,"dl-"+u.detail); if(!u.corners)b.classList.add("no-geo");
+  const am="color-mix(in srgb,var(--accent) 11%,transparent)";
+  let bi="none",bs="auto";
+  if(u.pattern==="grid"){bi=`linear-gradient(${th.grid} 1px,transparent 1px),linear-gradient(90deg,${th.grid} 1px,transparent 1px)`;bs="40px 40px";}
+  else if(u.pattern==="dots"){bi=`radial-gradient(${th.grid} 1.5px,transparent 1.7px)`;bs="26px 26px";}
+  else if(u.pattern==="diag"){bi=`repeating-linear-gradient(135deg,transparent 0 46px,${am} 46px 47px)`;}
+  b.style.backgroundImage=bi; b.style.backgroundSize=bs;
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content",th.bg);
   r.setProperty("--cols-d",settings.colsDesktop||3);
   r.setProperty("--cols-m",settings.colsMobile||2);
   r.fontSize=(settings.fontScale||100)+"%";
-  document.documentElement.dataset.mobileDensity=settings.mobileDensity||"normal";
-  document.documentElement.classList.toggle("mobile-nav-off",settings.mobileNav===false);
-  document.documentElement.classList.toggle("mobile-density-compact",settings.mobileDensity==="compact");
-  document.documentElement.classList.toggle("mobile-density-airy",settings.mobileDensity==="airy");
   const font=settings.font||"Cairo";
   r.setProperty("--font",`'${font}'`);
   const link=$("#fontLink"), href=`https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;700;800;900&display=swap`;
@@ -672,7 +719,7 @@ async function loadMyLikes(){
   const u=await ensureAnon(); if(!u)return myLikes;
   const {db,collection,query,where,getDocs}=await fb();
   const s=await getDocs(query(collection(db,"likes"),where("uid","==",u)));
-  myLikes=new Set(s.docs.map(dd=>dd.data().designId));
+  myLikes=new Set(s.docs.map(dd=>dd.data().designId)); updateFavBadge();
   return myLikes;
 }
 const hasLiked=id=>myLikes.has(id);
@@ -683,6 +730,7 @@ function bindLikeButtons(root){
   });
 }
 function paintLike(btn,id){
+  setTimeout(updateFavBadge,0);
   const liked=myLikes.has(id);
   btn.classList.toggle("liked",liked);
   btn.innerHTML=icon(settings.likeIcon==="star"?"star":"heart");
@@ -816,6 +864,10 @@ function socialIconsHTML(compact=false){
 /* ================= القشرة ================= */
 const NAV=[{href:"#/",path:"/",label:"الرئيسية",ic:"home"},{href:"#/portfolio",path:"/portfolio",label:"الأعمال",ic:"grid"},{href:"#/about",path:"/about",label:"من أنا",ic:"user"},{href:"#/contact",path:"/contact",label:"تواصل",ic:"phone"}];
 function initShell(){
+  $("#favBtn").innerHTML=icon("heart")+`<span class="fbadge" id="favN" hidden></span>`;
+  const tt=$("#toTop"); tt.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>`;
+  tt.onclick=()=>window.scrollTo({top:0,behavior:"smooth"});
+  window.addEventListener("scroll",()=>{tt.hidden=window.scrollY<700;},{passive:true});
   $("#searchBtn").innerHTML=icon("search"); $("#menuBtn").innerHTML=icon("menu"); $("#drawerClose").innerHTML=icon("close");
   $("#searchBtn").onclick=()=>nav("/portfolio?focus=1");
   $("#menuBtn").onclick=()=>openDrawer(true);
@@ -846,7 +898,7 @@ function renderShell(path){
   $("#logoText2").textContent=s.initials||"AR";
   if($("#splashLogo"))$("#splashLogo").textContent=s.initials||"AR";
   $("#topnav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${n.label}</a>`).join("");
-  $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
+  $("#drawerNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}">${icon(n.ic)}<span>${n.label}</span></a>`).join("")+`<a href="#/favorites" class="${path==="/favorites"?"active":""}">${icon("heart")}<span>المفضلة</span></a>`;
   $("#bottomNav").innerHTML=NAV.map(n=>`<a href="${n.href}" class="${path===n.path?"active":""}" aria-label="${n.label}">${icon(n.ic)}<span>${n.label}</span></a>`).join("");
 
   /* ✅ اسم المهندس + أيقونات التواصل في الهيدر */
@@ -913,7 +965,7 @@ function designCard(d,catName){
       <button class="like-btn ${hasLiked(d.id)?"liked":""}" data-like="${d.id}" aria-label="إعجاب"></button>
       <span class="like-count" data-likecount="${d.id}">${d.likesCount||0}</span>
     </a>
-    <div class="meta"><h3>${esc(d.title)}</h3><span>${esc(catName)}${d.viewsCount?` · ${Number(d.viewsCount).toLocaleString("ar-SA")} مشاهدة`:""}</span></div>
+    <div class="meta"><h3>${esc(d.title)}</h3><span>${esc(catName)}</span></div>
   </article>`;
 }
 const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="skel" style="aspect-ratio:4/3"></div><div class="skel" style="height:16px;margin-top:8px;width:70%"></div></div>`).join("")}</div>`;
@@ -928,36 +980,30 @@ async function renderHome(root){
     <div class="container hero-in">
       <h1>${esc(s.heroTitle1)} <span class="accent">${esc(s.heroAccent)}</span> ${esc(s.heroTitle2||"")}</h1>
       <p>${esc(s.heroDesc)}</p>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <a class="btn" href="#/portfolio">شاهد الأعمال ${icon("chevL")}</a>
-        <a class="btn ghost" href="#/portfolio?sort=likes">الأكثر إعجاباً ${icon("heart")}</a>
-      </div>
+      <a class="btn" href="#/portfolio">شاهد الأعمال ${icon("chevL")}</a>
     </div>
   </section>
   <section class="section container">
     <div class="section-head"><h2 class="section-title">أحدث المشاريع</h2><a class="link-accent" href="#/portfolio">عرض الكل ${icon("chevL")}</a></div>
-    <div class="home-tools">
-      <a class="chip active" href="#/portfolio?sort=new">الأحدث</a>
-      <a class="chip" href="#/portfolio?sort=likes">الأكثر إعجاباً</a>
-      <a class="chip" href="#/portfolio?sort=views">الأكثر مشاهدة</a>
-      <a class="chip" href="#/portfolio?featured=1">المميزة</a>
-    </div>
-    <div id="homeGrid">${skeletonGrid(6)}</div>
-  </section>
-  <section class="section container" style="padding-top:8px">
-    <div class="section-head"><h2 class="section-title">التصاميم الشائعة</h2><a class="link-accent" href="#/portfolio?sort=likes">كل الشائع ${icon("chevL")}</a></div>
-    <div id="popularGrid">${skeletonGrid(4)}</div>
+    <div id="homeGrid">${skeletonGrid(9)}</div>
   </section>`;
   const all=await getAllDesigns();
   const published=all.filter(dd=>dd.status==="published");
   let items=published.filter(dd=>dd.featured===true);
-  if(items.length<6) items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
-  else items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
-  const popular=[...published].sort((a,b)=>((b.likesCount||0)*3+(b.viewsCount||0))-((a.likesCount||0)*3+(a.viewsCount||0))).slice(0,4);
-  const grid=$("#homeGrid"), pop=$("#popularGrid");
-  grid.innerHTML=items.length?`<div class="grid">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
-  pop.innerHTML=popular.length?`<div class="grid popular-grid">${popular.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم شائعة بعد");
-  bindCards(grid); bindCards(pop);
+  if(items.length<9){ items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
+  else{ items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
+  const grid=$("#homeGrid");
+  grid.innerHTML=items.length?`<div class="${gridCls()}">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
+  bindCards(grid);
+}
+async function renderFavorites(root){
+  root.innerHTML=`<section class="section container" style="padding-top:26px"><h1 style="font-weight:900">المفضلة</h1><p style="color:var(--muted);margin-bottom:18px">التصاميم التي أعجبتك على هذا الجهاز.</p><div id="favGrid">${skeletonGrid(6)}</div></section>`;
+  try{const u=await ensureAnon();if(u)await loadMyLikes();}catch{}
+  const all=await getAllDesigns();
+  const items=all.filter(d=>myLikes.has(d.id)&&d.status==="published");
+  const g=$("#favGrid"); if(!g)return;
+  g.innerHTML=items.length?`<div class="${gridCls()}">${items.map(d=>designCard(d,store.catName(d.categoryId))).join("")}</div>`:emptyState("لم تُعجب بأي تصميم بعد");
+  bindCards(g);
 }
 async function renderAbout(root){
   const s=settings;
@@ -1015,7 +1061,7 @@ function render404(root){root.innerHTML=`<div class="empty" style="padding:120px
 
 let pState=null;
 async function renderPortfolio(root,params){
-  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",featured:params.get("featured")==="1",view:localStorage.getItem("ap_portfolio_view")||"grid",items:[],page:0,done:false,loading:false};
+  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
     <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية.</p>
@@ -1026,7 +1072,6 @@ async function renderPortfolio(root,params){
         <select id="sort" class="input" style="width:150px" aria-label="ترتيب">
           <option value="new" ${pState.sort==="new"?"selected":""}>الأحدث</option>
           <option value="likes" ${pState.sort==="likes"?"selected":""}>الأكثر إعجاباً</option>
-           <option value="views" ${pState.sort==="views"?"selected":""}>الأكثر مشاهدة</option>
         </select>
       </div>
     </div>
@@ -1037,9 +1082,6 @@ async function renderPortfolio(root,params){
   renderChips();
   $("#q").oninput=debounce(e=>{pState.q=e.target.value.trim();pReset();},350);
   $("#sort").onchange=e=>{pState.sort=e.target.value;pReset();};
-  $("#featuredToggle").onclick=()=>{pState.featured=!pState.featured;pReset();};
-  $("#gridView").onclick=()=>{pState.view="grid";localStorage.setItem("ap_portfolio_view","grid");$("#gridView").classList.add("active");$("#listView").classList.remove("active");paintGrid();};
-  $("#listView").onclick=()=>{pState.view="list";localStorage.setItem("ap_portfolio_view","list");$("#listView").classList.add("active");$("#gridView").classList.remove("active");paintGrid();};
   if($("#clrColor"))$("#clrColor").onclick=()=>location.hash="#/portfolio";
   if(params.get("focus"))setTimeout(()=>$("#q")?.focus(),300);
   const moreBtn=$("#more"); moreBtn.onclick=()=>fetchPage();
@@ -1049,26 +1091,19 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){
-  pState.items=[];pState.page=0;pState.done=false;
-  const host=$("#pGrid");
-  if(host)host.innerHTML=`<div class="empty" style="padding:38px 20px"><p style="margin:0;color:var(--muted)">${pState.cat?"جارٍ التحقق من التصاميم والصور المنشورة…":"جارٍ تحميل التصاميم…"}</p></div>`;
-  await fetchPage();
-}
+async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
   const all=await getAllDesigns();
-  /* لا نعرض تصميماً على أنه صورة منشورة إلا إذا كان له غلاف وصور فعلية. */
-  let pool=all.filter(dd=>dd.status==="published" && !!dd.thumbnail && Number(dd.imagesCount||0)>0);
+  let pool=all.filter(dd=>dd.status==="published");
   if(pState.cat) pool=pool.filter(dd=>dd.categoryId===catIdBySlug(pState.cat));
   if(pState.color) pool=pool.filter(dd=>(dd.colorTags||[]).includes(pState.color));
-  if(pState.featured) pool=pool.filter(dd=>dd.featured===true);
   if(pState.q){
     const q=pState.q.toLowerCase();
     pool=pool.filter(dd=>(dd.title||"").toLowerCase().includes(q)||(dd.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(dd.categoryId).toLowerCase().includes(q));
   }
-  const orderF=pState.sort==="likes"?"likesCount":pState.sort==="views"?"viewsCount":"createdAt";
+  const orderF=pState.sort==="likes"?"likesCount":"createdAt";
   pool.sort((a,b)=>(b[orderF]||0)-(a[orderF]||0));
   const start=pState.page*appConfig.pageSize, end=start+appConfig.pageSize;
   const slice=pool.slice(start,end);
@@ -1079,7 +1114,7 @@ async function fetchPage(){
 }
 function paintGrid(){
   const g=$("#pGrid");
-  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId)).replace('<article class="card dcard">',`<article class="card dcard ${pState.view==="list"?"list-card":""}">`)).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
+  g.innerHTML=pState.items.length?`<div class="${gridCls()}">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
   bindCards(g); $("#more").hidden=pState.done;
 }
 
@@ -1103,10 +1138,10 @@ async function renderDesign(root,params,path){
     <button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
     <div class="detail">
       <div>
-        <div class="detail-main geo"><img id="mainImg" src="${main0}" alt="${esc(d.title)}" onerror="__imgErr(this)"></div>
+        <div class="detail-main"><img id="mainImg" src="${main0}" alt="${esc(d.title)}" onerror="__imgErr(this)"></div>
         <div class="detail-thumbs" id="dThumbs">${thumbs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}" loading="lazy" onerror="__imgErr(this)">`).join("")}</div>
       </div>
-      <div class="specs geo">
+      <div class="specs">
         <div style="display:flex;justify-content:space-between;align-items:start;gap:10px">
           <h1>${esc(d.title)}</h1>
           <button class="like-btn" style="position:static;background:var(--bg);border:1px solid var(--line)" data-like="${d.id}"></button>
@@ -1124,6 +1159,7 @@ async function renderDesign(root,params,path){
         <div class="actions-row">
           <button class="btn sm ghost" id="shareBtn">${icon("share")} مشاركة</button>
           <button class="btn sm ghost" id="copyBtn">${icon("ul")} نسخ الرابط</button>
+          <button class="btn sm ghost" id="printBtn">${icon("dl")} طباعة / PDF</button>
           ${settings.contact?.whatsappNumber?`<a class="btn sm ghost" target="_blank" href="https://wa.me/${esc(settings.contact.whatsappNumber)}?text=${encodeURIComponent("مهتم بتصميم: "+d.title)}">${icon("wa")} واتساب</a>`:""}
         </div>
       </div>
@@ -1144,6 +1180,7 @@ async function renderDesign(root,params,path){
   if(imgs.length)showMain(Math.max(0,imgs.findIndex(i=>i.id===d.coverImageId)));
   $("#mainImg").onclick=async()=>{const u=await bigUrls();const list=u.map((x,i)=>x||thumbs[i]).filter(Boolean);openLightbox(list.length?list:[$("#mainImg").src],Math.min(cur,Math.max(0,list.length-1)));};
   const url=()=>location.href;
+  $("#printBtn")&&($("#printBtn").onclick=()=>window.print());
   $("#copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText(url());toast("تم نسخ الرابط");}catch{toast("تعذر النسخ","err");}};
   $("#shareBtn").onclick=async()=>{
     if(navigator.share){try{await navigator.share({title:d.title,url:url()});}catch{}return;}
@@ -1152,7 +1189,7 @@ async function renderDesign(root,params,path){
   };
   const all=await getAllDesigns();
   const list=all.filter(x=>x.status==="published"&&x.categoryId===d.categoryId&&x.id!==id).slice(0,4);
-  $("#sim").innerHTML=list.length?`<div class="grid">${list.map(x=>designCard(x,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
+  $("#sim").innerHTML=list.length?`<div class="${gridCls()}">${list.map(x=>designCard(x,store.catName(d.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم مشابهة");
   bindCards($("#sim"));
   document.title=`${d.title} | ${settings.siteName}`;
   const md=document.querySelector('meta[name="description"]'); if(md)md.setAttribute("content",(d.description||d.title).slice(0,150));
@@ -1161,9 +1198,9 @@ async function renderDesign(root,params,path){
 async function renderDemoDesign(root,d){
   const imgs=[sceneURI(d._slug,d._pal,d._i),sceneURI(d._slug,d._pal,d._i+11)];
   root.innerHTML=`<div class="container"><button class="back-link" onclick="history.back()">${icon("chevR")} العودة للمعرض</button>
-    <div class="detail"><div><div class="detail-main geo"><img id="mainImg" src="${imgs[0]}" alt="${esc(d.title)}"></div>
+    <div class="detail"><div><div class="detail-main"><img id="mainImg" src="${imgs[0]}" alt="${esc(d.title)}"></div>
     <div class="detail-thumbs" id="dThumbs">${imgs.map((t,i)=>`<img src="${t}" data-i="${i}" class="${i===0?"sel":""}" alt="مصغرة ${i+1}">`).join("")}</div></div>
-    <div class="specs geo"><h1>${esc(d.title)}</h1><p style="color:var(--muted);font-size:.9rem">${esc(d.description)}</p>
+    <div class="specs"><h1>${esc(d.title)}</h1><p style="color:var(--muted);font-size:.9rem">${esc(d.description)}</p>
     <div class="spec-row"><b>${icon("layers")} النوع</b>${esc(store.catName(d.categoryId)==="غير مصنف"?SEED_META[d._slug]:store.catName(d.categoryId))}</div>
     <div class="spec-row"><b>${icon("gear")} البرنامج</b>3D Max</div><div class="spec-row"><b>${icon("grid")} المساحة</b>${esc(d.area)}</div>
     <div class="spec-row"><b>${icon("image")} الخامات</b>${esc(d.materials)}</div>
@@ -1253,26 +1290,18 @@ function renderCats(){
     botState={step:"colors",cat:{slug:b.dataset.slug,id:b.dataset.id,name:b.textContent}};
     await botSay(b.textContent,true);
     bumpStat("cat_"+b.dataset.slug);
-    /* ابقِ المستخدم داخل البوت: سنفحص الصور أولاً ثم نعرض الألوان المأخوذة منها فقط. */
-    await renderPalettes();
+    botToggle(false);
+    nav(`/portfolio?cat=${encodeURIComponent(b.dataset.slug)}`);
+    setTimeout(()=>showBubble("ما هي ألوانك المفضلة؟ اضغط عليّ"),2500);
   };
 }
 const reducedMotion=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
-async function designPalettes(cid){
-  try{
-    const all=await getAllDesigns();
-    const source=all
-      /* لا نستخدم أي ألوان محفوظة من تصميم بلا صورة فعلية. */
-      .filter(d=>d.status==="published" && d.categoryId===cid && !!d.thumbnail && Number(d.imagesCount||0)>0)
-      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
-    const out=[];
-    for(const d of source){
-      const colors=await extractColors(d.thumbnail,6);
-      if(colors.length<3)continue;
-      out.push({name:d.title,colors,tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:colorNames(colors),designId:d.id,auto:true,source:"image"});
-    }
-    return out;
-  }catch{return []}
+function designPalettes(cid){
+  return getAllDesigns().then(all=>all
+    .filter(d=>d.status==="published"&&d.categoryId===cid&&Array.isArray(d.colors)&&d.colors.length>=3)
+    .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
+    .map(d=>({name:d.title,colors:d.colors.slice(0,6),tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:d.colorTags||colorNames(d.colors),designId:d.id,auto:true}))
+  ).catch(()=>[]);
 }
 async function prefetchPalettes(){
   try{const {db,collection,getDocs}=await fb();const s=await getDocs(collection(db,"palettes"));
@@ -1281,25 +1310,20 @@ async function prefetchPalettes(){
 async function renderPalettes(){
   botState.step="colors";
   const cid=botState.cat.id;
+  let base=_palCache[cid];
+  if(!base){
+    try{const {db,doc,getDoc}=await fb();const s=await getDoc(doc(db,"palettes",cid));base=s.data()?.items;}catch{}
+    if(!base||!base.length)base=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
+    _palCache[cid]=base;
+  }
   const autos=await designPalettes(cid);
-  const body=$("#botBody"); if(!body)return;
+  const items=[...autos,...base];
   $("#botChips").innerHTML="";
   $("#palList")?.remove();
+  const body=$("#botBody"); if(!body)return;
   const line=(l,v)=>v?`<p><b>${l}:</b> ${esc(v)}</p>`:"";
-  if(!autos.length){
-    body.insertAdjacentHTML("beforeend",`<div id="palList" class="empty" style="padding:28px 10px">
-      ${icon("image")}<p><b>لا توجد صور منشورة في تصنيف «${esc(botState.cat.name)}» حالياً.</b></p>
-      <p style="font-size:.78rem">لن أعرض ألواناً على أنها مستخرجة من الصور ما دامت لا توجد صور فعلية لتحليلها.</p>
-    </div>`);
-    $("#botChips").innerHTML=`<button class="chip active" id="bGoCat">فتح التصنيف</button><button class="chip" id="bRestart">ابدأ من جديد</button>`;
-    $("#bGoCat").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}`);};
-    $("#bRestart").onclick=()=>{botState=null;botGreet();};
-    return;
-  }
-  /* الباقات اليدوية لا تُخلط مع تحليل الصور حتى لا تبدو وكأنها مستخرجة منها. */
-  const items=autos;
   body.insertAdjacentHTML("beforeend",`<div id="palList" style="display:flex;flex-direction:column;gap:8px">${items.map((p,i)=>`
-    <div class="palette-card" data-i="${i}"><h5><span class="badge pub" style="margin-inline-end:6px">من ألوان صورنا</span>${esc(p.name)}</h5>
+    <div class="palette-card" data-i="${i}"><h5>${p.auto?`<span class="badge pub" style="margin-inline-end:6px">من أعمالنا</span>`:""}${esc(p.name)}</h5>
       <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div>
       ${line("الأرضيات",p.tiles)}${line("الأثاث",p.furniture)}${line("الستائر",p.curtains)}${line("السجاد",p.carpet)}
       ${p.auto&&(p.tags||[]).length?line("الألوان",(p.tags||[]).slice(0,4).join("، ")):""}
@@ -1677,25 +1701,32 @@ async function secPalettes(m){
 }
 function secLook(m){
   const s={...settings};
-  m.innerHTML=`<h2>مظهر الموقع</h2><div class="form-grid">
+  const _thId=s.theme||"royal", _U=themeUI(s);
+  const opt=(k,list)=>`<select class="input" data-k="${k}">${list.map(([v,t])=>`<option value="${v}" ${String(_U[k])===v?"selected":""}>${t}</option>`).join("")}</select>`;
+  const themeCards=Object.entries(THEMES).map(([id,t])=>`<button type="button" class="theme-card ${_thId===id?"sel":""}" data-th="${id}"><span class="tp" style="background:${t.bg};border-color:${t.line}"><i style="background:${t.card};border-color:${t.line}"></i><i style="background:${t.card};border-color:${t.line}"></i><i style="background:${t.card};border-color:${t.line}"></i><em style="background:${t.accent}"></em></span><b>${t.name}</b><small>${t.desc}</small></button>`).join("");
+  m.innerHTML=`<h2>مظهر الموقع</h2>
+  <h3>قالب تصميم الموقع</h3><p style="color:var(--muted);font-size:.8rem;margin:0">اختر قالباً فيتغير الموقع كله فوراً (يشمل هذه اللوحة للمعاينة)، ثم اضغط «حفظ المظهر» أسفل الصفحة.</p>
+  <div class="theme-grid">${themeCards}</div>
+  <h3>تخصيص التخطيط</h3>
+  <div class="form-grid">
+    <div class="field"><label>شكل بطاقات الأعمال</label>${opt("cardStyle",[["classic","كلاسيكي"],["overlay","العنوان فوق الصورة"],["minimal","بسيط بلا إطار"],["frame","إطار هندسي"]])}</div>
+    <div class="field"><label>تخطيط المعرض</label>${opt("gallery",[["grid","شبكة منتظمة"],["masonry","متدرج (Masonry)"],["featured","أول عمل كبير"]])}</div>
+    <div class="field"><label>شكل واجهة الرئيسية</label>${opt("hero",[["split","نص مع صورة"],["center","في المنتصف"],["full","ملء الشاشة"],["minimal","بسيط"]])}</div>
+    <div class="field"><label>خلفية الموقع</label>${opt("pattern",[["diag","خطوط مائلة"],["grid","شبكة مخطط هندسي"],["dots","نقاط"],["none","بدون"]])}</div>
+    <div class="field"><label>نسبة صور البطاقات</label>${opt("ratio",[["4/3","عريضة 4:3"],["1/1","مربعة"],["3/4","طولية"],["16/9","سينمائية 16:9"]])}</div>
+    <div class="field"><label>عرض المواصفات</label>${opt("spec",[["card","بطاقة"],["titleblock","جدول مخطط هندسي"]])}</div>
+    <div class="field"><label>صفحة التصميم</label>${opt("detail",[["side","الصورة بجانب المواصفات"],["stack","صورة كبيرة فوق المواصفات"]])}</div>
+    <div class="field"><label>استدارة الزوايا: <span id="rdV">${_U.radius}</span>px</label><input type="range" data-k="radius" min="0" max="28" value="${_U.radius}"></div>
+  </div>
+  <label style="display:flex;gap:8px;font-size:.85rem;margin:4px 0 12px"><input type="checkbox" data-k="corners" ${_U.corners?"checked":""}> إظهار الخطوط الهندسية في زوايا الأقسام</label>
+  <button type="button" class="btn sm ghost" id="thReset" style="margin-bottom:18px">${icon("refresh")} استعادة افتراضيات القالب</button>
+  <h3>الخط والألوان والعناوين</h3><div class="form-grid">
     <div class="field"><label>نوع الخط</label><select class="input" id="lFont">${["Cairo","Tajawal","Almarai","IBM Plex Sans Arabic","Noto Kufi Arabic","Changa","Amiri"].map(f=>`<option ${s.font===f?"selected":""}>${f}</option>`).join("")}</select></div>
     <div class="field"><label>حجم الخط: <span id="fsV">${s.fontScale}</span>%</label><div class="range-row"><input type="range" id="lScale" min="85" max="125" value="${s.fontScale||100}"></div></div>
     <div class="field"><label>لون التمييز</label><div id="lDots" style="display:flex;gap:8px;align-items:center"><span class="color-dot ${s.accent==="#E10600"?"sel":""}" data-c="#E10600" style="background:#E10600"></span><span class="color-dot ${s.accent==="#D4AF37"?"sel":""}" data-c="#D4AF37" style="background:#D4AF37"></span><input type="color" id="lColor" value="${s.accent}" style="width:44px;height:34px;background:none;border:none"></div></div>
     <div class="field"><label>رمز الإعجاب</label><select class="input" id="lLike"><option value="heart" ${s.likeIcon==="heart"?"selected":""}>قلب ♥</option><option value="star" ${s.likeIcon==="star"?"selected":""}>نجمة ★</option></select></div>
     <div class="field"><label>عدد الصور بالصف (حاسوب)</label><select class="input" id="lCd">${[1,2,3,4,5].map(n=>`<option ${s.colsDesktop===n?"selected":""}>${n}</option>`).join("")}</select></div>
     <div class="field"><label>عدد الصور بالصف (جوال)</label><select class="input" id="lCm">${[1,2,3,4,5].map(n=>`<option ${s.colsMobile===n?"selected":""}>${n}</option>`).join("")}</select></div>
-    <div class="field"><label>كثافة بطاقات الجوال</label><select class="input" id="lDensity"><option value="compact" ${s.mobileDensity==="compact"?"selected":""}>مضغوط — نتائج أكثر</option><option value="normal" ${!s.mobileDensity||s.mobileDensity==="normal"?"selected":""}>متوازن</option><option value="airy" ${s.mobileDensity==="airy"?"selected":""}>مريح — مساحات أكبر</option></select></div>
-    <div class="field" style="display:flex;align-items:end"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="lMobileNav" ${s.mobileNav!==false?"checked":""}> إظهار شريط التنقل السفلي في الجوال</label></div>
-  </div>
-  <div class="specs" style="margin:4px 0 16px;padding:14px">
-    <h3 style="margin-bottom:6px">${icon("theme")} قوالب عرض جاهزة</h3>
-    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">قوالب مناسبة لمواقع العمارة والتصميم الداخلي. اختر قالباً ثم اضغط حفظ.</p>
-    <div class="form-grid">
-      <button class="btn ghost" type="button" data-preset="architect">هندسي معماري</button>
-      <button class="btn ghost" type="button" data-preset="luxury">فاخر هادئ</button>
-      <button class="btn ghost" type="button" data-preset="modern">مودرن دافئ</button>
-      <button class="btn ghost" type="button" data-preset="minimal">مينيمال</button>
-    </div>
   </div>
   <div class="field"><label>عنوان الهيرو (جزء 1)</label><input class="input" id="lH1" value="${esc(s.heroTitle1)}"></div>
   <div class="form-grid"><div class="field"><label>الكلمة الملونة</label><input class="input" id="lHA" value="${esc(s.heroAccent)}"></div><div class="field"><label>الجزء 3</label><input class="input" id="lH2" value="${esc(s.heroTitle2||"")}"></div></div>
@@ -1704,20 +1735,25 @@ function secLook(m){
   <label style="display:flex;gap:8px;font-size:.85rem;margin:8px 0"><input type="checkbox" id="lWm" ${s.watermark?.enabled?"checked":""}> تفعيل العلامة المائية على الصور</label>
   <div class="field"><label>نص العلامة المائية</label><input class="input" id="lWt" value="${esc(s.watermark?.text||"")}" placeholder="اتركه فارغاً لاستخدام اسم الموقع"></div>
   <button class="btn" id="lSave">${icon("check")} حفظ المظهر</button>`;
-  const live=()=>{s.font=$("#lFont").value;s.fontScale=+$("#lScale").value;s.likeIcon=$("#lLike").value;s.colsDesktop=+$("#lCd").value;s.colsMobile=+$("#lCm").value;s.mobileDensity=$("#lDensity").value;s.mobileNav=$("#lMobileNav").checked;s.heroTitle1=$("#lH1").value;s.heroAccent=$("#lHA").value;s.heroTitle2=$("#lH2").value;s.heroDesc=$("#lHD").value;s.watermark={enabled:$("#lWm").checked,text:$("#lWt").value};$("#fsV").textContent=s.fontScale;Object.assign(store.settings,s);applyTheme();};
-  m.addEventListener("input",e=>{if(e.target.id!=="lColor")live();});
-  m.addEventListener("change",live);
+  const live=()=>{s.font=$("#lFont").value;s.fontScale=+$("#lScale").value;s.likeIcon=$("#lLike").value;s.colsDesktop=+$("#lCd").value;s.colsMobile=+$("#lCm").value;s.heroTitle1=$("#lH1").value;s.heroAccent=$("#lHA").value;s.heroTitle2=$("#lH2").value;s.heroDesc=$("#lHD").value;s.watermark={enabled:$("#lWm").checked,text:$("#lWt").value};$("#fsV").textContent=s.fontScale;Object.assign(store.settings,s);applyTheme();};
+  const syncUI=()=>{
+    const u=themeUI(s);
+    $$("[data-k]",m).forEach(el=>{const v=u[el.dataset.k];if(el.type==="checkbox")el.checked=!!v;else el.value=v;});
+    $("#rdV").textContent=u.radius; $("#lColor").value=s.accent;
+    $$(".color-dot",m).forEach(x=>x.classList.toggle("sel",x.dataset.c===s.accent));
+    $$("[data-th]",m).forEach(x=>x.classList.toggle("sel",x.dataset.th===(s.theme||"royal")));
+  };
+  const uiH=e=>{const k=e.target.dataset&&e.target.dataset.k;if(!k)return;const el=e.target;
+    s.ui={...(s.ui||{}),[k]:el.type==="checkbox"?el.checked:(el.type==="range"?+el.value:el.value)};
+    if(k==="radius")$("#rdV").textContent=el.value; live();};
+  m.oninput=e=>{uiH(e);if(e.target.id!=="lColor")live();};
+  m.onchange=e=>{uiH(e);live();};
+  m.querySelector(".theme-grid").onclick=e=>{const c=e.target.closest("[data-th]");if(!c)return;const t=THEMES[c.dataset.th];s.theme=c.dataset.th;s.accent=t.accent;s.ui={...t.ui};live();syncUI();};
+  $("#thReset").onclick=()=>{const t=THEMES[s.theme||"royal"];s.ui={...t.ui};s.accent=t.accent;live();syncUI();};
   $("#lDots").onclick=e=>{const dot=e.target.closest("[data-c]");if(dot){s.accent=dot.dataset.c;$("#lColor").value=s.accent;m.querySelectorAll(".color-dot").forEach(x=>x.classList.toggle("sel",x===dot));live();}};
   $("#lColor").oninput=e=>{s.accent=e.target.value;live();};
   $("#lDz").onclick=()=>$("#lFile").click();
   $("#lFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;const c=await compressToFit(f,{});s.heroImage=c.data;$("#lDz").innerHTML=`<img src="${c.data}" style="max-height:120px;margin:auto;border-radius:8px">`;};
-  const presets={
-    architect:{accent:"#E10600",font:"Cairo",fontScale:100,colsDesktop:3,colsMobile:2,mobileDensity:"normal",mobileNav:true},
-    luxury:{accent:"#D4AF37",font:"Noto Kufi Arabic",fontScale:100,colsDesktop:3,colsMobile:2,mobileDensity:"airy",mobileNav:true},
-    modern:{accent:"#C97B4A",font:"Tajawal",fontScale:100,colsDesktop:4,colsMobile:2,mobileDensity:"normal",mobileNav:true},
-    minimal:{accent:"#7E8A97",font:"IBM Plex Sans Arabic",fontScale:98,colsDesktop:3,colsMobile:2,mobileDensity:"airy",mobileNav:true}
-  };
-  m.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{Object.assign(s,presets[b.dataset.preset]||{});$("#lFont").value=s.font;$("#lScale").value=s.fontScale;$("#lCd").value=s.colsDesktop;$("#lCm").value=s.colsMobile;$("#lDensity").value=s.mobileDensity;$("#lMobileNav").checked=s.mobileNav;$("#fsV").textContent=s.fontScale;live();toast("تم تطبيق القالب — اضغط حفظ لتثبيته");});
   $("#lSave").onclick=async()=>{live();const {db,doc,setDoc}=await fb();await setDoc(doc(db,"settings","site"),s,{merge:true});toast("تم حفظ المظهر");};
 }
 function secGeneral(m){
@@ -2088,7 +2124,7 @@ async function seedAll(progress=()=>{}){
   progress("تم!");
 }
 
-route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
+route("/favorites",renderFavorites); route("/",renderHome); route("/portfolio",renderPortfolio); route("/design/:id",renderDesign);
 route("/about",renderAbout); route("/contact",renderContact); route("/404",render404); route("/admin",renderAdmin);
 (async function boot(){
   const minSplash=wait(1000);
