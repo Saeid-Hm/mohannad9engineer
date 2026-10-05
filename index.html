@@ -27,13 +27,8 @@ h1,h2,h3,h4{line-height:1.35;margin:0 0 .5em}
 @media(max-width:820px){.only-mobile{display:inline-flex!important}.no-mobile{display:none!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 .geo{position:relative;overflow:hidden}
-.geo::before,.geo::after{content:"";position:absolute;width:230px;height:230px;pointer-events:none;opacity:.55;
- background:
-  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 0 0/100% 100% no-repeat,
-  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 46px 46px/100% 100% no-repeat,
-  linear-gradient(135deg,transparent 48.5%,var(--accent) 49%,var(--accent) 51%,transparent 51.5%) 92px 92px/100% 100% no-repeat;}
-.geo::before{inset-inline-end:-70px;top:-70px}
-.geo::after{inset-inline-start:-70px;bottom:-70px;transform:rotate(180deg)}
+/* الزخرفة الهندسية معطلة حتى لا تُرسم فوق صور المشاريع. */
+.geo::before,.geo::after{display:none!important;content:none!important}
 #splash{position:fixed;inset:0;background:var(--bg);z-index:200;display:grid;place-items:center;transition:opacity .5s,visibility .5s}
 #splash.hide{opacity:0;visibility:hidden;pointer-events:none}
 .splash-logo{font-size:56px;font-weight:900;color:var(--accent);letter-spacing:2px;animation:pop .8s ease}
@@ -304,6 +299,48 @@ input[type=range]{accent-color:var(--accent);flex:1}
 #botBubble{font-size:.88rem;font-weight:700;padding:8px 16px;border-color:var(--accent)}
 #botWin{animation:winIn .22s ease;transform-origin:bottom left}
 @keyframes winIn{from{opacity:0;transform:translateY(14px) scale(.96)}}
+/* تحسينات العرض الحديثة والجوال */
+.home-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:-6px;margin-bottom:18px}
+.view-toggle{display:inline-flex;gap:4px;padding:4px;border:1px solid var(--line);background:var(--card);border-radius:12px}
+.view-toggle .mini-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dcard.list-card{display:grid;grid-template-columns:150px 1fr;align-items:stretch}
+.dcard.list-card .thumb{aspect-ratio:auto;min-height:112px}
+.dcard.list-card .meta{display:flex;flex-direction:column;justify-content:center;padding:14px 16px}
+.dcard.list-card .meta h3{white-space:normal}
+.mobile-nav-off .bottomnav{display:none!important}
+@media(max-width:820px){
+  body{font-size:.95rem}
+  .hero h1{font-size:clamp(1.75rem,8vw,2.35rem);line-height:1.3}
+  .hero-in{padding:40px 0 54px}
+  .dcard .thumb{aspect-ratio:1/1}
+  .dcard .meta h3{font-size:.84rem}
+  .dcard .meta span{font-size:.68rem}
+  .grid{gap:10px}
+  .home-tools{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;scrollbar-width:none}
+  .home-tools::-webkit-scrollbar{display:none}
+  .home-tools .chip{flex:0 0 auto}
+  .dcard.list-card{grid-template-columns:118px 1fr}
+  .dcard.list-card .thumb{min-height:96px}
+  .dcard.list-card .meta{padding:10px}
+  .detail{gap:14px}
+  .specs{padding:15px}
+  .admin{padding:12px 0}
+}
+@media(max-width:520px){
+  .container{width:calc(100% - 24px)}
+  .hero .btn{width:100%;justify-content:center}
+  .tools-r{display:grid!important;grid-template-columns:1fr 1fr}
+  .tools-r>div{width:100%}
+  .tools-r input,.tools-r select{width:100%!important}
+  #pGrid .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .dcard.list-card{grid-template-columns:104px 1fr}
+  .dcard.list-card .thumb{min-height:90px}
+}
+@media(max-width:380px){
+  #pGrid .grid{grid-template-columns:1fr}
+  .dcard .thumb{aspect-ratio:4/3}
+  .dcard.list-card{grid-template-columns:96px 1fr}
+}
 </style>
 </head>
 <body>
@@ -425,7 +462,7 @@ const FALLBACK_SETTINGS={
   stats:{years:"5+",projects:"50+",satisfaction:"100%"},
   links:{whatsapp:"",instagram:"",twitter:"",facebook:""},
   contact:{email:"info@architect.com",phone:"+966 50 123 4567",address:"الرياض، السعودية",whatsappNumber:"966501234567"},
-  watermark:{enabled:false,text:""},adminPath:"/admin-panel"
+  watermark:{enabled:false,text:""},mobileDensity:"normal",mobileNav:true,adminPath:"/admin-panel"
 };
 const stripMax=t=>typeof t==="string"?t.replace(/\s*(المنفذة|منفذة|منفذ)\s+(بدقة\s+)?عبر\s*3ds\s*max\.?/gi,"").replace(/\s+\./g,".").trim():t;
 const cleanSettings=s=>{s.heroDesc=stripMax(s.heroDesc);s.bio=stripMax(s.bio);if(/unsplash\.com/.test(s.heroImage||""))s.heroImage="";return s;};
@@ -450,6 +487,10 @@ function applyTheme(){
   r.setProperty("--cols-d",settings.colsDesktop||3);
   r.setProperty("--cols-m",settings.colsMobile||2);
   r.fontSize=(settings.fontScale||100)+"%";
+  document.documentElement.dataset.mobileDensity=settings.mobileDensity||"normal";
+  document.documentElement.classList.toggle("mobile-nav-off",settings.mobileNav===false);
+  document.documentElement.classList.toggle("mobile-density-compact",settings.mobileDensity==="compact");
+  document.documentElement.classList.toggle("mobile-density-airy",settings.mobileDensity==="airy");
   const font=settings.font||"Cairo";
   r.setProperty("--font",`'${font}'`);
   const link=$("#fontLink"), href=`https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@400;500;700;800;900&display=swap`;
@@ -872,7 +913,7 @@ function designCard(d,catName){
       <button class="like-btn ${hasLiked(d.id)?"liked":""}" data-like="${d.id}" aria-label="إعجاب"></button>
       <span class="like-count" data-likecount="${d.id}">${d.likesCount||0}</span>
     </a>
-    <div class="meta"><h3>${esc(d.title)}</h3><span>${esc(catName)}</span></div>
+    <div class="meta"><h3>${esc(d.title)}</h3><span>${esc(catName)}${d.viewsCount?` · ${Number(d.viewsCount).toLocaleString("ar-SA")} مشاهدة`:""}</span></div>
   </article>`;
 }
 const skeletonGrid=(n=8)=>`<div class="grid">${Array(n).fill(`<div><div class="skel" style="aspect-ratio:4/3"></div><div class="skel" style="height:16px;margin-top:8px;width:70%"></div></div>`).join("")}</div>`;
@@ -887,21 +928,36 @@ async function renderHome(root){
     <div class="container hero-in">
       <h1>${esc(s.heroTitle1)} <span class="accent">${esc(s.heroAccent)}</span> ${esc(s.heroTitle2||"")}</h1>
       <p>${esc(s.heroDesc)}</p>
-      <a class="btn" href="#/portfolio">شاهد الأعمال ${icon("chevL")}</a>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <a class="btn" href="#/portfolio">شاهد الأعمال ${icon("chevL")}</a>
+        <a class="btn ghost" href="#/portfolio?sort=likes">الأكثر إعجاباً ${icon("heart")}</a>
+      </div>
     </div>
   </section>
   <section class="section container">
     <div class="section-head"><h2 class="section-title">أحدث المشاريع</h2><a class="link-accent" href="#/portfolio">عرض الكل ${icon("chevL")}</a></div>
-    <div id="homeGrid">${skeletonGrid(9)}</div>
+    <div class="home-tools">
+      <a class="chip active" href="#/portfolio?sort=new">الأحدث</a>
+      <a class="chip" href="#/portfolio?sort=likes">الأكثر إعجاباً</a>
+      <a class="chip" href="#/portfolio?sort=views">الأكثر مشاهدة</a>
+      <a class="chip" href="#/portfolio?featured=1">المميزة</a>
+    </div>
+    <div id="homeGrid">${skeletonGrid(6)}</div>
+  </section>
+  <section class="section container" style="padding-top:8px">
+    <div class="section-head"><h2 class="section-title">التصاميم الشائعة</h2><a class="link-accent" href="#/portfolio?sort=likes">كل الشائع ${icon("chevL")}</a></div>
+    <div id="popularGrid">${skeletonGrid(4)}</div>
   </section>`;
   const all=await getAllDesigns();
   const published=all.filter(dd=>dd.status==="published");
   let items=published.filter(dd=>dd.featured===true);
-  if(items.length<9){ items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
-  else{ items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,9); }
-  const grid=$("#homeGrid");
+  if(items.length<6) items=[...published].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+  else items=items.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+  const popular=[...published].sort((a,b)=>((b.likesCount||0)*3+(b.viewsCount||0))-((a.likesCount||0)*3+(a.viewsCount||0))).slice(0,4);
+  const grid=$("#homeGrid"), pop=$("#popularGrid");
   grid.innerHTML=items.length?`<div class="grid">${items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState();
-  bindCards(grid);
+  pop.innerHTML=popular.length?`<div class="grid popular-grid">${popular.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد تصاميم شائعة بعد");
+  bindCards(grid); bindCards(pop);
 }
 async function renderAbout(root){
   const s=settings;
@@ -959,7 +1015,7 @@ function render404(root){root.innerHTML=`<div class="empty" style="padding:120px
 
 let pState=null;
 async function renderPortfolio(root,params){
-  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",items:[],page:0,done:false,loading:false};
+  pState={cat:params.get("cat")||"",color:params.get("color")||"",q:params.get("q")||"",sort:params.get("sort")||"new",featured:params.get("featured")==="1",view:localStorage.getItem("ap_portfolio_view")||"grid",items:[],page:0,done:false,loading:false};
   root.innerHTML=`<section class="section container" style="padding-top:26px">
     <h1 style="font-weight:900">معرض الأعمال</h1>
     <p style="color:var(--muted);margin-bottom:18px">استعرض أحدث تصاميمي الداخلية والخارجية.</p>
@@ -970,6 +1026,7 @@ async function renderPortfolio(root,params){
         <select id="sort" class="input" style="width:150px" aria-label="ترتيب">
           <option value="new" ${pState.sort==="new"?"selected":""}>الأحدث</option>
           <option value="likes" ${pState.sort==="likes"?"selected":""}>الأكثر إعجاباً</option>
+           <option value="views" ${pState.sort==="views"?"selected":""}>الأكثر مشاهدة</option>
         </select>
       </div>
     </div>
@@ -980,6 +1037,9 @@ async function renderPortfolio(root,params){
   renderChips();
   $("#q").oninput=debounce(e=>{pState.q=e.target.value.trim();pReset();},350);
   $("#sort").onchange=e=>{pState.sort=e.target.value;pReset();};
+  $("#featuredToggle").onclick=()=>{pState.featured=!pState.featured;pReset();};
+  $("#gridView").onclick=()=>{pState.view="grid";localStorage.setItem("ap_portfolio_view","grid");$("#gridView").classList.add("active");$("#listView").classList.remove("active");paintGrid();};
+  $("#listView").onclick=()=>{pState.view="list";localStorage.setItem("ap_portfolio_view","list");$("#listView").classList.add("active");$("#gridView").classList.remove("active");paintGrid();};
   if($("#clrColor"))$("#clrColor").onclick=()=>location.hash="#/portfolio";
   if(params.get("focus"))setTimeout(()=>$("#q")?.focus(),300);
   const moreBtn=$("#more"); moreBtn.onclick=()=>fetchPage();
@@ -989,19 +1049,26 @@ function renderChips(){
   $("#chips").innerHTML=`<button class="chip ${!pState.cat?"active":""}" data-c="">الكل</button>`+store.categories.map(c=>`<button class="chip ${pState.cat===c.slug?"active":""}" data-c="${esc(c.slug)}">${esc(c.name)}</button>`).join("");
   $("#chips").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;pState.cat=b.dataset.c;renderChips();pReset();};
 }
-async function pReset(){pState.items=[];pState.page=0;pState.done=false;$("#pGrid").innerHTML=skeletonGrid(appConfig.pageSize);await fetchPage();}
+async function pReset(){
+  pState.items=[];pState.page=0;pState.done=false;
+  const host=$("#pGrid");
+  if(host)host.innerHTML=`<div class="empty" style="padding:38px 20px"><p style="margin:0;color:var(--muted)">${pState.cat?"جارٍ التحقق من التصاميم والصور المنشورة…":"جارٍ تحميل التصاميم…"}</p></div>`;
+  await fetchPage();
+}
 const catIdBySlug=slug=>store.categories.find(c=>c.slug===slug)?.id||"";
 async function fetchPage(){
   if(pState.loading||pState.done)return; pState.loading=true;
   const all=await getAllDesigns();
-  let pool=all.filter(dd=>dd.status==="published");
+  /* لا نعرض تصميماً على أنه صورة منشورة إلا إذا كان له غلاف وصور فعلية. */
+  let pool=all.filter(dd=>dd.status==="published" && !!dd.thumbnail && Number(dd.imagesCount||0)>0);
   if(pState.cat) pool=pool.filter(dd=>dd.categoryId===catIdBySlug(pState.cat));
   if(pState.color) pool=pool.filter(dd=>(dd.colorTags||[]).includes(pState.color));
+  if(pState.featured) pool=pool.filter(dd=>dd.featured===true);
   if(pState.q){
     const q=pState.q.toLowerCase();
     pool=pool.filter(dd=>(dd.title||"").toLowerCase().includes(q)||(dd.tags||[]).some(t=>(t||"").toLowerCase().includes(q))||store.catName(dd.categoryId).toLowerCase().includes(q));
   }
-  const orderF=pState.sort==="likes"?"likesCount":"createdAt";
+  const orderF=pState.sort==="likes"?"likesCount":pState.sort==="views"?"viewsCount":"createdAt";
   pool.sort((a,b)=>(b[orderF]||0)-(a[orderF]||0));
   const start=pState.page*appConfig.pageSize, end=start+appConfig.pageSize;
   const slice=pool.slice(start,end);
@@ -1012,7 +1079,7 @@ async function fetchPage(){
 }
 function paintGrid(){
   const g=$("#pGrid");
-  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId))).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
+  g.innerHTML=pState.items.length?`<div class="grid">${pState.items.map(dd=>designCard(dd,store.catName(dd.categoryId)).replace('<article class="card dcard">',`<article class="card dcard ${pState.view==="list"?"list-card":""}">`)).join("")}</div>`:emptyState("لا توجد نتائج مطابقة");
   bindCards(g); $("#more").hidden=pState.done;
 }
 
@@ -1186,18 +1253,26 @@ function renderCats(){
     botState={step:"colors",cat:{slug:b.dataset.slug,id:b.dataset.id,name:b.textContent}};
     await botSay(b.textContent,true);
     bumpStat("cat_"+b.dataset.slug);
-    botToggle(false);
-    nav(`/portfolio?cat=${encodeURIComponent(b.dataset.slug)}`);
-    setTimeout(()=>showBubble("ما هي ألوانك المفضلة؟ اضغط عليّ"),2500);
+    /* ابقِ المستخدم داخل البوت: سنفحص الصور أولاً ثم نعرض الألوان المأخوذة منها فقط. */
+    await renderPalettes();
   };
 }
 const reducedMotion=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
-function designPalettes(cid){
-  return getAllDesigns().then(all=>all
-    .filter(d=>d.status==="published"&&d.categoryId===cid&&Array.isArray(d.colors)&&d.colors.length>=3)
-    .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6)
-    .map(d=>({name:d.title,colors:d.colors.slice(0,6),tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:d.colorTags||colorNames(d.colors),designId:d.id,auto:true}))
-  ).catch(()=>[]);
+async function designPalettes(cid){
+  try{
+    const all=await getAllDesigns();
+    const source=all
+      /* لا نستخدم أي ألوان محفوظة من تصميم بلا صورة فعلية. */
+      .filter(d=>d.status==="published" && d.categoryId===cid && !!d.thumbnail && Number(d.imagesCount||0)>0)
+      .sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,6);
+    const out=[];
+    for(const d of source){
+      const colors=await extractColors(d.thumbnail,6);
+      if(colors.length<3)continue;
+      out.push({name:d.title,colors,tiles:d.materials||"",furniture:"",curtains:"",carpet:"",tags:colorNames(colors),designId:d.id,auto:true,source:"image"});
+    }
+    return out;
+  }catch{return []}
 }
 async function prefetchPalettes(){
   try{const {db,collection,getDocs}=await fb();const s=await getDocs(collection(db,"palettes"));
@@ -1206,20 +1281,25 @@ async function prefetchPalettes(){
 async function renderPalettes(){
   botState.step="colors";
   const cid=botState.cat.id;
-  let base=_palCache[cid];
-  if(!base){
-    try{const {db,doc,getDoc}=await fb();const s=await getDoc(doc(db,"palettes",cid));base=s.data()?.items;}catch{}
-    if(!base||!base.length)base=DEFAULT_PALETTES[botState.cat.slug]||DEFAULT_PALETTES.living;
-    _palCache[cid]=base;
-  }
   const autos=await designPalettes(cid);
-  const items=[...autos,...base];
+  const body=$("#botBody"); if(!body)return;
   $("#botChips").innerHTML="";
   $("#palList")?.remove();
-  const body=$("#botBody"); if(!body)return;
   const line=(l,v)=>v?`<p><b>${l}:</b> ${esc(v)}</p>`:"";
+  if(!autos.length){
+    body.insertAdjacentHTML("beforeend",`<div id="palList" class="empty" style="padding:28px 10px">
+      ${icon("image")}<p><b>لا توجد صور منشورة في تصنيف «${esc(botState.cat.name)}» حالياً.</b></p>
+      <p style="font-size:.78rem">لن أعرض ألواناً على أنها مستخرجة من الصور ما دامت لا توجد صور فعلية لتحليلها.</p>
+    </div>`);
+    $("#botChips").innerHTML=`<button class="chip active" id="bGoCat">فتح التصنيف</button><button class="chip" id="bRestart">ابدأ من جديد</button>`;
+    $("#bGoCat").onclick=()=>{botToggle(false);nav(`/portfolio?cat=${encodeURIComponent(botState.cat.slug)}`);};
+    $("#bRestart").onclick=()=>{botState=null;botGreet();};
+    return;
+  }
+  /* الباقات اليدوية لا تُخلط مع تحليل الصور حتى لا تبدو وكأنها مستخرجة منها. */
+  const items=autos;
   body.insertAdjacentHTML("beforeend",`<div id="palList" style="display:flex;flex-direction:column;gap:8px">${items.map((p,i)=>`
-    <div class="palette-card" data-i="${i}"><h5>${p.auto?`<span class="badge pub" style="margin-inline-end:6px">من أعمالنا</span>`:""}${esc(p.name)}</h5>
+    <div class="palette-card" data-i="${i}"><h5><span class="badge pub" style="margin-inline-end:6px">من ألوان صورنا</span>${esc(p.name)}</h5>
       <div class="swatches">${(p.colors||[]).slice(0,6).map(h=>`<i style="background:${esc(h)}" title="${esc(h)}"></i>`).join("")}</div>
       ${line("الأرضيات",p.tiles)}${line("الأثاث",p.furniture)}${line("الستائر",p.curtains)}${line("السجاد",p.carpet)}
       ${p.auto&&(p.tags||[]).length?line("الألوان",(p.tags||[]).slice(0,4).join("، ")):""}
@@ -1604,6 +1684,18 @@ function secLook(m){
     <div class="field"><label>رمز الإعجاب</label><select class="input" id="lLike"><option value="heart" ${s.likeIcon==="heart"?"selected":""}>قلب ♥</option><option value="star" ${s.likeIcon==="star"?"selected":""}>نجمة ★</option></select></div>
     <div class="field"><label>عدد الصور بالصف (حاسوب)</label><select class="input" id="lCd">${[1,2,3,4,5].map(n=>`<option ${s.colsDesktop===n?"selected":""}>${n}</option>`).join("")}</select></div>
     <div class="field"><label>عدد الصور بالصف (جوال)</label><select class="input" id="lCm">${[1,2,3,4,5].map(n=>`<option ${s.colsMobile===n?"selected":""}>${n}</option>`).join("")}</select></div>
+    <div class="field"><label>كثافة بطاقات الجوال</label><select class="input" id="lDensity"><option value="compact" ${s.mobileDensity==="compact"?"selected":""}>مضغوط — نتائج أكثر</option><option value="normal" ${!s.mobileDensity||s.mobileDensity==="normal"?"selected":""}>متوازن</option><option value="airy" ${s.mobileDensity==="airy"?"selected":""}>مريح — مساحات أكبر</option></select></div>
+    <div class="field" style="display:flex;align-items:end"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="lMobileNav" ${s.mobileNav!==false?"checked":""}> إظهار شريط التنقل السفلي في الجوال</label></div>
+  </div>
+  <div class="specs" style="margin:4px 0 16px;padding:14px">
+    <h3 style="margin-bottom:6px">${icon("theme")} قوالب عرض جاهزة</h3>
+    <p style="color:var(--muted);font-size:.78rem;margin-bottom:10px">قوالب مناسبة لمواقع العمارة والتصميم الداخلي. اختر قالباً ثم اضغط حفظ.</p>
+    <div class="form-grid">
+      <button class="btn ghost" type="button" data-preset="architect">هندسي معماري</button>
+      <button class="btn ghost" type="button" data-preset="luxury">فاخر هادئ</button>
+      <button class="btn ghost" type="button" data-preset="modern">مودرن دافئ</button>
+      <button class="btn ghost" type="button" data-preset="minimal">مينيمال</button>
+    </div>
   </div>
   <div class="field"><label>عنوان الهيرو (جزء 1)</label><input class="input" id="lH1" value="${esc(s.heroTitle1)}"></div>
   <div class="form-grid"><div class="field"><label>الكلمة الملونة</label><input class="input" id="lHA" value="${esc(s.heroAccent)}"></div><div class="field"><label>الجزء 3</label><input class="input" id="lH2" value="${esc(s.heroTitle2||"")}"></div></div>
@@ -1612,13 +1704,20 @@ function secLook(m){
   <label style="display:flex;gap:8px;font-size:.85rem;margin:8px 0"><input type="checkbox" id="lWm" ${s.watermark?.enabled?"checked":""}> تفعيل العلامة المائية على الصور</label>
   <div class="field"><label>نص العلامة المائية</label><input class="input" id="lWt" value="${esc(s.watermark?.text||"")}" placeholder="اتركه فارغاً لاستخدام اسم الموقع"></div>
   <button class="btn" id="lSave">${icon("check")} حفظ المظهر</button>`;
-  const live=()=>{s.font=$("#lFont").value;s.fontScale=+$("#lScale").value;s.likeIcon=$("#lLike").value;s.colsDesktop=+$("#lCd").value;s.colsMobile=+$("#lCm").value;s.heroTitle1=$("#lH1").value;s.heroAccent=$("#lHA").value;s.heroTitle2=$("#lH2").value;s.heroDesc=$("#lHD").value;s.watermark={enabled:$("#lWm").checked,text:$("#lWt").value};$("#fsV").textContent=s.fontScale;Object.assign(store.settings,s);applyTheme();};
+  const live=()=>{s.font=$("#lFont").value;s.fontScale=+$("#lScale").value;s.likeIcon=$("#lLike").value;s.colsDesktop=+$("#lCd").value;s.colsMobile=+$("#lCm").value;s.mobileDensity=$("#lDensity").value;s.mobileNav=$("#lMobileNav").checked;s.heroTitle1=$("#lH1").value;s.heroAccent=$("#lHA").value;s.heroTitle2=$("#lH2").value;s.heroDesc=$("#lHD").value;s.watermark={enabled:$("#lWm").checked,text:$("#lWt").value};$("#fsV").textContent=s.fontScale;Object.assign(store.settings,s);applyTheme();};
   m.addEventListener("input",e=>{if(e.target.id!=="lColor")live();});
   m.addEventListener("change",live);
   $("#lDots").onclick=e=>{const dot=e.target.closest("[data-c]");if(dot){s.accent=dot.dataset.c;$("#lColor").value=s.accent;m.querySelectorAll(".color-dot").forEach(x=>x.classList.toggle("sel",x===dot));live();}};
   $("#lColor").oninput=e=>{s.accent=e.target.value;live();};
   $("#lDz").onclick=()=>$("#lFile").click();
   $("#lFile").onchange=async e=>{const f=e.target.files[0];if(!f)return;const c=await compressToFit(f,{});s.heroImage=c.data;$("#lDz").innerHTML=`<img src="${c.data}" style="max-height:120px;margin:auto;border-radius:8px">`;};
+  const presets={
+    architect:{accent:"#E10600",font:"Cairo",fontScale:100,colsDesktop:3,colsMobile:2,mobileDensity:"normal",mobileNav:true},
+    luxury:{accent:"#D4AF37",font:"Noto Kufi Arabic",fontScale:100,colsDesktop:3,colsMobile:2,mobileDensity:"airy",mobileNav:true},
+    modern:{accent:"#C97B4A",font:"Tajawal",fontScale:100,colsDesktop:4,colsMobile:2,mobileDensity:"normal",mobileNav:true},
+    minimal:{accent:"#7E8A97",font:"IBM Plex Sans Arabic",fontScale:98,colsDesktop:3,colsMobile:2,mobileDensity:"airy",mobileNav:true}
+  };
+  m.querySelectorAll("[data-preset]").forEach(b=>b.onclick=()=>{Object.assign(s,presets[b.dataset.preset]||{});$("#lFont").value=s.font;$("#lScale").value=s.fontScale;$("#lCd").value=s.colsDesktop;$("#lCm").value=s.colsMobile;$("#lDensity").value=s.mobileDensity;$("#lMobileNav").checked=s.mobileNav;$("#fsV").textContent=s.fontScale;live();toast("تم تطبيق القالب — اضغط حفظ لتثبيته");});
   $("#lSave").onclick=async()=>{live();const {db,doc,setDoc}=await fb();await setDoc(doc(db,"settings","site"),s,{merge:true});toast("تم حفظ المظهر");};
 }
 function secGeneral(m){
